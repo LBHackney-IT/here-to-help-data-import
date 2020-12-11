@@ -1,0 +1,4 @@
+.idea/*
+infrastructure/.terraform/*
+infrastructure/.terraform.lock.hcl
+venv/*

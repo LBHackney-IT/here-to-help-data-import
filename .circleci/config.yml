@@ -42,10 +42,6 @@ commands:
       - run:
           name: Zip lib
           command: zip lambda.zip lib -r
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - lambda.zip
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:

@@ -22,10 +22,6 @@ variable "function_name" {
   default = "here-to-help-data-ingestion"
 }
 
-variable "role" {
-  default = {"development" = "arn:aws:iam::859159924354:role/cv-19-res-support-dev-eu-west-2-lambdaRole"}
-}
-
 variable "handler" {
   default = "lib.main.lambda_handler"
 }
@@ -34,10 +30,16 @@ variable "runtime" {
   default = "python3.7"
 }
 variable "subnet_ids_for_lambda" {
-  default = {"development" =  ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"]}
+  default = { "development" =  ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"]
+              "staging" = "",
+              "production" = ""
+            }
 }
 variable "sg_for_lambda" {
-  default = {"development" =  ["sg-0295c6df4beffa609"]}
+  default = { "development" =  ["sg-0295c6df4beffa609"]
+              "staging" = "",
+              "production" = ""
+            }
 }
 
 variable "stage" {
@@ -63,7 +65,7 @@ resource "aws_s3_bucket_object" "handler" {
 }
 
 resource "aws_lambda_function" "here-to-help-lambda" {
-  role             = lookup(var.role, var.stage)
+  role             = aws_iam_role.here_to_help_role.arn
   handler          = var.handler
   runtime          = var.runtime
   function_name    = var.function_name
@@ -76,19 +78,19 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   }
 }
 
-//resource "aws_iam_role" "here_to_help_role" {
-//  name               = "here-to-help-lambda-role"
-//  assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json
-//}
-//
-//data "aws_iam_policy_document" "here_to_help_role" {
-//  statement {
-//    actions = ["sts:AssumeRole"]
-//    effect  = "Allow"
-//
-//    principals {
-//      type        = "Service"
-//      identifiers = ["lambda.amazonaws.com"]
-//    }
-//  }
-//}
+resource "aws_iam_role" "here_to_help_role" {
+  name               = "here-to-help-lambda-role"
+  assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json
+}
+
+data "aws_iam_policy_document" "here_to_help_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    effect  = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}

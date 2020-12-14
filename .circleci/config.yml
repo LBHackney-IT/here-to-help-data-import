@@ -64,20 +64,41 @@ commands:
             terraform apply -auto-approve -var 'stage=<<parameters.stage>>'
 
 jobs:
+  zip-lambda:
+    executor: docker-python
+    steps:
+      - zip-lib-directory
   assume-role-development:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DEVELOPMENT
+  assume-role-staging:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_STAGING
+  assume-role-production:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_PRODUCTION
   terraform-init-and-apply-to-development:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
           stage: "development"
-  zip-lambda:
-    executor: docker-python
+  terraform-init-and-apply-to-staging:
+    executor: docker-terraform
     steps:
-      - zip-lib-directory
+      - terraform-init-then-apply:
+          stage: "staging"
+  terraform-init-and-apply-to-production:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-apply:
+          stage: "production"
+
 
 
 workflows:
@@ -92,3 +113,40 @@ workflows:
       - terraform-init-and-apply-to-development:
           requires:
             - assume-role-development
+  check-and-deploy-staging:
+    jobs:
+      - permit-staging-release:
+            type: approval
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          filters:
+            branches:
+              only: master
+          requires:
+            - permit-staging-release
+      - terraform-init-and-apply-to-staging:
+          requires:
+            - assume-role-staging
+          filters:
+            branches:
+              only: master
+  check-and-deploy-production:
+    jobs:
+      - permit-production-release:
+          type: approval
+          filters:
+            branches:
+              only: master
+      - assume-role-production:
+          context: api-assume-role-production-context
+          requires:
+            - permit-production-release
+          filters:
+            branches:
+              only: master
+      - terraform-init-and-apply-to-production:
+          requires:
+            - assume-role-production
+          filters:
+            branches:
+              only: master

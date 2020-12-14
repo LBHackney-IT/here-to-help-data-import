@@ -1,23 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.0"
-    }
-  }
-
- backend "s3" {
-    region     = "eu-west-2"
-    key        = "tf-remote-state/here-to-help-data-ingestion"
-    bucket     = "here-to-help-data-ingestion-terraform-state"
-    encrypt    = true
-  }
-}
-
-provider "aws" {
-  region = "eu-west-2"
-}
-
 variable "function_name" {
   default = "here-to-help-data-ingestion"
 }
@@ -30,15 +10,15 @@ variable "runtime" {
   default = "python3.7"
 }
 variable "subnet_ids_for_lambda" {
-  default = { "development" =  ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"]
-              "staging" = "",
-              "production" = ""
+  default = { "development" =  ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"],
+              "staging" = ["subnet-06d3de1bd9181b0d7", "subnet-0ed7d7713d1127656"],
+              "production" = ["subnet-01d3657f97a243261", "subnet-0b7b8fea07efabf34"]
             }
 }
 variable "sg_for_lambda" {
-  default = { "development" =  ["sg-0295c6df4beffa609"]
-              "staging" = "",
-              "production" = ""
+  default = { "development" =  ["sg-0295c6df4beffa609"],
+              "staging" = ["sg-0cd6d0dd6097bb9e8"],
+              "production" = ["sg-0e3ca1352f142d8c8"]
             }
 }
 
@@ -46,13 +26,12 @@ variable "stage" {
   type = string
 }
 
-
 data "local_file" "here-to-help-lambda-object" {
-  filename = "../lambda.zip"
+  filename = "../../lambda.zip"
 }
 
 resource "aws_s3_bucket" "s3_deployment_artefacts" {
-  bucket        = "here-to-help-data-ingestion-dev"
+  bucket        = "here-to-help-data-ingestion-${var.stage}"
   acl           = "private"
   force_destroy = true
 }
@@ -93,4 +72,31 @@ data "aws_iam_policy_document" "here_to_help_role" {
       identifiers = ["lambda.amazonaws.com"]
     }
   }
+}
+
+resource "aws_iam_policy" "here_to_help_lambda_policy" {
+    name        = "here-to-help-lambda-policy"
+    policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:CreateNetworkInterface",
+        "ec2:DeleteNetworkInterface",
+        "ec2:DescribeInstances",
+        "ec2:AttachNetworkInterface"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "here-to-help-lambda-role-attachment" {
+  role       = aws_iam_role.here_to_help_role.name
+  policy_arn = aws_iam_policy.here_to_help_lambda_policy.arn
 }

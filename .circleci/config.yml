@@ -53,15 +53,15 @@ commands:
       - run:
           name: format get and init
           command: |
-            cd infrastructure
+            cd infrastructure/<<parameters.stage>>
             terraform fmt
             terraform get -update=true
             terraform init
       - run:
           name: apply
           command: |
-            cd infrastructure
-            terraform apply -auto-approve -var 'stage=<<parameters.stage>>'
+            cd infrastructure/<<parameters.stage>>
+            terraform apply -auto-approve
 
 jobs:
   zip-lambda:

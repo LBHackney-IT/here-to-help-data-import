@@ -19,6 +19,22 @@ references:
       at: *workspace_root
 
 commands:
+  build-and-test:
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pipenv install
+      - run:
+          name: Run unit tests
+          command: |
+            sudo pip install pytest
+            pytest
+
   assume-role-and-persist-workspace:
     description: "Assumes deployment role and persists credentials across jobs"
     parameters:
@@ -64,6 +80,10 @@ commands:
             terraform apply -auto-approve
 
 jobs:
+  build-and-test:
+    executor: docker-python
+    steps:
+      - build-and-test
   zip-lambda:
     executor: docker-python
     steps:
@@ -105,18 +125,33 @@ workflows:
   version: 2
   check-and-deploy-development:
     jobs:
-      - zip-lambda
+      - build-and-test
+      - zip-lambda:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: development
       - assume-role-development:
           context: api-assume-role-development-context
           requires:
             - zip-lambda
+          filters:
+            branches:
+              only: development
       - terraform-init-and-apply-to-development:
           requires:
             - assume-role-development
+          filters:
+            branches:
+              only: development
   check-and-deploy-staging:
     jobs:
       - permit-staging-release:
             type: approval
+            filters:
+              branches:
+                only: master
       - assume-role-staging:
           context: api-assume-role-staging-context
           filters:

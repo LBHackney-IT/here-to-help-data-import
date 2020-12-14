@@ -1,4 +1,9 @@
 .idea/*
 infrastructure/.terraform/*
 infrastructure/.terraform.lock.hcl
+infrastructure/venv/*
+lib/__pycache__/*
+lib/gateways/__pycache__/*
+lib/usecase/__pycache__/*
 venv/*
+.env

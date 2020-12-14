@@ -3,10 +3,8 @@ import json
 
 class CreateHelpRequest:
 
-    def execute(self):
-        print("hello world")
+    def __init__(self, gateway):
+        self.gateway = gateway
 
-        response = json.dumps({
-            "success": True,
-        })
-        return response
+    def execute(self, help_request):
+        return self.gateway.create_help_request(help_request=help_request)

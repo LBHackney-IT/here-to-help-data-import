@@ -74,16 +74,20 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "development"
+  zip-lambda:
+    executor: docker-python
+    steps:
+      - zip-lib-directory
 
 
 workflows:
   version: 2
   continuous-delivery:
     jobs:
-      - zip-lib-directory
+      - zip-lambda
       - assume-role-development:
           requires:
-            - assume-role-development
+            - zip-lambda
       - terraform-init-and-apply-to-development:
           requires:
             - assume-role-development

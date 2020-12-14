@@ -10,7 +10,7 @@ terraform {
     region     = "eu-west-2"
     key        = "tf-remote-state/here-to-help-data-ingestion"
     bucket     = "here-to-help-data-ingestion-terraform-state"
-    encrypt        = true
+    encrypt    = true
   }
 }
 
@@ -23,7 +23,7 @@ variable "function_name" {
 }
 
 variable "role" {
-  default = "arn:aws:iam::859159924354:role/cv-19-res-support-dev-eu-west-2-lambdaRole"
+  default = {"development" = "arn:aws:iam::859159924354:role/cv-19-res-support-dev-eu-west-2-lambdaRole"}
 }
 
 variable "handler" {
@@ -34,11 +34,16 @@ variable "runtime" {
   default = "python3.7"
 }
 variable "subnet_ids_for_lambda" {
-  default = ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"]
+  default = {"development" =  ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"]}
 }
 variable "sg_for_lambda" {
-  default = ["sg-0295c6df4beffa609"]
+  default = {"development" =  ["sg-0295c6df4beffa609"]}
 }
+
+variable "stage" {
+  type = string
+}
+
 
 data "local_file" "here-to-help-lambda-object" {
   filename = "../lambda.zip"
@@ -58,16 +63,16 @@ resource "aws_s3_bucket_object" "handler" {
 }
 
 resource "aws_lambda_function" "here-to-help-lambda" {
-  role             = var.role
+  role             = lookup(var.role, var.stage)
   handler          = var.handler
   runtime          = var.runtime
   function_name    = var.function_name
-  s3_bucket                      = aws_s3_bucket.s3_deployment_artefacts.bucket
-  s3_key                         = aws_s3_bucket_object.handler.key
+  s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
+  s3_key           = aws_s3_bucket_object.handler.key
 
   vpc_config {
-    subnet_ids         = var.subnet_ids_for_lambda
-    security_group_ids = var.sg_for_lambda
+    subnet_ids         = lookup(var.subnet_ids_for_lambda, var.stage)
+    security_group_ids = lookup(var.sg_for_lambda, var.stage)
   }
 }
 

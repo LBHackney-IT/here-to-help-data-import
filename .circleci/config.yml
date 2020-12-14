@@ -45,7 +45,7 @@ commands:
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:
-      environment:
+      stage:
         type: string
     steps:
       - *attach_workspace
@@ -61,7 +61,7 @@ commands:
           name: apply
           command: |
             cd infrastructure
-            terraform apply -auto-approve
+            terraform apply -auto-approve -var 'stage=<<parameters.stage>>'
 
 jobs:
   assume-role-development:
@@ -73,7 +73,7 @@ jobs:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
-          environment: "development"
+          stage: "development"
   zip-lambda:
     executor: docker-python
     steps:
@@ -82,7 +82,7 @@ jobs:
 
 workflows:
   version: 2
-  continuous-delivery:
+  check-and-deploy-development:
     jobs:
       - zip-lambda
       - assume-role-development:

@@ -57,6 +57,33 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "here-to-help-data-ingestion-logs" {
+  name              = "/aws/lambda/${aws_lambda_function.here-to-help-lambda.function_name}-logs"
+  retention_in_days = 14
+}
+
+# See also the following AWS managed policy: AWSLambdaBasicExecutionRole
+
+resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
+  name                = "here-to-help-scheduled-event"
+  description         = "Fires every one minutes"
+  schedule_expression = "rate(1 minute)"
+}
+
+resource "aws_cloudwatch_event_target" "check_google_sheet" {
+  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
+  target_id = "here-to-help-lambda"
+  arn       = aws_lambda_function.here-to-help-lambda.arn
+}
+
+resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.here-to-help-lambda.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event.arn
+}
+
 resource "aws_iam_role" "here_to_help_role" {
   name               = "here-to-help-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json
@@ -90,6 +117,15 @@ resource "aws_iam_policy" "here_to_help_lambda_policy" {
       ],
       "Effect": "Allow",
       "Resource": "*"
+    },
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
     }
   ]
 }

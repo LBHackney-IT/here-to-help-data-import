@@ -4,12 +4,19 @@ class CreateHelpRequest:
         self.gateway = gateway
 
     def execute(self, help_requests):
-        ids = []
-        unsuccessful = []
+        result = {"created_help_request_ids": [], "unsuccessful_help_requests": []}
+        exceptions = []
         for help_request in help_requests:
-            result = self.gateway.create_help_request(help_request=help_request)
-            if result is None:
-                unsuccessful.append(help_request)
-            else:
-                ids.append(result["id"])
-        return {"created_help_request_ids": ids, "unsuccessful_help_requests": unsuccessful}
+            try:
+                response = self.gateway.create_help_request(help_request=help_request)
+                if response is None:
+                    result["unsuccessful_help_requests"].append(help_request)
+                else:
+                    result["created_help_request_ids"].append(response["id"])
+            except Exception as err:
+                help_request["err"] = err
+                exceptions.append(help_request)
+                print("[CreateHelpRequestUseCase] Failed to create help request", err, help_request)
+            if exceptions:
+                result["exceptions"] = exceptions
+        return result

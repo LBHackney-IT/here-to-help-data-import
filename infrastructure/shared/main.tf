@@ -57,11 +57,6 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "here-to-help-data-ingestion-logs" {
-  name              = "/aws/lambda/${aws_lambda_function.here-to-help-lambda.function_name}-logs"
-  retention_in_days = 14
-}
-
 # See also the following AWS managed policy: AWSLambdaBasicExecutionRole
 
 resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {

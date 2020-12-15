@@ -18,6 +18,7 @@ class HereToHelpGateway:
             }
 
             response = requests.request("POST", help_requests_url, headers=headers, data=help_request)
+            result = json.loads(response.text)
             print(response.text)
         except HTTPError as err:
             if err.code == 403:
@@ -30,4 +31,4 @@ class HereToHelpGateway:
             print("Could not create a new help request: ", help_request)
             return None
 
-        return json.loads(response.text)
+        return result

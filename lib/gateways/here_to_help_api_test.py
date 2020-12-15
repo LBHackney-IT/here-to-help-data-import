@@ -26,3 +26,7 @@ def test_create_help_request_other_http_error_handling(requests_mock):
 def test_create_help_request_general_error_handling(requests_mock):
     requests_mock.register_uri('POST', url, exc=ValueError)
     assert gateway.create_help_request(help_request={}) is None
+
+def test_create_help_request_handle_non_json_responses(requests_mock):
+    requests_mock.register_uri('POST', url, text="{{}")
+    assert gateway.create_help_request(help_request={}) is None

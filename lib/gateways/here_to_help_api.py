@@ -16,7 +16,6 @@ class HereToHelpGateway:
             headers = {
                 'Content-Type': 'application/json'
             }
-
             response = requests.request("POST", help_requests_url, headers=headers, data=help_request)
             result = json.loads(response.text)
             print(response.text)
@@ -26,9 +25,9 @@ class HereToHelpGateway:
                 return {"Error": err.msg}
             else:
                 print("Could not create a new help request: ", help_request, err.msg)
-                return {"Help request was not created": help_request, "Error": err.msg}
+                return {"Error": err.msg}
         except Exception as err:
             print("Help request was not created", help_request)
-            return {"Help request was not created": help_request, "Error": err}
+            return {"Error": err}
 
         return result

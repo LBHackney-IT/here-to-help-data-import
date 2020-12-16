@@ -23,12 +23,12 @@ class HereToHelpGateway:
         except HTTPError as err:
             if err.code == 403:
                 print("Authentication error", err.msg)
-                return None
+                return {"Error": err.msg}
             else:
                 print("Could not create a new help request: ", help_request, err.msg)
-                return None
-        except:
-            print("Could not create a new help request: ", help_request)
-            return None
+                return {"Help request was not created": help_request, "Error": err.msg}
+        except Exception as err:
+            print("Help request was not created", help_request)
+            return {"Help request was not created": help_request, "Error": err}
 
         return result

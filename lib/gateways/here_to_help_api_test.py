@@ -14,19 +14,19 @@ def test_create_help_request(requests_mock):
 
 
 def test_create_help_request_authentication_error_handling(requests_mock):
-    requests_mock.register_uri('POST', url, exc=HTTPError(url="", code=403, msg="", hdrs={}, fp=None))
-    assert gateway.create_help_request(help_request={}) is None
+    requests_mock.register_uri('POST', url, exc=HTTPError(url="", code=403, msg="Forbidden", hdrs={}, fp=None))
+    assert gateway.create_help_request(help_request={})["Error"] == "Forbidden"
 
 
 def test_create_help_request_other_http_error_handling(requests_mock):
-    requests_mock.register_uri('POST', url, exc=HTTPError(url="", code=500, msg="", hdrs={}, fp=None))
-    assert gateway.create_help_request(help_request={}) is None
+    requests_mock.register_uri('POST', url, exc=HTTPError(url="", code=500, msg="Connection error", hdrs={}, fp=None))
+    assert gateway.create_help_request(help_request={})["Error"] == "Connection error"
 
 
 def test_create_help_request_general_error_handling(requests_mock):
-    requests_mock.register_uri('POST', url, exc=ValueError)
-    assert gateway.create_help_request(help_request={}) is None
+    requests_mock.register_uri('POST', url, exc=Exception("Exception"))
+    assert gateway.create_help_request(help_request={})["Error"] is not None
 
 def test_create_help_request_handle_non_json_responses(requests_mock):
     requests_mock.register_uri('POST', url, text="{{}")
-    assert gateway.create_help_request(help_request={}) is None
+    assert gateway.create_help_request(help_request={})["Error"] is not None

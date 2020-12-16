@@ -9,7 +9,7 @@ class CreateHelpRequest:
         for help_request in help_requests:
             try:
                 response = self.gateway.create_help_request(help_request=help_request)
-                if response is None:
+                if response["Error"] is not None:
                     result["unsuccessful_help_requests"].append(help_request)
                 else:
                     result["created_help_request_ids"].append(response["id"])

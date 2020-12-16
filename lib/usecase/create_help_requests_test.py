@@ -2,7 +2,7 @@ from create_help_requests import CreateHelpRequest
 import json
 
 class FakeHereToHelpGateway:
-    def __init__(self,error=False):
+    def __init__(self, error=False):
         self.count = 0
         self.error = error
 
@@ -13,7 +13,7 @@ class FakeHereToHelpGateway:
         if 'FirstName' in help_request:
             return json.loads(f'{{"id": {self.count}}}')
         else:
-            return None
+            return {"Error": "error"}
 
 
 def test_create_help_request():

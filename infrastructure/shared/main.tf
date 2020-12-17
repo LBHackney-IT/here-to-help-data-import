@@ -3,7 +3,7 @@ variable "function_name" {
 }
 
 variable "handler" {
-  default = "here-to-help-data-ingestion.main.lambda_handler"
+  default = "lib.main.lambda_handler"
 }
 
 variable "runtime" {
@@ -32,7 +32,7 @@ variable "stage" {
 
 data "archive_file" "lib_zip_file" {
   type        = "zip"
-  source_dir = "../../lib"
+  source = "../../lib"
   output_path = "../../lambda.zip"
 }
 

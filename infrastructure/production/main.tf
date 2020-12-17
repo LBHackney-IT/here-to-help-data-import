@@ -18,7 +18,12 @@ provider "aws" {
   region = "eu-west-2"
 }
 
+variable "api_url" {
+  type = string
+}
+
 module "all-resources" {
   source = "../shared"
   stage = "production"
+  api_url = var.api_url
 }

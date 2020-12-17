@@ -47,11 +47,19 @@ commands:
           root: *workspace_root
           paths:
             - .aws
-  zip-lib-directory:
-    description: "Initializes and applies terraform configuration"
+  add-credentials-file-and-zip-lib-directory:
+    description: "Adds HTH_Ingest_Key.json and zips lambda function"
+    parameters:
+      stage:
+        type: string
     steps:
       - *attach_workspace
       - checkout
+      - run:
+          name: Add HTH_Ingest_Key.json
+          command: |
+            HTH_GSUITE_TOKEN=$(aws ssm get-parameter --name /here-to-help/<<parameters.stage>>/google-auth-token --query Parameter.Value --output text)
+            echo HTH_GSUITE_TOKEN > HTH_Ingest_Key.json
       - run:
           name: Zip lib
           command: zip lambda.zip lib -r
@@ -83,10 +91,21 @@ jobs:
     executor: docker-python
     steps:
       - build-and-test
-  zip-lambda:
+  zip-lambda-development:
     executor: docker-python
     steps:
-      - zip-lib-directory
+      - add-credentials-file-and-zip-lib-directory:
+          stage: "development"
+  zip-lambda-staging:
+    executor: docker-python
+    steps:
+      - add-credentials-file-and-zip-lib-directory:
+          stage: "staging"
+  zip-lambda-production:
+    executor: docker-python
+    steps:
+      - add-credentials-file-and-zip-lib-directory:
+          stage: "production"
   assume-role-development:
     executor: docker-python
     steps:
@@ -128,7 +147,7 @@ workflows:
   check-and-deploy-development:
     jobs:
       - build-and-test
-      - zip-lambda:
+      - zip-lambda-development:
           requires:
             - build-and-test
           filters:
@@ -137,7 +156,7 @@ workflows:
       - assume-role-development:
           context: api-assume-role-development-context
           requires:
-            - zip-lambda
+            - zip-lambda-development
           filters:
             branches:
               only: development
@@ -149,6 +168,13 @@ workflows:
               only: development
   check-and-deploy-staging:
     jobs:
+      - build-and-test
+      - zip-lambda-staging:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: development
       - permit-staging-release:
             type: approval
             filters:
@@ -169,6 +195,13 @@ workflows:
               only: master
   check-and-deploy-production:
     jobs:
+      - build-and-test
+      - zip-lambda-production:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: development
       - permit-production-release:
           type: approval
           filters:

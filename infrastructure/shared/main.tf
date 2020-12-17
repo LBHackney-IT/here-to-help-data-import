@@ -32,7 +32,7 @@ variable "stage" {
 
 data "archive_file" "lib_zip_file" {
   type        = "zip"
-  source_file = "../../lib_src"
+  source_dir = "../../lib_src"
   output_path = "../../lambda.zip"
 }
 

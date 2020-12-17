@@ -7,8 +7,15 @@ name = "pypi"
 requests="2.25.0"
 python-dotenv="0.15.0"
 pytest="6.2.0"
+requests-mock="1.8.0"
+importlib-metadata="3.3.0"
+typing-extensions="3.7.4.3"
 
 [dev-packages]
+requests="2.25.0"
+python-dotenv="0.15.0"
+pytest="6.2.0"
+requests-mock="1.8.0"
 
 [requires]
 python_version = "3.7"

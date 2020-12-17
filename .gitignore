@@ -7,3 +7,9 @@ lib/gateways/__pycache__/*
 lib/usecase/__pycache__/*
 venv/*
 .env
+infrastructure/development/.terraform.lock.hcl
+infrastructure/development/.terraform
+infrastructure/staging/.terraform.lock.hcl
+infrastructure/staging/.terraform
+infrastructure/production/.terraform.lock.hcl
+infrastructure/production/.terraform

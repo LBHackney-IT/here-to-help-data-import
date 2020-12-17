@@ -11,5 +11,5 @@ def lambda_handler(event, context):
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
     handler = LambdaHandler(create_help_request)
     print("event: ", event, "context:", context)
-    # handler.execute(event, context)
-    return json.dumps({"success": True})
+    response = handler.execute(event, context)
+    return response

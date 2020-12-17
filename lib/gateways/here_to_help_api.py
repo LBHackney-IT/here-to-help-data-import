@@ -12,7 +12,7 @@ class HereToHelpGateway:
 
     def create_help_request(self, help_request):
         try:
-            help_requests_url = os.getenv("CV-19-RES-SUPPORT-V3-HELP-REQUESTS-URL")
+            help_requests_url = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL")
             headers = {
                 'Content-Type': 'application/json'
             }

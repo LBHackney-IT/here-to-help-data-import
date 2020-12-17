@@ -3,7 +3,7 @@ variable "function_name" {
 }
 
 variable "handler" {
-  default = "lib.main.lambda_handler"
+  default = "here-to-help-data-ingestion.main.lambda_handler"
 }
 
 variable "runtime" {

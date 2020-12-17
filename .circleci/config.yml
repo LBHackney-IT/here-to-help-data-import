@@ -47,14 +47,6 @@ commands:
           root: *workspace_root
           paths:
             - .aws
-  zip-lib-directory:
-    description: "Initializes and applies terraform configuration"
-    steps:
-      - *attach_workspace
-      - checkout
-      - run:
-          name: Zip lib
-          command: zip lambda.zip lib -r
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:
@@ -83,10 +75,6 @@ jobs:
     executor: docker-python
     steps:
       - build-and-test
-  zip-lambda:
-    executor: docker-python
-    steps:
-      - zip-lib-directory
   assume-role-development:
     executor: docker-python
     steps:
@@ -121,23 +109,15 @@ jobs:
           stage: "production"
           help_request_api_url: $HELP_REQUEST_API_URL_PRODUCTION
 
-
-
 workflows:
   version: 2
   check-and-deploy-development:
     jobs:
       - build-and-test
-      - zip-lambda:
+      - assume-role-development:
           requires:
             - build-and-test
-          filters:
-            branches:
-              only: development
-      - assume-role-development:
           context: api-assume-role-development-context
-          requires:
-            - zip-lambda
           filters:
             branches:
               only: development

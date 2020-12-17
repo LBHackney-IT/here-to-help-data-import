@@ -30,8 +30,10 @@ variable "stage" {
   type = string
 }
 
-data "local_file" "here-to-help-lambda-object" {
-  filename = "../../lambda.zip"
+data "archive_file" "lib_zip_file" {
+  type        = "zip"
+  source_file = "../../lib"
+  output_path = "../../lambda.zip"
 }
 
 resource "aws_s3_bucket" "s3_deployment_artefacts" {
@@ -42,8 +44,8 @@ resource "aws_s3_bucket" "s3_deployment_artefacts" {
 
 resource "aws_s3_bucket_object" "handler" {
   bucket = aws_s3_bucket.s3_deployment_artefacts.bucket
-  key    = "handler-${filebase64sha256(data.local_file.here-to-help-lambda-object.filename)}.zip"
-  source = data.local_file.here-to-help-lambda-object.filename
+  key    = "handler-${filebase64sha256("here-to-help-lib")}.zip"
+  source = data.archive_file.lib_zip_file.output_path
   acl    = "private"
 }
 

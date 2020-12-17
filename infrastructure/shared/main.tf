@@ -22,6 +22,10 @@ variable "sg_for_lambda" {
             }
 }
 
+variable "api_url" {
+  type = string
+}
+
 variable "stage" {
   type = string
 }
@@ -54,6 +58,11 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   vpc_config {
     subnet_ids         = lookup(var.subnet_ids_for_lambda, var.stage)
     security_group_ids = lookup(var.sg_for_lambda, var.stage)
+  }
+  environment {
+    variables = {
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL = var.api_url
+    }
   }
 }
 

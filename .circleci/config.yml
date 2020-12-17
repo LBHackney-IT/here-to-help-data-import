@@ -28,9 +28,14 @@ commands:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pipenv install
+            pipenv lock -r -d > requirements.txt
+            pip install --target ./lib_src requests
             sudo pip install pytest
             pytest
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - lib_src
 
   assume-role-and-persist-workspace:
     description: "Assumes deployment role and persists credentials across jobs"

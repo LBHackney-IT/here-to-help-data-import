@@ -44,7 +44,7 @@ resource "aws_s3_bucket" "s3_deployment_artefacts" {
 
 resource "aws_s3_bucket_object" "handler" {
   bucket = aws_s3_bucket.s3_deployment_artefacts.bucket
-  key    = "handler-${filebase64sha256("here-to-help-lib")}.zip"
+  key    = "here-to-help-handler.zip"
   source = data.archive_file.lib_zip_file.output_path
   acl    = "private"
 }

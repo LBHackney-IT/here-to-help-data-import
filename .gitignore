@@ -13,3 +13,5 @@ infrastructure/staging/.terraform.lock.hcl
 infrastructure/staging/.terraform
 infrastructure/production/.terraform.lock.hcl
 infrastructure/production/.terraform
+lambda.zip
+.DS_Store

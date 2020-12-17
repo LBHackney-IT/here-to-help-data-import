@@ -41,7 +41,7 @@ commands:
       - persist_to_workspace:
           root: *workspace_root
           paths:
-            - ./lib_src
+            - ./project/lib_src
 
 
   assume-role-and-persist-workspace:

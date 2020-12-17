@@ -60,6 +60,8 @@ commands:
     parameters:
       stage:
         type: string
+      help_request_api_url:
+        type: string
     steps:
       - *attach_workspace
       - checkout
@@ -74,7 +76,7 @@ commands:
           name: apply
           command: |
             cd infrastructure/<<parameters.stage>>
-            terraform apply -auto-approve
+            terraform apply -var api_url=<<parameters.help_request_api_url>> -auto-approve
 
 jobs:
   build-and-test:
@@ -105,16 +107,19 @@ jobs:
     steps:
       - terraform-init-then-apply:
           stage: "development"
+          help_request_api_url: $HELP_REQUEST_API_URL_DEVELOPEMENT
   terraform-init-and-apply-to-staging:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
           stage: "staging"
+          help_request_api_url: $HELP_REQUEST_API_URL_STAGINING
   terraform-init-and-apply-to-production:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
           stage: "production"
+          help_request_api_url: $HELP_REQUEST_API_URL_PRODUCTION
 
 
 

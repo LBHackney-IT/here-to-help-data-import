@@ -38,11 +38,6 @@ commands:
             . venv/bin/activate
             sudo pipenv lock -r -d > requirements.txt
             sudo pip install --target ./lib_src -r requirements.txt
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - ./project/lib_src
-
 
   assume-role-and-persist-workspace:
     description: "Assumes deployment role and persists credentials across jobs"

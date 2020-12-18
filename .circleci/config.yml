@@ -31,13 +31,6 @@ commands:
             pipenv install
             sudo pip install pytest
             pytest
-      - run:
-          name: install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            sudo pipenv lock -r -d > requirements.txt
-            sudo pip install --target ./lib_src -r requirements.txt
 
   assume-role-and-persist-workspace:
     description: "Assumes deployment role and persists credentials across jobs"
@@ -64,6 +57,13 @@ commands:
     steps:
       - *attach_workspace
       - checkout
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            sudo pipenv lock -r -d > requirements.txt
+            sudo pip install --target ./lib_src -r requirements.txt
       - run:
           name: format get and init
           command: |

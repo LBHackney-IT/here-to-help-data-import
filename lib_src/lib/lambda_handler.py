@@ -66,6 +66,7 @@ class LambdaHandler:
         # get the files
         # clean the files
         # help_request=get the format that we need
+        # we need to add tests around the lambda handler
 
         response = self.create_help_request.execute(help_requests=help_request)
         return response

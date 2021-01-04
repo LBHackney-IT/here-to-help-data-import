@@ -40,6 +40,7 @@ resource "aws_s3_bucket" "s3_deployment_artefacts" {
   bucket        = "here-to-help-data-ingestion-${var.stage}"
   acl           = "private"
   force_destroy = true
+
 }
 
 resource "aws_s3_bucket_object" "handler" {
@@ -47,7 +48,10 @@ resource "aws_s3_bucket_object" "handler" {
   key    = "here-to-help-lambda-handler.zip"
   source = data.archive_file.lib_zip_file.output_path
   acl    = "private"
-  etag   = filemd5("../../lambda.zip")
+  etag   = filemd5(data.archive_file.lib_zip_file.output_path)
+  depends_on = [
+    data.archive_file.lib_zip_file
+  ]
 }
 
 resource "aws_lambda_function" "here-to-help-lambda" {
@@ -68,6 +72,9 @@ resource "aws_lambda_function" "here-to-help-lambda" {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL = var.api_url
     }
   }
+   depends_on = [
+    aws_s3_bucket_object.handler
+  ]
 }
 
 # See also the following AWS managed policy: AWSLambdaBasicExecutionRole

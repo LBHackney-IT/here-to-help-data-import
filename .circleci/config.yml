@@ -140,18 +140,11 @@ workflows:
               only: development
   check-and-deploy-staging:
     jobs:
-      - permit-staging-release:
-            type: approval
-            filters:
-              branches:
-                only: master
       - assume-role-staging:
           context: api-assume-role-staging-context
           filters:
             branches:
               only: master
-          requires:
-            - permit-staging-release
       - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging

@@ -47,6 +47,7 @@ resource "aws_s3_bucket_object" "handler" {
   key    = "here-to-help-lambda-handler.zip"
   source = data.archive_file.lib_zip_file.output_path
   acl    = "private"
+  etag   = filemd5("../../lambda.zip")
 }
 
 resource "aws_lambda_function" "here-to-help-lambda" {

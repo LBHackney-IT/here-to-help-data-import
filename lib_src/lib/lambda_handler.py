@@ -66,6 +66,8 @@ class LambdaHandler:
         # get the files
         # clean the files
         # help_request=get the format that we need
+        # just checking for re deploy
+        print('yay')
 
         response = self.create_help_request.execute(help_request=help_request)
         return response

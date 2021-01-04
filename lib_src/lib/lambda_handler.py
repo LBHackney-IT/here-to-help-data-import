@@ -67,5 +67,5 @@ class LambdaHandler:
         # clean the files
         # help_request=get the format that we need
 
-        response = self.create_help_request.execute(help_request=help_request)
+        response = self.create_help_request.execute(help_requests=help_request)
         return response

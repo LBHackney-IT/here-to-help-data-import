@@ -48,6 +48,7 @@ commands:
       aws-account:
         type: string
     steps:
+      - *attach_workspace
       - checkout
       - aws_assume_role/assume_role:
           account: <<parameters.aws-account>>

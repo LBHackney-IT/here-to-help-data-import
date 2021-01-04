@@ -86,88 +86,61 @@ jobs:
     executor: docker-python
     steps:
       - build-and-test
-  assume-role-development:
-    executor: docker-python
+  deploy-development:
+    executor: docker-terraform
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DEVELOPMENT
-  assume-role-staging:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_STAGING
-  assume-role-production:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_PRODUCTION
-  terraform-init-and-apply-to-development:
-    executor: docker-terraform
-    steps:
       - terraform-init-then-apply:
           stage: "development"
           help_request_api_url: $HELP_REQUEST_API_URL_DEVELOPEMENT
-  terraform-init-and-apply-to-staging:
+  deploy-staging:
     executor: docker-terraform
     steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_STAGING
       - terraform-init-then-apply:
           stage: "staging"
           help_request_api_url: $HELP_REQUEST_API_URL_STAGINING
-  terraform-init-and-apply-to-production:
+  deploy-production:
     executor: docker-terraform
     steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_PRODUCTION
       - terraform-init-then-apply:
           stage: "production"
           help_request_api_url: $HELP_REQUEST_API_URL_PRODUCTION
 
 workflows:
   version: 2
-  check-and-deploy-development:
+  continuous-delivery:
     jobs:
       - build-and-test
-      - assume-role-development:
+      - deploy-development:
+          context: api-assume-role-development-context
           requires:
             - build-and-test
-          context: api-assume-role-development-context
           filters:
             branches:
               only: development
-      - terraform-init-and-apply-to-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              only: development
-  check-and-deploy-staging:
-    jobs:
-      - assume-role-staging:
+      - deploy-staging:
           context: api-assume-role-staging-context
-          filters:
-            branches:
-              only: master
-      - terraform-init-and-apply-to-staging:
           requires:
-            - assume-role-staging
+            - build-and-test
           filters:
             branches:
               only: master
-  check-and-deploy-production:
-    jobs:
       - permit-production-release:
           type: approval
+          requires:
+            - deploy-staging
           filters:
             branches:
               only: master
-      - assume-role-production:
+      - deploy-production:
           context: api-assume-role-production-context
           requires:
             - permit-production-release
-          filters:
-            branches:
-              only: master
-      - terraform-init-and-apply-to-production:
-          requires:
-            - assume-role-production
           filters:
             branches:
               only: master

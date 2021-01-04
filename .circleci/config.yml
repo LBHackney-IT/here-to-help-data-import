@@ -10,7 +10,6 @@ executors:
       - image: circleci/python:3.7.0
   docker-terraform:
     docker:
-      - image: circleci/python:3.7.0
       - image: "hashicorp/terraform:light"
 
 references:
@@ -32,7 +31,17 @@ commands:
             pipenv install
             sudo pip install pytest
             pytest
-
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            sudo pipenv lock -r -d > requirements.txt
+            sudo pip install --target ./lib_src -r requirements.txt
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - project
   assume-role-and-persist-workspace:
     description: "Assumes deployment role and persists credentials across jobs"
     parameters:
@@ -58,27 +67,6 @@ commands:
     steps:
       - *attach_workspace
       - checkout
-#      - run:
-#          name: update pyenv
-#          command: |
-#            git clone git://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
-#            pyenv update
-#            pyenv install 3.7.0
-#      - run:
-#          name: Set Python Version
-#          command: pyenv global 3.7.0
-#      - run:
-#          name: install/update pip pipenv
-#          command: |
-#            sudo python -m pip install --upgrade pip setuptools wheel
-#            sudo python -m pip install pipenv
-      - run:
-          name: install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            sudo pipenv lock -r -d > requirements.txt
-            sudo pip install --target ./lib_src -r requirements.txt
       - run:
           name: format get and init
           command: |

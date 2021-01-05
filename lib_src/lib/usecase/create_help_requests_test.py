@@ -11,7 +11,7 @@ class FakeHereToHelpGateway:
             raise Exception("message")
         self.count += 1
         if 'FirstName' in help_request:
-            return {"id": self.count}
+            return {"Id": self.count}
         else:
             return {"Error": "error message"}
 

@@ -10,8 +10,8 @@ url = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL")
 
 
 def test_create_help_request(requests_mock):
-    requests_mock.register_uri('POST', url, text='{"id": "1"}')
-    assert gateway.create_help_request(help_request={}) == {"id": "1"}
+    requests_mock.register_uri('POST', url, text='{"Id": "1"}')
+    assert gateway.create_help_request(help_request={}) == {"Id": "1"}
 
 
 def test_create_help_request_authentication_error_handling(requests_mock):

@@ -2,6 +2,7 @@ from .gateways.here_to_help_api import HereToHelpGateway
 from .usecase.create_help_requests import CreateHelpRequest
 from .lambda_handler import LambdaHandler
 from dotenv import load_dotenv
+
 load_dotenv()
 
 

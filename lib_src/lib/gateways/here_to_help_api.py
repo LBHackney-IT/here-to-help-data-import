@@ -16,9 +16,9 @@ class HereToHelpGateway:
             headers = {
                 'Content-Type': 'application/json'
             }
-            response = requests.request("POST", help_requests_url, headers=headers, data=help_request)
-            result = json.loads(response.text)
-            print(response.text)
+            data = json.dumps(help_request)
+            response = requests.request("POST", help_requests_url, headers=headers, data=data)
+            result = eval(response.text)
         except HTTPError as err:
             if err.code == 403:
                 print("Authentication error", err.msg)

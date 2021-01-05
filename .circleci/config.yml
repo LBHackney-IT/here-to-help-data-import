@@ -69,13 +69,6 @@ commands:
       - *attach_workspace
       - checkout
       - run:
-          name: format get and init
-          command: |
-            cd infrastructure/<<parameters.stage>>
-            terraform fmt
-            terraform get -update=true
-            terraform init
-      - run:
           name: apply
           command: |
             cd infrastructure/<<parameters.stage>>
@@ -144,10 +137,10 @@ workflows:
           filters:
             branches:
               only: master
+  deploy-production:
+    jobs:
       - permit-production-release:
           type: approval
-          requires:
-            - terraform-init-and-apply-to-staging
           filters:
             branches:
               only: master

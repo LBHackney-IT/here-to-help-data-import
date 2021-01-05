@@ -50,6 +50,12 @@ commands:
     steps:
       - *attach_workspace
       - checkout
+      - run:
+          name: unset aws credentials
+          command: |
+            unset AWS_SECRET_ACCESS_KEY
+            unset AWS_SECRET_KEY
+            unset AWS_SESSION_TOKEN
       - aws_assume_role/assume_role:
           account: <<parameters.aws-account>>
           profile_name: default

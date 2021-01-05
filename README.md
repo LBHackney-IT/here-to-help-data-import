@@ -1,5 +1,9 @@
 # Here to help: Data Ingestion
+This tool is used to ingest and transform data from a google sheet into the here to [help help api](https://github.com/LBHackney-IT/cv-19-res-support-v3).
 
+## Stack
+- pytest test framework
+- terraform to provision resources for the lambda
 ## Getting started
 
 To create the virtual environment 
@@ -18,3 +22,16 @@ To run tests
 ```bash
 pytest
 ```
+### Development
+You can deploy to a development environment by committing to the development branch, for which there is an automated 
+deployment process in CircleCI.
+### Release process
+We have an automated deployment process, which runs in CircleCI.
+
+1. Automated tests (pytest) are run to ensure the release is of good quality.
+2. The application is deployed to staging when changes are merged into the master branch.
+5. We manually confirm a production deployment in the CircleCI workflow once we're happy with our changes in staging.
+6. The application is deployed to production.
+
+Our staging and production environments are hosted by AWS. We would deploy to production per each feature/config merged 
+into  `master`  branch.

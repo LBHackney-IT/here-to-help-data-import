@@ -18,16 +18,15 @@ class HereToHelpGateway:
             }
             data = json.dumps(help_request)
             response = requests.request("POST", help_requests_url, headers=headers, data=data)
+            if response.status_code == 403:
+                print("Authentication error", response)
+                return {"Error": response}
             print("Response from the backend", response.text)
             result = eval(response.text)
             print("Evaluated result", result)
         except HTTPError as err:
-            if err.code == 403:
-                print("Authentication error", err.msg)
-                return {"Error": err.msg}
-            else:
-                print("Could not create a new help request: ", help_request, err.msg)
-                return {"Error": err.msg}
+            print("Could not create a new help request: ", help_request, err.msg)
+            return {"Error": err.msg}
         except Exception as err:
             print("Help request was not created", help_request)
             return {"Error": err}

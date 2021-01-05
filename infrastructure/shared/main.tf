@@ -93,7 +93,7 @@ resource "aws_cloudwatch_event_target" "check_google_sheet" {
 }
 
 resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet" {
-  statement_id  = "AllowExecutionFromCloudWatch"
+  statement_id_prefix  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.here-to-help-lambda.function_name
   principal     = "events.amazonaws.com"

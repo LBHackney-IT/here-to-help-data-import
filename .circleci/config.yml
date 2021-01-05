@@ -112,7 +112,7 @@ jobs:
     steps:
       - terraform-init-then-apply:
           stage: "staging"
-          help_request_api_url: $HELP_REQUEST_API_URL_STAGINING
+          help_request_api_url: $HELP_REQUEST_API_URL_DEVELOPEMENT
   terraform-init-and-apply-to-production:
     executor: docker-terraform
     steps:

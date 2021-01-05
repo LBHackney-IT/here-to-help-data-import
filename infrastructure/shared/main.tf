@@ -63,6 +63,7 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
   s3_key           = aws_s3_bucket_object.handler.key
   source_code_hash = data.archive_file.lib_zip_file.output_base64sha256
+  timeout = 60
 
   vpc_config {
     subnet_ids         = lookup(var.subnet_ids_for_lambda, var.stage)

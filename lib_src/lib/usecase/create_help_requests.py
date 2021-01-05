@@ -13,7 +13,7 @@ class CreateHelpRequest:
                     help_request['Error'] = response["Error"]
                     result["unsuccessful_help_requests"].append(help_request)
                 else:
-                    result["created_help_request_ids"].append(response["Id"])
+                    result["created_help_request_ids"].append(response['Id'])
             except Exception as err:
                 help_request['Error'] = str(err)
                 exceptions.append(help_request)

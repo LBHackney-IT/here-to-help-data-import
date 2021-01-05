@@ -20,7 +20,7 @@ class HereToHelpGateway:
             response = requests.request("POST", help_requests_url, headers=headers, data=data)
             if response.status_code == 403:
                 print("Authentication error", response)
-                return {"Error": response}
+                return {"Error": json.dumps(response.json())}
             print("Response from the backend", response.text)
             result = eval(response.text)
             print("Evaluated result", result)

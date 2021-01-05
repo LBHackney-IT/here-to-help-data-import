@@ -30,6 +30,10 @@ variable "stage" {
   type = string
 }
 
+data "aws_ssm_parameter" "api_key" {
+  name = "/cv-19-res-support-v3/${var.stage}/api-key"
+}
+
 data "archive_file" "lib_zip_file" {
   type        = "zip"
   source_dir = "../../lib_src"
@@ -40,7 +44,6 @@ resource "aws_s3_bucket" "s3_deployment_artefacts" {
   bucket        = "here-to-help-data-ingestion-${var.stage}"
   acl           = "private"
   force_destroy = true
-
 }
 
 resource "aws_s3_bucket_object" "handler" {
@@ -72,6 +75,7 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   environment {
     variables = {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL = var.api_url
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
     }
   }
    depends_on = [

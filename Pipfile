@@ -16,6 +16,7 @@ gspread-formatting = "*"
 gspread-dataframe = "*"
 gspread = "*"
 autopep8 = "*"
+oauth2client = "*"
 
 [dev-packages]
 requests="2.25.0"

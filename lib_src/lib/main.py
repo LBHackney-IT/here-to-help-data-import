@@ -24,13 +24,11 @@ def lambda_handler(event, context):
 
     folders = json.loads(event)
 
-    # inbound_folder_id = '1sh35k9J-a4AaOQFDGaePcHAeSpo45sC8'
-    # outbound_folder_id = '1zEdMiqPE9wWEZ-xuOHA13YzA2a5aKW-3'
+    print("event: ", event, "context:", context)
 
     find_and_process_new_sheet.execute(
         folders["inbound_folder_id"],
         folders["outbound_folder_id"])
 
-    print("event: ", event, "context:", context)
     response = handler.execute(event, context)
     return response

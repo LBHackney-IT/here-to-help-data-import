@@ -14,6 +14,7 @@ To activate the virtual envirment
 ```bash
 . venv/bin/activate
 ```
+
 To install dependencies
 ```bash
 pipenv install

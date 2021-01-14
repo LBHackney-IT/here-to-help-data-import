@@ -10,6 +10,11 @@ pytest="6.2.0"
 requests-mock="1.8.0"
 importlib-metadata="3.3.0"
 typing-extensions="3.7.4.3"
+google-api-python-client = "*"
+pylint = "*"
+gspread-formatting = "*"
+gspread-dataframe = "*"
+gspread = "*"
 
 [dev-packages]
 requests="2.25.0"

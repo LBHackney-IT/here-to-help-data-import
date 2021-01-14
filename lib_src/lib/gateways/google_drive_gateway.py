@@ -1,7 +1,6 @@
+import datetime as dt
 from oauth2client.service_account import ServiceAccountCredentials
 from apiclient.discovery import build
-import datetime as dt
-s
 
 # Hopefully Kat has sorted the authentication part
 # You can make keys by going to https://console.cloud.google.com/iam-admin/
@@ -22,7 +21,7 @@ class GoogleDriveGateway:
 
         self.drive_service = build('drive', 'v3', credentials=credentials)
 
-    def searchFolder(self, folderID: str, targetDate: str, fileType: str):
+    def search_folder(self, folder_id: str, target_date: str, file_type: str):
         """returns true/false if there are new files that match the date given."""
 
         # Drive_service(call google api).Files(the files part of the api).List(list function)
@@ -40,24 +39,27 @@ class GoogleDriveGateway:
         # Gives us a nice link to click and open the drive...in probably the wrong browser.
         # Copy Paste Recommended
         print(
-            "[CheckFile: %s] Looking for files in folder: https://drive.google.com/drive/folders/%s" %
-            (dt.datetime.now(), folderID))
+            "[CheckFile: %s] Looking for files in \
+            folder: https://drive.google.com/drive/folders/%s" %
+            (dt.datetime.now(), folder_id)
+        )
 
         # This makes the file list with the fields we want. In the folder ID passed to it
         # Field parameters here -
         # https://developers.google.com/drive/api/v3/reference/files
 
-        # this [q = "stuff"] is quite confusing. Its basically only returning files which satisfy Q, but its done in a non logical way
+        # this [q = "stuff"] is quite confusing. Its basically only returning files which satisfy Q,
+        # but its done in a non logical way
         # Documentation for q = Filter - https://developers.google.com/drive/api/v3/search-files
-        # So trashed = false exists because its able to read trashed files which is a disaster at best
-        # mimeType only looks for certain file types. So ive set it to sheets.
+        # So trashed = false exists because its able to read trashed files which is
+        # a disaster at best mimeType only looks for certain file types. So ive set it to sheets.
         # sheets is "spreadsheet"
         filelist = self.drive_service.files().list(
             includeItemsFromAllDrives=True,
             supportsAllDrives=True,
             q="'%s' in parents and trashed=False and mimeType = 'application/vnd.google-apps.%s'" %
-            (folderID,
-             fileType),
+            (folder_id,
+             file_type),
             fields="files(id, name, createdTime)").execute()
 
         items = filelist.get('files', [])
@@ -66,7 +68,7 @@ class GoogleDriveGateway:
             # anotherTestTime = j.get('createdTime')
             # print(anotherTestTime)
             testime = j.get('createdTime')[0:10]
-            if testime == targetDate:
+            if testime == target_date:
                 file_name = j.get('name')
                 print(
                     "[CheckFile: %s] Found a file: %s" %
@@ -79,28 +81,29 @@ class GoogleDriveGateway:
                 dt.datetime.now())
             return True
 
-        elif foundcount == 0:
-            print(
-                "[CheckFile: %s] No File Found. Will return false" %
-                dt.datetime.now())
-            return False
+        print(
+            "[CheckFile: %s] No File Found. Will return false" %
+            dt.datetime.now())
+        return False
 
     # returns file id to be used to read file
-    def get_file(self, folderID: str, targetDate: str, fileType: str):
+    def get_file(self, folder_id: str, target_date: str, file_type: str):
         file_id = ""
-        # Note: I have no idea what it does if two files are made in there at the same time. I expect horrific stuff
+        # Note: I have no idea what it does if two files are made in there at the same time.
+        # I expect horrific stuff
         # made it so if 0 or 2+ files are found. dont return file ID
 
         foundcount = 0
         print(
-            "[get_file: %s] Looking for files in folder: https://drive.google.com/drive/folders/%s" %
-            (dt.datetime.now(), folderID))
+            "[get_file: %s] Looking for files in folder: \
+            https://drive.google.com/drive/folders/%s" %
+            (dt.datetime.now(), folder_id))
         filelist = self.drive_service.files().list(
             includeItemsFromAllDrives=True,
             supportsAllDrives=True,
             q="'%s' in parents and trashed=False and mimeType = 'application/vnd.google-apps.%s'" %
-            (folderID,
-             fileType),
+            (folder_id,
+             file_type),
             fields="files(id, name, createdTime)").execute()
         items = filelist.get('files', [])
 
@@ -108,7 +111,7 @@ class GoogleDriveGateway:
             # anotherTestTime = j.get('createdTime')
             # print(anotherTestTime)
             testime = j.get('createdTime')[0:10]
-            if testime == targetDate:
+            if testime == target_date:
                 file_id = j.get('id')
                 print(
                     "[get_file: %s] Found ID: %s" %
@@ -121,10 +124,10 @@ class GoogleDriveGateway:
                 dt.datetime.now())
             return file_id
 
-        else:
-            print(
-                "[get_file: %s] Error: 0 or more than 1 file found." %
-                dt.datetime.now())
+        print(
+            "[get_file: %s] Error: 0 or more than 1 file found." %
+            dt.datetime.now())
+        return ""
 
     def create_spreadsheet(self, destination_folder, file_name):
         folder_id = destination_folder

@@ -16,9 +16,11 @@ def lambda_handler(event, context):
     handler = LambdaHandler(create_help_request)
 
     print("------- Getting key_file_location")
-    google_drive_gateway = GoogleDriveGateway("key_file_location")
+
+    key_file_location = 'key_file.json'
+    google_drive_gateway = GoogleDriveGateway(key_file_location)
     gspread_drive_gateway = GSpreadGateway(
-        "key_file_location", google_drive_gateway)
+        key_file_location, google_drive_gateway)
 
     find_and_process_new_sheet = FindAndProcessNewSheet(
         google_drive_gateway, gspread_drive_gateway)

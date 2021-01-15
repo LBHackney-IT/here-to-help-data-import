@@ -15,6 +15,7 @@ def lambda_handler(event, context):
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
     handler = LambdaHandler(create_help_request)
 
+    print("------- Getting key_file_location")
     google_drive_gateway = GoogleDriveGateway("key_file_location")
     gspread_drive_gateway = GSpreadGateway(
         "key_file_location", google_drive_gateway)

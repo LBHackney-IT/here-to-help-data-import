@@ -1,6 +1,6 @@
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
-import gspread as gspread
+import gspread
 import numpy as np
 import gspread_dataframe as gspread_dataframe
 

@@ -6,9 +6,9 @@ from .gateways.google_drive_gateway import GoogleDriveGateway
 from .usecase.create_help_requests import CreateHelpRequest
 # from .usecase.find_and_process_new_sheet import FindAndProcessNewSheet
 from .lambda_handler import LambdaHandler
+import os
 
 load_dotenv()
-
 
 def lambda_handler(event, context):
     here_to_help_gateway = HereToHelpGateway()
@@ -17,8 +17,19 @@ def lambda_handler(event, context):
 
     print("------- Getting key_file_location")
 
-    key_file_location = 'key_file.json'
-    google_drive_gateway = GoogleDriveGateway(key_file_location)
+    key_file_location = 'lib/key_file.json'
+    print(os.getcwd())
+    real_location = os.path.realpath(key_file_location)
+
+    print('real_location', real_location)
+    print('     ')
+
+    print('os.listdir("lib/")', os.listdir("lib/"))
+    print('     ')
+    print('os.listdir("./")', os.listdir("./"))
+
+
+    google_drive_gateway = GoogleDriveGateway(real_location)
 
     print(google_drive_gateway)
     # gspread_drive_gateway = GSpreadGateway(

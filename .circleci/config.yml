@@ -37,6 +37,9 @@ commands:
             python3 -m venv venv
             . venv/bin/activate
             sudo pipenv lock -r -d > requirements.txt
+            echo "================================================"
+            cat requirements.txt
+            echo "================================================"
             sudo pip install --target ./lib_src -r requirements.txt
       - persist_to_workspace:
           root: *workspace_root

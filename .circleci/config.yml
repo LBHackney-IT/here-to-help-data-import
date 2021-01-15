@@ -36,7 +36,7 @@ commands:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            sudo pipenv lock -r -d > requirements.txt
+            sudo pipenv lock --requirements > requirements.txt
             echo "================================================"
             cat requirements.txt
             echo "================================================"

@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "hth-el-data-ingestion",
+  "private_key_id": "0dd88dce90885c309a68c0247ae4517f7776f762",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCfvpHD3daKUyaB\nB3NqZSSAN+n3pw7R7w48o8Q4RqCZOL6uyXaXR+hwf35bar2bsOqtxRn5zJaRO5aA\nFRJXan19IUftHaX1KFwvHD21xuS2sINI47twrGiHGSoBevR2Ymkz0tWI3OAWDoZN\nGyEfxzxZ3Do7EvuDzVu6aB40KHd9loIA8sKdf4nD2svHo7k9rJQugHPrk3MOWzC0\n/Ur2MZj4My7CMumNx0DDv7ygC//cn5xywhHaIDbuEKD+jC5ulmU5btoyKiblLKbb\n/WI1y5GQFCcqHj7uyTTsjszJMb7AJIUuv3dPkw35l/46HCRdnnyfIqkyoAz+3vTC\noACTU8stAgMBAAECggEAE+1ygqQYYN4ZlgwHZlTitkoDWl0ROLghJwho8HpDC4os\nI2LHc/zI7svAyAerSpJJ3E6TvHk8qTZtQmIejSAgMm1l6xsBOnGD+m6D9jqvCmk/\nn2alWdtwGLZXaqLbfy8sn4XkFHQ1UhsSvuis+6lfingyHW9zR9Bk6n6Vkf0gVt6u\npIYF3ffQbxqbRdrt86JPd0cmSZt8JC3J8zLv1HQaI8pWzyIZBpUqU13S+JVHx8Qw\nfkZ+WNfIlqeGKiCUjyJEweVq7A+SHgVcIcWMoCDODb01icaHE4kjkgCKSqcDk8om\nc80wILuIzSPIdyrcLhtIDai/ZGOsVm/EPo3iHqnwEwKBgQDWKj0vwmAZRbevbXSK\nQW0yc0Kyg11oNoJytEH/qnqfXYptp7lPlKB3yRc80SAID5eQFlkocIQ88z3mN4gs\ngAxMxtyldvgZ9o2/d/u0MDZF0dB2lDT5YMaKIIh8R+p5cI6BFNN4OLoEy+E659s4\nPv1AL7zRh3UWhHOubQfBkY7efwKBgQC+8urLLDvP5/1d4Ea0qKowAOS+/OiI44dS\n/aacZmlIzFqL+05GXJiIXRYNmMYJVbLCToHZSprx/zQWbQ+qc7glD8HawPkWIqHn\ntx8WAcfkYJ1Mknb3zWmjCuXZalT+jKuxV6Kx26k4QJfShn1AcmC55I/Y6rc0+cQa\nsIYcQ3pYUwKBgQC9yW6xjSIWI0c1Kd01y+cV5zh685jqCiwts/ostAm4gm9y30iD\n8mUF4ek61uP44MBiSru174fwb2oyQpHlRZAg1bWg2D3i3DAfNheTRYpC8z02Z/5N\n5Gns7AmngR+TgKB4WVlRV4vZRkeRKPiG7qMEp4k/cTfcvYG6WBqgefpOxwKBgEZa\n1J3lf2g8LwNuxj58QrCLM70XDEqbotm2MbRAm5xCBz66an3MUjs0KRL7bkQ0OjgT\nmw5Hyc1OXY/BwVrpZjjplGCYZ257djIdK6v9HfyMiIiVEpZ9LeXv9v5jikt74yrl\ngkGMEM50JjxgZzferLrxdvrSiIxRVqsKzW8Ogb6XAoGALs4dhYZuw+NThvSI7Ljy\ndDRFkD0r3d8LRgbB8fixDz+lwyWqZafCBizfU22AwIe5M0m+gY9mC8kqf9ZT9Has\n2g4ndTKXbUp48H6tkl4X4ryGfA2ZOQjcMOKuvAe1puw0iG2DD22KqDfA4QJDZ/YQ\n7eiWkwOveMl8Yspt8NtMVFw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "lambda-el-test@hth-el-data-ingestion.iam.gserviceaccount.com",
+  "client_id": "115061405040103399517",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/lambda-el-test%40hth-el-data-ingestion.iam.gserviceaccount.com"
+}

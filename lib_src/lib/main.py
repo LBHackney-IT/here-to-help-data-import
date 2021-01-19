@@ -20,21 +20,29 @@ def lambda_handler(event, context):
        WithDecryption=True
    )
 
+
+    print(secret)
+
+    print(secret.get("Parameter"))
+
     print(secret.get("Parameter").get("Value"))
 
     key_file_location = '/tmp/key_file.json'
 
-    with open(key_file_location, 'w') as json_file:
-        json.dump(secret.get("Parameter").get("Value"), json_file)
+    # with open(key_file_location, 'w') as json_file:
+    #     json.dump(secret.get("Parameter").get("Value"), json_file)
+    #
+    # here_to_help_gateway = HereToHelpGateway()
+    # create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
+    # handler = LambdaHandler(create_help_request)
+    #
+    # google_drive_gateway = GoogleDriveGateway(key_file_location)
+    #
+    # print('google_drive_gateway')
+    # print(google_drive_gateway)
+    #
 
-    here_to_help_gateway = HereToHelpGateway()
-    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
-    handler = LambdaHandler(create_help_request)
 
-    google_drive_gateway = GoogleDriveGateway(key_file_location)
-
-    print('google_drive_gateway')
-    print(google_drive_gateway)
     # gspread_drive_gateway = GSpreadGateway(
     #     key_file_location, google_drive_gateway)
     #

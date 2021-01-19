@@ -34,23 +34,21 @@ data "aws_ssm_parameter" "api_key" {
   name = "/cv-19-res-support-v3/${var.stage}/api-key"
 }
 
-data "aws_ssm_parameter" "gdrive_key" {
-  name = "/cv-19-res-support-v3/${var.stage}/gdrive_key"
-}
-
-data "local_file" "key_file" {
-    content  = data.aws_ssm_parameter.gdrive_key.value
-    filename = "../../lib_src/lib/key_file.json"
-
+//data "aws_ssm_parameter" "gdrive_key" {
+//  name = "/cv-19-res-support-v3/${var.stage}/gdrive_key"
+//}
+//
+//data "local_file" "key_file" {
+//    content  = data.aws_ssm_parameter.gdrive_key.value
+//    filename = "../../lib_src/lib/key_file.json"
+//
 //    depends_on = [ data.aws_ssm_parameter.gdrive_key ]
-}
+//}
 
 data "archive_file" "lib_zip_file" {
   type        = "zip"
   source_dir = "../../lib_src"
   output_path = "../../lambda.zip"
-
-  depends_on = [ data.local_file.key_file ]
 }
 
 resource "aws_s3_bucket" "s3_deployment_artefacts" {

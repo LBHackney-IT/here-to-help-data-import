@@ -7,7 +7,7 @@ variable "handler" {
 }
 
 variable "runtime" {
-  default = "python3.7"
+  default = "python3.8"
 }
 variable "subnet_ids_for_lambda" {
   default = { "development" =  ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"],

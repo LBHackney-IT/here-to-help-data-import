@@ -22,7 +22,7 @@ def lambda_handler(event, context):
 
     print(secret.get("Parameter").get("Value"))
 
-    key_file_location = 'key_file.json'
+    key_file_location = '/tmp/key_file.json'
 
     with open(key_file_location, 'w') as json_file:
         json.dump(secret.get("Parameter").get("Value"), json_file)

@@ -76,7 +76,7 @@ commands:
             terraform get -update=true
             terraform init
       - run:
-          name: apply
+          name: Terrafrom Apply
           command: |
             cd infrastructure/<<parameters.stage>>
             terraform apply -var api_url=<<parameters.help_request_api_url>> -auto-approve

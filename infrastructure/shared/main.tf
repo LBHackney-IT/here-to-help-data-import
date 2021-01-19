@@ -146,7 +146,10 @@ resource "aws_iam_policy" "here_to_help_lambda_policy" {
         "ec2:CreateNetworkInterface",
         "ec2:DeleteNetworkInterface",
         "ec2:DescribeInstances",
-        "ec2:AttachNetworkInterface"
+        "ec2:AttachNetworkInterface",
+        "ssm:Describe*",
+        "ssm:Get*",
+        "ssm:List*"
       ],
       "Effect": "Allow",
       "Resource": "*"

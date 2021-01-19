@@ -42,7 +42,7 @@ data "local_file" "key_file" {
     content  = data.aws_ssm_parameter.gdrive_key.value
     filename = "../../lib_src/lib/key_file.json"
 
-    depends_on = [ data.aws_ssm_parameter.gdrive_key ]
+//    depends_on = [ data.aws_ssm_parameter.gdrive_key ]
 }
 
 data "archive_file" "lib_zip_file" {

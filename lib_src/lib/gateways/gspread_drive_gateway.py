@@ -43,6 +43,7 @@ class GSpreadGateway:
         'Date Time Extracted']
 
     def __init__(self, key_file_location, google_drive_gateway):
+        print(' GSpreadGateway init ')
 
         self.google_drive_gateway = google_drive_gateway
         scopes = ['https://spreadsheets.google.com/feeds']

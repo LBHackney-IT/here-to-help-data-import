@@ -48,9 +48,7 @@ data "archive_file" "lib_zip_file" {
   source_dir = "../../lib_src"
   output_path = "../../lambda.zip"
 
-  depends_on = [
-    data.local_file.key_file
-  ]
+//  depends_on = [ data.local_file.key_file ]
 }
 
 resource "aws_s3_bucket" "s3_deployment_artefacts" {

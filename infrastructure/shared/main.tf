@@ -38,9 +38,11 @@ data "aws_ssm_parameter" "gdrive_key" {
   name = "/cv-19-res-support-v3/${var.stage}/gdrive_key"
 }
 
-resource "local_file" "key_file" {
+data "local_file" "key_file" {
     content  = data.aws_ssm_parameter.gdrive_key.value
     filename = "../../lib_src/lib/key_file.json"
+
+    depends_on = [ data.aws_ssm_parameter.gdrive_key ]
 }
 
 data "archive_file" "lib_zip_file" {
@@ -48,7 +50,7 @@ data "archive_file" "lib_zip_file" {
   source_dir = "../../lib_src"
   output_path = "../../lambda.zip"
 
-//  depends_on = [ data.local_file.key_file ]
+  depends_on = [ data.local_file.key_file ]
 }
 
 resource "aws_s3_bucket" "s3_deployment_artefacts" {

@@ -17,7 +17,7 @@ def lambda_handler(event, context):
     ssm = boto3.client("ssm")
     print('   ----    fetching ssm')
     secret = ssm.get_parameter(
-       Name="/cv-19-res-support-v3/development/api-key",
+       Name="/cv-19-res-support-v3/development/gdrive_key",
        WithDecryption=True
    )
 
@@ -33,9 +33,9 @@ def lambda_handler(event, context):
     # with open(key_file_location, 'w') as json_file:
     #     json.dump(secret.get("Parameter").get("Value"), json_file)
     #
-    # here_to_help_gateway = HereToHelpGateway()
-    # create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
-    # handler = LambdaHandler(create_help_request)
+    here_to_help_gateway = HereToHelpGateway()
+    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
+    handler = LambdaHandler(create_help_request)
     #
     # google_drive_gateway = GoogleDriveGateway(key_file_location)
     #

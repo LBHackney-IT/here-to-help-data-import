@@ -13,8 +13,9 @@ import json
 load_dotenv()
 
 def lambda_handler(event, context):
+    print('-----------------------')
     ssm = boto3.client("ssm")
-
+    print('   ----    fetching ssm')
     secret = ssm.get_parameter(
        Name="/cv-19-res-support-v3/development/api-key",
        WithDecryption=True

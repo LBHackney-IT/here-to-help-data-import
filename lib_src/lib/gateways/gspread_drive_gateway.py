@@ -1,8 +1,9 @@
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
-import gspread
+# import gspread
 import numpy as np
 import gspread_dataframe as gspread_dataframe
+import pygsheets
 
 # from gspread_formatting import *
 
@@ -48,16 +49,19 @@ class GSpreadGateway:
         self.google_drive_gateway = google_drive_gateway
         scopes = ['https://spreadsheets.google.com/feeds']
 
-        creds = ServiceAccountCredentials.from_json_keyfile_name(
-            key_file_location, scopes)
-        self.gspread_service = gspread.authorize(
-            creds)  # makes the gspread service
+        self.gsheet_service = pygsheets.authorize(client_secret=key_file_location)
+
+        # creds = ServiceAccountCredentials.from_json_keyfile_name(
+        #     key_file_location, scopes)
+
+        # self.gspread_service = gspread.authorize(
+        #     creds)  # makes the gspread service
 
     def get_cases_from_gsheet(self, sheet_key):
         print(
             "[get_cases_from_gsheet] Trying to open by key using %s" %
             sheet_key)
-        spreadsheet = self.gspread_service.open_by_key(sheet_key)
+        spreadsheet = self.gsheet_service.open_by_key(sheet_key)
         print(spreadsheet)
         sheet = spreadsheet.worksheet(self.SHEET_NAME)
         # find first cell in T&T dowbnload - this should be 'Category', and use
@@ -89,7 +93,7 @@ class GSpreadGateway:
         # create a new spreadsheet TODO this only writes to personal drive so
         # need way to write to shared drive - service account better for this?
 
-        spreadsheet = self.gspread_service.open_by_key(
+        spreadsheet = self.gsheet_service.open_by_key(
             self.google_drive_gateway.create_spreadsheet(
                 outbound_folder_id, new_spreadsheet_name))
         print(spreadsheet)
@@ -111,7 +115,7 @@ class GSpreadGateway:
         new_spreadsheet_name = f'city_CT_FOR_UPLOAD_{today}'
         # create a new spreadsheet TODO this only writes to personal drive so
         # need way to write to shared drive - service account better for this?
-        spreadsheet = self.gspread_service.open_by_key(
+        spreadsheet = self.gsheet_service.open_by_key(
             self.google_drive_gateway.create_spreadsheet(
                 outbound_folder_id, new_spreadsheet_name))
         # loop through each created dataframe and populate spreadsheet

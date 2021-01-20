@@ -17,15 +17,31 @@ def lambda_handler(event, context):
 
     ssm = boto3.client("ssm")
 
+    print('getting param')
     secret = ssm.get_parameter(
        Name="/cv-19-res-support-v3/development/gdrive_key",
-       WithDecryption=True
-   )
+       WithDecryption=True)  # returns dict
+
+    print('ooooooooooooooooooooooooooooooooo')
+
+    print(secret)
+
+
+    secret_parameter = secret.get("Parameter")
+
+    print('-------------------------------------')
+    print(secret_parameter)
+
+    secret_parameter_value = secret.get("Parameter").get("Value")
+
+    print(secret_parameter_value)
 
     key_file_location = '/tmp/key_file.json'
 
     with open(key_file_location, 'w') as json_file:
-        json.dump(secret.get("Parameter").get("Value"), json_file)
+        json.dump(secret_parameter_value, json_file)
+
+    print("create", key_file_location)
 
     here_to_help_gateway = HereToHelpGateway()
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
@@ -33,13 +49,14 @@ def lambda_handler(event, context):
 
     google_drive_gateway = GoogleDriveGateway(key_file_location)
 
-    print('google_drive_gateway')
-    print(google_drive_gateway)
+    print('google_drive_gateway init done')
 
     gspread_drive_gateway = GSpreadGateway(
         key_file_location,
         google_drive_gateway
     )
+
+    print('gspread_drive_gateway init done')
 
     find_and_process_new_sheet = FindAndProcessNewSheet(
         google_drive_gateway, gspread_drive_gateway)

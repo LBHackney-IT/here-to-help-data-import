@@ -47,6 +47,8 @@ commands:
     parameters:
       aws-account:
         type: string
+      stage:
+        type: string
     steps:
       - *attach_workspace
       - checkout
@@ -54,9 +56,14 @@ commands:
           account: <<parameters.aws-account>>
           profile_name: default
           role: "LBH_Circle_CI_Deployment_Role"
+      - run:
+          name: go the thing
+          command: |
+            aws ssm get-parameter --name "/cv-19-res-support-v3/<<parameters.stage>>/gdrive_key" --output text --query Parameter.Value > ./lib_src/lib/key_file.json
       - persist_to_workspace:
           root: *workspace_root
           paths:
+            - project/lib_src/lib/key_file.json
             - .aws
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
@@ -78,6 +85,7 @@ commands:
       - run:
           name: Terrafrom Apply
           command: |
+            cat ./lib_src/lib/key_file.json
             cd infrastructure/<<parameters.stage>>
             terraform apply -var api_url=<<parameters.help_request_api_url>> -auto-approve
 
@@ -91,11 +99,13 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DEVELOPMENT
+          stage: "development"
   assume-role-staging:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_STAGING
+          stage: "staging"
   assume-role-production:
     executor: docker-python
     steps:
@@ -107,6 +117,7 @@ jobs:
             unset AWS_SESSION_TOKEN
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
+          stage: "production"
   terraform-init-and-apply-to-development:
     executor: docker-terraform
     steps:

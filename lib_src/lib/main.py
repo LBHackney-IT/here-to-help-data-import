@@ -6,7 +6,9 @@ from .gateways.google_drive_gateway import GoogleDriveGateway
 from .usecase.create_help_requests import CreateHelpRequest
 from .usecase.find_and_process_new_sheet import FindAndProcessNewSheet
 from .lambda_handler import LambdaHandler
-import os
+from os import path
+from os import listdir
+from os import getcwd
 import boto3
 import json
 
@@ -15,33 +17,43 @@ load_dotenv()
 def lambda_handler(event, context):
     print("event: ", event, "context:", context)
 
-    ssm = boto3.client("ssm")
-
-    print('getting param')
-    secret = ssm.get_parameter(
-       Name="/cv-19-res-support-v3/development/gdrive_key",
-       WithDecryption=True)  # returns dict
-
-    print('ooooooooooooooooooooooooooooooooo')
-
-    print(secret)
-
-
-    secret_parameter = secret.get("Parameter")
-
+    # ssm = boto3.client("ssm")
+    #
+    # print('getting param')
+    # secret = ssm.get_parameter(
+    #    Name="/cv-19-res-support-v3/development/gdrive_key",
+    #    WithDecryption=True)  # returns dict
+    #
+    # print('ooooooooooooooooooooooooooooooooo')
+    #
+    # print(secret)
+    #
+    #
+    # secret_parameter = secret.get("Parameter")
+    #
     print('-------------------------------------')
-    print(secret_parameter)
+    # print(secret_parameter)
+    #
+    # secret_parameter_value = secret.get("Parameter").get("Value")
+    #
+    # print(secret_parameter_value)
+    print(getcwd())
 
-    secret_parameter_value = secret.get("Parameter").get("Value")
+    print('     ')
 
-    print(secret_parameter_value)
+    print('os.listdir("lib/")', listdir("lib/"))
+    print('     ')
 
-    key_file_location = '/tmp/key_file.json'
+    key_file_location = path.relpath('lib/key_file.json')
 
-    with open(key_file_location, 'w') as json_file:
-        json.dump(secret_parameter_value, json_file)
+    print(key_file_location)
+    f = open(key_file_location, "r")
+    print(f.readline())
+    f.close()
+    # with open(key_file_location, 'w') as json_file:
+    #     json.dump(secret_parameter_value, json_file)
 
-    print("create", key_file_location)
+    print(key_file_location)
 
     here_to_help_gateway = HereToHelpGateway()
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)

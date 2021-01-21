@@ -37,8 +37,8 @@ class FindAndProcessNewSheet:
                     data_frame=output_data_frames, outbound_folder_id=outbound_folder_id)
                 self.gspread_drive_gateway.create_city_spreadsheet(
                     data_frame=city_data_frames, outbound_folder_id=outbound_folder_id)
-                cases_dict = self.hackney_cases_to_dict(data_frame=hackney_cases)
-                print(cases_dict)
+                # cases_dict = self.hackney_cases_to_dict(data_frame=hackney_cases)
+                # print(cases_dict)
 
             else:
                 print(

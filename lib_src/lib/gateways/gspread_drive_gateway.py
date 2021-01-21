@@ -1,12 +1,6 @@
 from datetime import datetime
-from oauth2client.service_account import ServiceAccountCredentials
-# import gspread
 import numpy as np
-import gspread_dataframe as gspread_dataframe
 import pygsheets
-
-# from gspread_formatting import *
-
 
 # Hopefully Kat has sorted the authentication part
 # You can make keys by going to https://console.cloud.google.com/iam-admin/
@@ -14,7 +8,6 @@ import pygsheets
 # only be for me [Huu Do]
 
 # key_file_location = 'Here2HelpKey.json'
-
 
 class GSpreadGateway:
 
@@ -53,25 +46,14 @@ class GSpreadGateway:
 
         print('    GSpreadGateway gsheet_service start')
 
-        # scopes = ['https://spreadsheets.google.com/feeds']
-        # creds = ServiceAccountCredentials.from_json_keyfile_name(
-        #     key_file_location, scopes)
-        #
-        # self.gspread_service = gspread.authorize(
-        #     creds)  # makes the gspread service
-
     def get_cases_from_gsheet(self, sheet_key):
         print(
             "[get_cases_from_gsheet] Trying to open by key using %s" %
             sheet_key)
         spreadsheet = self.gsheet_service.open_by_key(sheet_key)
         print(spreadsheet)
-        sheet = spreadsheet.worksheet(self.SHEET_NAME)
-        # find first cell in T&T dowbnload - this should be 'Category', and use
-        # returned row value to get starting point of data
-        first_cell = sheet.find(self.FIND_TERM)
-        data_frame = gspread_dataframe.get_as_dataframe(
-            sheet, skiprows=2, parse_dates=True)
+        sheet = spreadsheet.worksheet('index', 0)  # CHANGEINCODE - finds first sheet instead
+        data_frame = sheet.get_as_df(start='A3', parse_dates=True)  # CHANGEINCODE - different sheet loading style
         data_frame = data_frame.convert_dtypes()
         data_frame = self.clean_data(data_frame=data_frame)
         print("[get_cases_from_gsheet] Displaying Dataframe")
@@ -105,8 +87,8 @@ class GSpreadGateway:
         for i in data_frame:
             print(i[1])
             self.populate_output_sheets(spreadsheet=spreadsheet, data_frame=i[0], title=i[1])
-        sheet1 = spreadsheet.get_worksheet(0)
-        spreadsheet.del_worksheet(sheet1)
+        sheet1 = spreadsheet.worksheet('title', 'Sheet1')  # CHANGEINCODE - different worksheet pull
+        spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
 
         print(f'spreadsheet {new_spreadsheet_name} created.')
 
@@ -126,8 +108,8 @@ class GSpreadGateway:
             print(i[1])
             self.populate_output_sheets(spreadsheet=spreadsheet, data_frame=i[0], title=i[1])
 
-        sheet1 = spreadsheet.get_worksheet(0)
-        spreadsheet.del_worksheet(sheet1)
+        sheet1 = spreadsheet.worksheet('title', 'Sheet1')  # CHANGEINCODE - different worksheet pull
+        spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
         print(f'spreadsheet {new_spreadsheet_name} created.')
 
         # should we update this to write to csv or xlsx?
@@ -135,12 +117,10 @@ class GSpreadGateway:
     def populate_output_sheets(self, spreadsheet, data_frame, title):
         print("[populate_output_sheets]")
         # add a tab for each file and write each dataframe
-        worksheet = spreadsheet.add_worksheet(
-            title=title, rows=data_frame.shape[0] + 10, cols=len(self.COLS))
-        next_row = self.next_available_row(worksheet)
-        return gspread_dataframe.set_with_dataframe(
-            worksheet, data_frame, include_column_header=True, row=int(next_row), col=1)
-        # set_row_height(worksheet, f'1:{data_frame.shape[0] + 10}', 21)
+
+        worksheet = spreadsheet.add_worksheet(title=title)
+
+        return worksheet.set_dataframe(df=data_frame, start='A1', fit=True)
 
     def next_available_row(self, worksheet):
         print("[next_available_row]")

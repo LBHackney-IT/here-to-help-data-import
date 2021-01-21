@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 from .gateways.here_to_help_api import HereToHelpGateway
-from .gateways.gspread_drive_gateway import GSpreadGateway
+from .gateways.pygsheets_gateway import PygsheetsGateway
 from .gateways.google_drive_gateway import GoogleDriveGateway
 from .usecase.create_help_requests import CreateHelpRequest
 from .usecase.find_and_process_new_sheet import FindAndProcessNewSheet
@@ -32,18 +32,18 @@ def lambda_handler(event, context):
 
     print('google_drive_gateway init done')
 
-    print('gspread_drive_gateway init start')
+    print('pygsheets_gateway init start')
 
-    gspread_drive_gateway = GSpreadGateway(
+    pygsheets_gateway = PygsheetsGateway(
         key_file_location,
         google_drive_gateway
     )
 
-    print('gspread_drive_gateway init done')
+    print('pygsheets_gateway init done')
 
     print('find_and_process_new_sheet init start')
     find_and_process_new_sheet = FindAndProcessNewSheet(
-        google_drive_gateway, gspread_drive_gateway)
+        google_drive_gateway, pygsheets_gateway)
 
     print('find_and_process_new_sheet init done')
 

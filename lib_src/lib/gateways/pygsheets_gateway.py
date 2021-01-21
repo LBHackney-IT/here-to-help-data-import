@@ -9,7 +9,7 @@ import pygsheets
 
 # key_file_location = 'Here2HelpKey.json'
 
-class GSpreadGateway:
+class PygsheetsGateway:
 
     DRIVE = "/content/drive/Shared drives/Here To Help Project Team/Data/"
     INPUT = 'T&T daily extracts'

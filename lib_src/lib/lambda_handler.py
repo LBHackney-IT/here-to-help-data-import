@@ -1,23 +1,27 @@
+from faker import Faker
+import datetime
+
 class LambdaHandler:
     def __init__(self, create_help_request):
         self.create_help_request = create_help_request
+        self.fake = Faker(['en-GB', 'en_GB', 'en_GB', 'en-GB'])
 
     def execute(self, event, context):
         help_request = [
             {
                 "IsOnBehalf": False,
                 "ConsentToCompleteOnBehalf": False,
-                "OnBehalfFirstName": "Test",
-                "OnBehalfLastName": "Test",
-                "OnBehalfEmailAddress": "Test",
-                "OnBehalfContactNumber": "Test",
-                "RelationshipWithResident": "Test",
-                "PostCode": "Test",
-                "Uprn": "TestToo",
-                "Ward": "Test",
-                "AddressFirstLine": "Test",
-                "AddressSecondLine": "Test",
-                "AddressThirdLine": "Test",
+                "OnBehalfFirstName": "",
+                "OnBehalfLastName": "",
+                "OnBehalfEmailAddress": "",
+                "OnBehalfContactNumber": "",
+                "RelationshipWithResident": "",
+                "PostCode": self.fake.postcode(),
+                "Uprn": "",
+                "Ward": "",
+                "AddressFirstLine": self.street_address(),
+                "AddressSecondLine": "",
+                "AddressThirdLine": "",
                 "GettingInTouchReason": "Test",
                 "HelpWithAccessingFood": False,
                 "HelpWithAccessingSupermarketFood": False,
@@ -43,24 +47,24 @@ class LambdaHandler:
                 "UrgentEssentialsAnythingElse": "This is a newly added db field",
                 "CurrentSupport": "Test",
                 "CurrentSupportFeedback": "Test",
-                "FirstName": "LambdaTest1",
-                "LastName": "LambdaTest1",
-                "DobMonth": "Test",
-                "DobYear": "Test",
-                "DobDay": "Test",
-                "ContactTelephoneNumber": "Test",
-                "ContactMobileNumber": "Test",
-                "EmailAddress": "Test",
+                "FirstName": "Test: %s" % self.fake.first_name(),
+                "LastName": "Test: %s" % self.fake.last_name(),
+                "DobMonth": self.fake.month(),
+                "DobYear": self.fake.year(),
+                "DobDay": self.fake.day_of_month(),
+                "ContactTelephoneNumber": self.fake.phone_number(),
+                "ContactMobileNumber": self.fake.cellphone_number(),
+                "EmailAddress": self.fake.free_email(),
                 "GpSurgeryDetails": "Test",
-                "NumberOfChildrenUnder18": "Test",
+                "NumberOfChildrenUnder18": 0,
                 "ConsentToShare": False,
-                "DateTimeRecorded": "2020-07-23T00:00:00",
+                "DateTimeRecorded": datetime.datetime.utcnow().isoformat(),
                 "RecordStatus": "MASTER",
                 "InitialCallbackCompleted": None,
                 "CallbackRequired": True,
                 "CaseNotes": None,
                 "AdviceNotes": None,
-                "HelpNeeded": "Conact Tracing"
+                "HelpNeeded": "Contact Tracing"
             }
         ]
         # get the files

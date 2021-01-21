@@ -6,13 +6,18 @@ from .usecase.create_help_requests import CreateHelpRequest
 from .usecase.find_and_process_new_sheet import FindAndProcessNewSheet
 from .lambda_handler import LambdaHandler
 from os import path
-from os import listdir
-from os import getcwd
 import json
 
 load_dotenv()
 
 def lambda_handler(event, context):
+
+    here_to_help_gateway = HereToHelpGateway()
+    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
+    handler = LambdaHandler(create_help_request)
+
+    response = handler.execute(event, context)
+
     print("event: ", event, "context:", context)
 
     print('-------------------------------------')
@@ -20,10 +25,6 @@ def lambda_handler(event, context):
     key_file_location = path.relpath('lib/key_file.json')
 
     print(key_file_location)
-
-    here_to_help_gateway = HereToHelpGateway()
-    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
-    handler = LambdaHandler(create_help_request)
 
     print('google_drive_gateway init start')
 
@@ -58,5 +59,4 @@ def lambda_handler(event, context):
 
     print('find_and_process_new_sheet execute done')
 
-    response = handler.execute(event, context)
     return response

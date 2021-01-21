@@ -3,6 +3,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 from googleapiclient import discovery
 
+from googleapiclient.discovery import build
+
 # Hopefully Kat has sorted the authentication part
 # You can make keys by going to https://console.cloud.google.com/iam-admin/
 # However that means you need access to the service account, which might
@@ -26,7 +28,8 @@ class GoogleDriveGateway:
         print('    gdrive credentials done')
         print('    gdrive drive_service start')
 
-        self.drive_service = discovery.build('drive', 'v3', credentials=credentials, cache_discovery=False)
+        # self.drive_service = discovery.build('drive', 'v3', credentials=credentials, cache_discovery=False)
+        self.drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
 
         print('    gdrive drive_service done')
 

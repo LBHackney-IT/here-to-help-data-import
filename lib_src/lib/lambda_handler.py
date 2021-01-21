@@ -19,7 +19,7 @@ class LambdaHandler:
                 "PostCode": self.fake.postcode(),
                 "Uprn": "",
                 "Ward": "",
-                "AddressFirstLine": self.street_address(),
+                "AddressFirstLine": self.fake.street_address(),
                 "AddressSecondLine": "",
                 "AddressThirdLine": "",
                 "GettingInTouchReason": "Test",

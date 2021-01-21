@@ -34,17 +34,6 @@ data "aws_ssm_parameter" "api_key" {
   name = "/cv-19-res-support-v3/${var.stage}/api-key"
 }
 
-//data "aws_ssm_parameter" "gdrive_key" {
-//  name = "/cv-19-res-support-v3/${var.stage}/gdrive_key"
-//}
-//
-//data "local_file" "key_file" {
-//    content  = data.aws_ssm_parameter.gdrive_key.value
-//    filename = "../../lib_src/lib/key_file.json"
-//
-//    depends_on = [ data.aws_ssm_parameter.gdrive_key ]
-//}
-
 data "archive_file" "lib_zip_file" {
   type        = "zip"
   source_dir = "../../lib_src"
@@ -147,6 +136,10 @@ resource "aws_iam_policy" "here_to_help_lambda_policy" {
         "ec2:DeleteNetworkInterface",
         "ec2:DescribeInstances",
         "ec2:AttachNetworkInterface",
+        "ec2:DescribeRouteTables",
+        "ec2:CreateRoute",
+        "ec2:DeleteRoute",
+        "ec2:ReplaceRoute",
         "ssm:Describe*",
         "ssm:Get*",
         "ssm:List*"

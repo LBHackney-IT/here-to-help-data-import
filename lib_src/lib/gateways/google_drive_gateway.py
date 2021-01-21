@@ -15,12 +15,20 @@ class GoogleDriveGateway:
 
     def __init__(self, key_file_location):
         scopes = ['https://www.googleapis.com/auth/drive']
+
+        print('    gdrive credentials start')
+
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
             key_file_location,
             scopes=scopes
         )
 
+        print('    gdrive credentials done')
+        print('    gdrive drive_service start')
+
         self.drive_service = discovery.build('drive', 'v3', credentials=credentials, cache_discovery=False)
+
+        print('    gdrive drive_service done')
 
     def search_folder(self, folder_id: str, target_date: str, file_type: str):
         """returns true/false if there are new files that match the date given."""

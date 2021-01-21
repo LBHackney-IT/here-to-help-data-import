@@ -47,7 +47,11 @@ class GSpreadGateway:
 
         self.google_drive_gateway = google_drive_gateway
 
+        print('    GSpreadGateway gsheet_service start')
+
         self.gsheet_service = pygsheets.authorize(service_file=key_file_location)
+
+        print('    GSpreadGateway gsheet_service start')
 
         # scopes = ['https://spreadsheets.google.com/feeds']
         # creds = ServiceAccountCredentials.from_json_keyfile_name(

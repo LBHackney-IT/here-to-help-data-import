@@ -47,15 +47,11 @@ def lambda_handler(event, context):
 
     print('find_and_process_new_sheet init done')
 
-    folders = json.loads(event)
-
-    print('folders: ', folders)
-
     print('find_and_process_new_sheet execute start')
 
     find_and_process_new_sheet.execute(
-        folders["inbound_folder_id"],
-        folders["outbound_folder_id"])
+        event.get("inbound_folder_id"),
+        event.get("outbound_folder_id"))
 
     print('find_and_process_new_sheet execute done')
 

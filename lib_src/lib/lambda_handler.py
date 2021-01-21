@@ -56,7 +56,7 @@ class LambdaHandler:
                 "ContactMobileNumber": self.fake.cellphone_number(),
                 "EmailAddress": self.fake.free_email(),
                 "GpSurgeryDetails": "Test",
-                "NumberOfChildrenUnder18": 0,
+                "NumberOfChildrenUnder18": "0",
                 "ConsentToShare": False,
                 "DateTimeRecorded": datetime.datetime.utcnow().isoformat(),
                 "RecordStatus": "MASTER",

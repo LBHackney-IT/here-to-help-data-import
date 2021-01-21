@@ -18,14 +18,6 @@ from googleapiclient.discovery import build
 class GoogleDriveGateway:
 
     def __init__(self, key_file_location):
-
-        response = requests.get("http://dummy.restapiexample.com/api/v1/employees")
-
-        print(response.status_code)
-        print(response.content)
-
-        print('- - - - - - - - - - - - - - - -')
-
         scopes = ['https://www.googleapis.com/auth/drive']
 
         print('    gdrive credentials start')

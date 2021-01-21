@@ -44,16 +44,15 @@ class GSpreadGateway:
         'Date Time Extracted']
 
     def __init__(self, key_file_location, google_drive_gateway):
-        print(' GSpreadGateway init ')
 
         self.google_drive_gateway = google_drive_gateway
-        scopes = ['https://spreadsheets.google.com/feeds']
 
         self.gsheet_service = pygsheets.authorize(service_file=key_file_location)
 
+        # scopes = ['https://spreadsheets.google.com/feeds']
         # creds = ServiceAccountCredentials.from_json_keyfile_name(
         #     key_file_location, scopes)
-
+        #
         # self.gspread_service = gspread.authorize(
         #     creds)  # makes the gspread service
 

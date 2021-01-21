@@ -1,7 +1,7 @@
 import datetime as dt
 from oauth2client.service_account import ServiceAccountCredentials
 
-from apiclient.discovery import build
+from googleapiclient import discovery
 
 # Hopefully Kat has sorted the authentication part
 # You can make keys by going to https://console.cloud.google.com/iam-admin/
@@ -20,7 +20,7 @@ class GoogleDriveGateway:
             scopes=scopes
         )
 
-        self.drive_service = build('drive', 'v3', credentials=credentials)
+        self.drive_service = discovery.build('drive', 'v3', credentials=credentials, cache_discovery=False)
 
     def search_folder(self, folder_id: str, target_date: str, file_type: str):
         """returns true/false if there are new files that match the date given."""

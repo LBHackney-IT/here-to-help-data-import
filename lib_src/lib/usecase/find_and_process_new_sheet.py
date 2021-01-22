@@ -10,18 +10,18 @@ class FindAndProcessNewSheet:
     def execute(self, inbound_folder_id, outbound_folder_id):
         today = dt.datetime.now().date().strftime('%Y-%m-%d')
 
-        print("[CheckLogic: %s] Begin Check" % dt.datetime.now())
+        # print("[CheckLogic: %s] Begin Check" % dt.datetime.now())
 
         if self.google_drive_gateway.search_folder(
                 inbound_folder_id, today, "spreadsheet"):
             if not self.google_drive_gateway.search_folder(
                     outbound_folder_id, today, "spreadsheet"):
-                print(
-                    "[CheckLogic: %s] Run DataWrangleScript" %
-                    dt.datetime.now())
+                # print(
+                #     "[CheckLogic: %s] Run DataWrangleScript" %
+                #     dt.datetime.now())
                 found_file_id = self.google_drive_gateway.get_file(
                     inbound_folder_id, today, "spreadsheet")
-                print(found_file_id)
+                # print(found_file_id)
 
                 data_frame = self.gspread_drive_gateway.get_cases_from_gsheet(
                     found_file_id)
@@ -63,13 +63,13 @@ class FindAndProcessNewSheet:
 
     @classmethod
     def get_city_cases(cls, data_frame):
-        print("[get_city_cases] Creating COL Case Dataframe")
+        # print("[get_city_cases] Creating COL Case Dataframe")
         city_data_frame = data_frame[data_frame['UTLA'] == 'City of London']
-        print(city_data_frame)
+        # print(city_data_frame)
         return city_data_frame
 
     def get_hackney_cases(self, data_frame):
-        print("[get_hackney_cases] Creating Hackney Case Dataframe")
+        # print("[get_hackney_cases] Creating Hackney Case Dataframe")
         hack_data_frame = data_frame[data_frame['UTLA'] == 'Hackney']
         hack_data_frame = hack_data_frame[(~hack_data_frame['Phone'].isna()) |
                           (~hack_data_frame['Phone2'].isna())]
@@ -79,7 +79,7 @@ class FindAndProcessNewSheet:
 
     @classmethod
     def get_text_message_list(cls, data_frame):
-        print("[get_text_message_list] Cases with no Phone Number for Text messaging")
+        # print("[get_text_message_list] Cases with no Phone Number for Text messaging")
         # Phone col appears to be always a mobile
         text_list = data_frame[~data_frame['Phone'].isna()]
         text_list = text_list[['Phone']]
@@ -89,8 +89,8 @@ class FindAndProcessNewSheet:
     # Only returns cases that don't have any phone number
     @classmethod
     def get_address_email_lists(cls, data_frame):
-        print(
-            "[get_address_email_lists] Only returns cases that don't have any phone number")
+        # print(
+        #     "[get_address_email_lists] Only returns cases that don't have any phone number")
         address_list =  data_frame[(data_frame['House Number'].str.len() > 0)
                                    & (data_frame['Postcode'].str.len() > 0)
                                    & (data_frame['Phone'].str.len() == 0)

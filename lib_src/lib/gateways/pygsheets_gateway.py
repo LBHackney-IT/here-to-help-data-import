@@ -40,23 +40,19 @@ class PygsheetsGateway:
 
         self.google_drive_gateway = google_drive_gateway
 
-        print('    GSpreadGateway gsheet_service start')
-
         self.gsheet_service = pygsheets.authorize(service_file=key_file_location)
 
-        print('    GSpreadGateway gsheet_service start')
-
     def get_cases_from_gsheet(self, sheet_key):
-        print(
-            "[get_cases_from_gsheet] Trying to open by key using %s" %
-            sheet_key)
+        # print(
+        #     "[get_cases_from_gsheet] Trying to open by key using %s" %
+        #     sheet_key)
         spreadsheet = self.gsheet_service.open_by_key(sheet_key)
-        print(spreadsheet)
+        # print(spreadsheet)
         sheet = spreadsheet.worksheet('index', 0)  # CHANGEINCODE - finds first sheet instead
         data_frame = sheet.get_as_df(start='A3', parse_dates=True)  # CHANGEINCODE - different sheet loading style
         data_frame = data_frame.convert_dtypes()
         data_frame = self.clean_data(data_frame=data_frame)
-        print("[get_cases_from_gsheet] Displaying Dataframe")
+        # print("[get_cases_from_gsheet] Displaying Dataframe")
         # print(data_frame)
         return data_frame  # returns dataframe
 
@@ -70,7 +66,7 @@ class PygsheetsGateway:
         return data_frame
 
     def create_output_spreadsheet(self, data_frame, outbound_folder_id):
-        print("[create_output_spreadsheet]")
+        # print("[create_output_spreadsheet]")
         # get today's date for new filename
         today = datetime.today().strftime('%d/%m/%Y')
         # create new filename
@@ -81,11 +77,11 @@ class PygsheetsGateway:
         spreadsheet = self.gsheet_service.open_by_key(
             self.google_drive_gateway.create_spreadsheet(
                 outbound_folder_id, new_spreadsheet_name))
-        print(spreadsheet)
+        # print(spreadsheet)
 
         # loop through each created dataframe and populate spreadsheet
         for i in data_frame:
-            print(i[1])
+            # print(i[1])
             self.populate_output_sheets(spreadsheet=spreadsheet, data_frame=i[0], title=i[1])
         sheet1 = spreadsheet.worksheet('title', 'Sheet1')  # CHANGEINCODE - different worksheet pull
         spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
@@ -93,7 +89,7 @@ class PygsheetsGateway:
         print(f'spreadsheet {new_spreadsheet_name} created.')
 
     def create_city_spreadsheet(self, data_frame, outbound_folder_id):
-        print("[create_city_spreadsheet]")
+        # print("[create_city_spreadsheet]")
         # get today's date for new filename
         today = datetime.today().strftime('%d/%m/%Y')
         # create new filename
@@ -110,12 +106,12 @@ class PygsheetsGateway:
 
         sheet1 = spreadsheet.worksheet('title', 'Sheet1')  # CHANGEINCODE - different worksheet pull
         spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
-        print(f'spreadsheet {new_spreadsheet_name} created.')
+        # print(f'spreadsheet {new_spreadsheet_name} created.')
 
         # should we update this to write to csv or xlsx?
 
     def populate_output_sheets(self, spreadsheet, data_frame, title):
-        print("[populate_output_sheets]")
+        # print("[populate_output_sheets]")
         # add a tab for each file and write each dataframe
 
         worksheet = spreadsheet.add_worksheet(title=title)
@@ -123,6 +119,6 @@ class PygsheetsGateway:
         return worksheet.set_dataframe(df=data_frame, start='A1', fit=True)
 
     def next_available_row(self, worksheet):
-        print("[next_available_row]")
+        # print("[next_available_row]")
         str_list = list(filter(None, worksheet.col_values(1)))
         return str(len(str_list) + 1)

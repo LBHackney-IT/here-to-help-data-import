@@ -85,7 +85,6 @@ commands:
       - run:
           name: Terrafrom Apply
           command: |
-            cat ./lib_src/lib/key_file.json
             cd infrastructure/<<parameters.stage>>
             terraform apply -var api_url=<<parameters.help_request_api_url>> -auto-approve
 

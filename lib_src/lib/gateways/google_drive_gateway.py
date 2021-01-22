@@ -1,9 +1,6 @@
 import datetime as dt
 
-import requests
 from oauth2client.service_account import ServiceAccountCredentials
-
-from googleapiclient import discovery
 
 from googleapiclient.discovery import build
 
@@ -20,20 +17,12 @@ class GoogleDriveGateway:
     def __init__(self, key_file_location):
         scopes = ['https://www.googleapis.com/auth/drive']
 
-        print('    gdrive credentials start')
-
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
             key_file_location,
             scopes=scopes
         )
 
-        print('    gdrive credentials done')
-        print('    gdrive drive_service start')
-
-        # self.drive_service = discovery.build('drive', 'v3', credentials=credentials, cache_discovery=False)
         self.drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
-
-        print('    gdrive drive_service done')
 
     def search_folder(self, folder_id: str, target_date: str, file_type: str):
         """returns true/false if there are new files that match the date given."""
@@ -84,20 +73,14 @@ class GoogleDriveGateway:
             testime = j.get('createdTime')[0:10]
             if testime == target_date:
                 file_name = j.get('name')
-                print(
-                    "[CheckFile: %s] Found a file: %s" %
-                    (dt.datetime.now(), file_name))
+                # # print("[CheckFile: %s] Found a file: %s" %(dt.datetime.now(), file_name))
                 foundcount += 1
 
         if foundcount > 0:
-            print(
-                "[CheckFile: %s] Files Found. Will Return True" %
-                dt.datetime.now())
+            # print( "[CheckFile: %s] Files Found. Will Return True" % dt.datetime.now())
             return True
 
-        print(
-            "[CheckFile: %s] No File Found. Will return false" %
-            dt.datetime.now())
+        # print( "[CheckFile: %s] No File Found. Will return false" % dt.datetime.now())
         return False
 
     # returns file id to be used to read file
@@ -108,10 +91,10 @@ class GoogleDriveGateway:
         # made it so if 0 or 2+ files are found. dont return file ID
 
         foundcount = 0
-        print(
-            "[get_file: %s] Looking for files in folder: \
-            https://drive.google.com/drive/folders/%s" %
-            (dt.datetime.now(), folder_id))
+        # print(
+        #     "[get_file: %s] Looking for files in folder: \
+        #     https://drive.google.com/drive/folders/%s" %
+        #     (dt.datetime.now(), folder_id))
         filelist = self.drive_service.files().list(
             includeItemsFromAllDrives=True,
             supportsAllDrives=True,
@@ -127,20 +110,20 @@ class GoogleDriveGateway:
             testime = j.get('createdTime')[0:10]
             if testime == target_date:
                 file_id = j.get('id')
-                print(
-                    "[get_file: %s] Found ID: %s" %
-                    (dt.datetime.now(), file_id))
+                # print(
+                #     "[get_file: %s] Found ID: %s" %
+                #     (dt.datetime.now(), file_id))
                 foundcount += 1
 
         if foundcount == 1:
-            print(
-                "[get_file: %s] Only ONE file found. Will return ID" %
-                dt.datetime.now())
+            # print(
+            #     "[get_file: %s] Only ONE file found. Will return ID" %
+            #     dt.datetime.now())
             return file_id
 
-        print(
-            "[get_file: %s] Error: 0 or more than 1 file found." %
-            dt.datetime.now())
+        # print(
+        #     "[get_file: %s] Error: 0 or more than 1 file found." %
+        #     dt.datetime.now())
         return ""
 
     def create_spreadsheet(self, destination_folder, file_name):
@@ -155,5 +138,5 @@ class GoogleDriveGateway:
             supportsAllDrives=True, body=file_metadata, fields='id').execute()
 
         file_id = spreadsheet.get('id')
-        print(file_id)
+        # print(file_id)
         return file_id

@@ -3,9 +3,10 @@ import datetime as dt
 
 class FindAndProcessNewSheet:
 
-    def __init__(self, google_drive_gateway, gspread_drive_gateway):
+    def __init__(self, google_drive_gateway, gspread_drive_gateway, add_hackney_cases_to_app):
         self.google_drive_gateway = google_drive_gateway
         self.gspread_drive_gateway = gspread_drive_gateway
+        self.add_hackney_cases_to_app = add_hackney_cases_to_app
 
     def execute(self, inbound_folder_id, outbound_folder_id):
         today = dt.datetime.now().date().strftime('%Y-%m-%d')
@@ -33,6 +34,9 @@ class FindAndProcessNewSheet:
                 city_data_frames = [[city_cases, 'city_cases']]
                 output_data_frames = [[email_list, 'email_list'], [
                     address_list, 'address_list'], [hackney_cases, 'hackney_cases']]
+                print('--  --  start adding to api --  --  --  --  --')
+                self.add_hackney_cases_to_app.execute(hackney_cases)
+                print('--  --  send adding to api --  --  --  --  -- ')
                 self.gspread_drive_gateway.create_output_spreadsheet(
                     data_frame=output_data_frames, outbound_folder_id=outbound_folder_id)
                 self.gspread_drive_gateway.create_city_spreadsheet(

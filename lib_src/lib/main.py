@@ -4,7 +4,7 @@ from .gateways.pygsheets_gateway import PygsheetsGateway
 from .gateways.google_drive_gateway import GoogleDriveGateway
 from .usecase.create_help_requests import CreateHelpRequest
 from .usecase.find_and_process_new_sheet import FindAndProcessNewSheet
-from .lambda_handler import LambdaHandler
+# from .lambda_handler import LambdaHandler
 from .usecase.add_hackney_cases_to_app import AddHackneyCasesToApp
 from os import path
 import requests

@@ -18,11 +18,9 @@ class AddHackneyCasesToApp:
                 {
                     "Postcode": row['Postcode'],
                     "AddressFirstLine": row['House Number'],
-                    "AddressSecondLine": "",
-                    "AddressThirdLine": "",
                     "HelpWithSomethingElse": True,
-                    "FirstName": "Test: %s" % row["Forename"],
-                    "LastName": "Test: %s" % row["Surname"],
+                    "FirstName": row["Forename"],
+                    "LastName": row["Surname"],
                     "DobDay": dob_day,
                     "DobMonth": dob_month,
                     "DobYear": dob_year,

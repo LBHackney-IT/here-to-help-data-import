@@ -90,13 +90,37 @@ resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
   name                = "here-to-help-scheduled-event"
   description         = "Fires every one minutes"
   schedule_expression = "rate(1 hour)"
-  is_enabled = false
+  is_enabled = true
+}
+
+data "aws_ssm_parameter" "inbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/inbound_folder_id"
+}
+
+data "aws_ssm_parameter" "outbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/outbound_folder_id"
 }
 
 resource "aws_cloudwatch_event_target" "check_google_sheet" {
   rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
   target_id = "here-to-help-lambda"
   arn       = aws_lambda_function.here-to-help-lambda.arn
+
+    input = <<DOC
+{
+	"inbound_folder_id": [data.aws_ssm_parameter.inbound_folder_id.value],
+    "outbound_folder_id": [data.aws_ssm_parameter.outbound_folder_id.value]
+}
+DOC
+//  run_command_targets {
+//    key    = "inbound_folder_id"
+//    values = [data.aws_ssm_parameter.inbound_folder_id.value]
+//  }
+//
+//  run_command_targets {
+//    key    = "outbound_folder_id"
+//    values = [data.aws_ssm_parameter.outbound_folder_id.value]
+//  }
 }
 
 resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet" {

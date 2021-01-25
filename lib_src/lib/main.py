@@ -6,6 +6,7 @@ from .usecase.create_help_requests import CreateHelpRequest
 from .usecase.find_and_process_new_sheet import FindAndProcessNewSheet
 # from .lambda_handler import LambdaHandler
 from .usecase.add_hackney_cases_to_app import AddHackneyCasesToApp
+from os import getenv
 from os import path
 import requests
 
@@ -39,8 +40,12 @@ def lambda_handler(event, context):
     find_and_process_new_sheet = FindAndProcessNewSheet(
         google_drive_gateway, pygsheets_gateway, add_hackney_cases_to_app)
 
+    inbound_folder_id = getenv("INBOUND_FOLDER_ID")
+    outbound_folder_id = getenv("OUTBOUND_FOLDER_ID")
+
     response = find_and_process_new_sheet.execute(
-        event.get("inbound_folder_id"),
-        event.get("outbound_folder_id"))
+        inbound_folder_id,
+        outbound_folder_id
+    )
 
     return response

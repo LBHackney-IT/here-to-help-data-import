@@ -34,6 +34,14 @@ data "aws_ssm_parameter" "api_key" {
   name = "/cv-19-res-support-v3/${var.stage}/api-key"
 }
 
+data "aws_ssm_parameter" "inbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/inbound_folder_id"
+}
+
+data "aws_ssm_parameter" "outbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/outbound_folder_id"
+}
+
 data "archive_file" "lib_zip_file" {
   type        = "zip"
   source_dir = "../../lib_src"
@@ -77,6 +85,8 @@ resource "aws_lambda_function" "here-to-help-lambda" {
     variables = {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL = var.api_url
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
+      INBOUND_FOLDER_ID = data.aws_ssm_parameter.inbound_folder_id.value
+      OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.outbound_folder_id.value
     }
   }
    depends_on = [
@@ -93,34 +103,10 @@ resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
   is_enabled = true
 }
 
-data "aws_ssm_parameter" "inbound_folder_id" {
-  name = "/cv-19-res-support-v3/${var.stage}/inbound_folder_id"
-}
-
-data "aws_ssm_parameter" "outbound_folder_id" {
-  name = "/cv-19-res-support-v3/${var.stage}/outbound_folder_id"
-}
-
 resource "aws_cloudwatch_event_target" "check_google_sheet" {
   rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
   target_id = "here-to-help-lambda"
   arn       = aws_lambda_function.here-to-help-lambda.arn
-
-    input = <<DOC
-{
-	"inbound_folder_id": [data.aws_ssm_parameter.inbound_folder_id.value],
-    "outbound_folder_id": [data.aws_ssm_parameter.outbound_folder_id.value]
-}
-DOC
-//  run_command_targets {
-//    key    = "inbound_folder_id"
-//    values = [data.aws_ssm_parameter.inbound_folder_id.value]
-//  }
-//
-//  run_command_targets {
-//    key    = "outbound_folder_id"
-//    values = [data.aws_ssm_parameter.outbound_folder_id.value]
-//  }
 }
 
 resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet" {

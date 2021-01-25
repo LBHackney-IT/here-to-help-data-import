@@ -7,7 +7,7 @@ variable "handler" {
 }
 
 variable "runtime" {
-  default = "python3.7"
+  default = "python3.8"
 }
 variable "subnet_ids_for_lambda" {
   default = { "development" =  ["subnet-0deabb5d8fb9c3446", "subnet-000b89c249f12a8ad"],
@@ -32,6 +32,14 @@ variable "stage" {
 
 data "aws_ssm_parameter" "api_key" {
   name = "/cv-19-res-support-v3/${var.stage}/api-key"
+}
+
+data "aws_ssm_parameter" "inbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/inbound_folder_id"
+}
+
+data "aws_ssm_parameter" "outbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/outbound_folder_id"
 }
 
 data "archive_file" "lib_zip_file" {
@@ -66,7 +74,8 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
   s3_key           = aws_s3_bucket_object.handler.key
   source_code_hash = data.archive_file.lib_zip_file.output_base64sha256
-  timeout = 60
+  memory_size = 10240
+  timeout = 900
 
   vpc_config {
     subnet_ids         = lookup(var.subnet_ids_for_lambda, var.stage)
@@ -76,6 +85,8 @@ resource "aws_lambda_function" "here-to-help-lambda" {
     variables = {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL = var.api_url
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
+      INBOUND_FOLDER_ID = data.aws_ssm_parameter.inbound_folder_id.value
+      OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.outbound_folder_id.value
     }
   }
    depends_on = [
@@ -89,7 +100,7 @@ resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
   name                = "here-to-help-scheduled-event"
   description         = "Fires every one minutes"
   schedule_expression = "rate(1 hour)"
-  is_enabled = false
+  is_enabled = true
 }
 
 resource "aws_cloudwatch_event_target" "check_google_sheet" {
@@ -135,7 +146,14 @@ resource "aws_iam_policy" "here_to_help_lambda_policy" {
         "ec2:CreateNetworkInterface",
         "ec2:DeleteNetworkInterface",
         "ec2:DescribeInstances",
-        "ec2:AttachNetworkInterface"
+        "ec2:AttachNetworkInterface",
+        "ec2:DescribeRouteTables",
+        "ec2:CreateRoute",
+        "ec2:DeleteRoute",
+        "ec2:ReplaceRoute",
+        "ssm:Describe*",
+        "ssm:Get*",
+        "ssm:List*"
       ],
       "Effect": "Allow",
       "Resource": "*"

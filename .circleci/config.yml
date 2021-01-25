@@ -57,7 +57,7 @@ commands:
           profile_name: default
           role: "LBH_Circle_CI_Deployment_Role"
       - run:
-          name: go the thing
+          name: Fetch key file from SSM
           command: |
             aws ssm get-parameter --name "/cv-19-res-support-v3/<<parameters.stage>>/gdrive_key" --output text --query Parameter.Value > ./lib_src/lib/key_file.json
       - persist_to_workspace:
@@ -102,6 +102,12 @@ jobs:
   assume-role-staging:
     executor: docker-python
     steps:
+      - run:
+            name: unset aws credentials
+            command: |
+              unset AWS_SECRET_ACCESS_KEY
+              unset AWS_SECRET_KEY
+              unset AWS_SESSION_TOKEN
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_STAGING
           stage: "staging"

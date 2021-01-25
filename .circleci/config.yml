@@ -56,6 +56,25 @@ commands:
           account: <<parameters.aws-account>>
           profile_name: default
           role: "LBH_Circle_CI_Deployment_Role"
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - project/lib_src/lib/key_file.json
+            - .aws
+  retrieve-key-file-from-ssm:
+    description: "Retrieves key file from ssm"
+    parameters:
+      stage:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl -L -o awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: Fetch key file from SSM
           command: |
@@ -64,7 +83,6 @@ commands:
           root: *workspace_root
           paths:
             - project/lib_src/lib/key_file.json
-            - .aws
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:
@@ -99,6 +117,11 @@ jobs:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DEVELOPMENT
           stage: "development"
+  retrieve-development-key-file-from-ssm:
+    executor: docker-python
+    steps:
+      - retrieve-key-file-from-ssm:
+          stage: "development"
   assume-role-staging:
     executor: docker-python
     steps:
@@ -111,6 +134,11 @@ jobs:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_STAGING
           stage: "staging"
+  retrieve-staging-key-file-from-ssm:
+    executor: docker-python
+    steps:
+      - retrieve-key-file-from-ssm:
+          stage: "staging"
   assume-role-production:
     executor: docker-python
     steps:
@@ -122,6 +150,11 @@ jobs:
             unset AWS_SESSION_TOKEN
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
+          stage: "production"
+  retrieve-production-key-file-from-ssm:
+    executor: docker-python
+    steps:
+      - retrieve-key-file-from-ssm:
           stage: "production"
   terraform-init-and-apply-to-development:
     executor: docker-terraform
@@ -154,9 +187,12 @@ workflows:
               only: master
           requires:
             - build-and-test
-      - terraform-init-and-apply-to-staging:
+      - retrieve-staging-key-file-from-ssm:
           requires:
             - assume-role-staging
+      - terraform-init-and-apply-to-staging:
+          requires:
+            - retrieve-staging-key-file-from-ssm
           filters:
             branches:
               only: master
@@ -177,9 +213,12 @@ workflows:
           filters:
             branches:
               only: master
-      - terraform-init-and-apply-to-production:
+      - retrieve-production-key-file-from-ssm:
           requires:
             - assume-role-production
+      - terraform-init-and-apply-to-production:
+          requires:
+            - retrieve-production-key-file-from-ssm
           filters:
             branches:
               only: master
@@ -196,9 +235,15 @@ workflows:
           filters:
             branches:
               only: development
-      - terraform-init-and-apply-to-development:
+      - retrieve-development-key-file-from-ssm:
           requires:
             - assume-role-development
+          filters:
+            branches:
+              only: development
+      - terraform-init-and-apply-to-development:
+          requires:
+            - retrieve-development-key-file-from-ssm
           filters:
             branches:
               only: development

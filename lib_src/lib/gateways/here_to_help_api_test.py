@@ -5,8 +5,8 @@ import os
 
 load_dotenv()
 gateway = HereToHelpGateway()
-os.environ[' CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL'] = "localhost:3000/"
-url = os.getenv(" CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL")+"v3/help-requests"
+os.environ['CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL'] = "localhost:3000/"
+url = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL")+"v3/help-requests"
 
 
 def test_create_help_request(requests_mock):

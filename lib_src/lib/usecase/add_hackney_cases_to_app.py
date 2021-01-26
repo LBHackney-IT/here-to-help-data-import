@@ -1,3 +1,5 @@
+import datetime
+
 class AddHackneyCasesToApp:
     def __init__(self, create_help_request):
         self.create_help_request = create_help_request
@@ -19,8 +21,8 @@ class AddHackneyCasesToApp:
                     "Postcode": row['Postcode'],
                     "AddressFirstLine": row['House Number'],
                     "HelpWithSomethingElse": True,
-                    "FirstName": row["Forename"],
-                    "LastName": row["Surname"],
+                    "FirstName": row["Forename"].capitalize() if row['Forename'] else '',
+                    "LastName": row["Surname"].capitalize() if row['Surname'] else '',
                     "DobDay": dob_day,
                     "DobMonth": dob_month,
                     "DobYear": dob_year,
@@ -29,6 +31,7 @@ class AddHackneyCasesToApp:
                     "EmailAddress":  row["Email"],
                     "CallbackRequired": True,
                     "CaseNotes": row["Comments"],
+                    "DateTimeRecorded": datetime.datetime.utcnow().isoformat(),
                     "HelpNeeded": "Contact Tracing",
                     "NhsNumber": row["NHS Number"],
                     "NhsCtasId": row["Account ID"]

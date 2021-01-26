@@ -22,7 +22,6 @@ class FindAndProcessNewSheet:
                 #     dt.datetime.now())
                 found_file_id = self.google_drive_gateway.get_file(
                     inbound_folder_id, today, "spreadsheet")
-                # print(found_file_id)
 
                 data_frame = self.gspread_drive_gateway.get_cases_from_gsheet(
                     found_file_id)
@@ -34,15 +33,24 @@ class FindAndProcessNewSheet:
                 city_data_frames = [[city_cases, 'city_cases']]
                 output_data_frames = [[email_list, 'email_list'], [
                     address_list, 'address_list'], [hackney_cases, 'hackney_cases']]
-                print('--  --  start adding to api --  --  --  --  --')
-                self.add_hackney_cases_to_app.execute(hackney_cases)
-                print('--  --  send adding to api --  --  --  --  -- ')
-                self.gspread_drive_gateway.create_output_spreadsheet(
-                    data_frame=output_data_frames, outbound_folder_id=outbound_folder_id)
-                self.gspread_drive_gateway.create_city_spreadsheet(
-                    data_frame=city_data_frames, outbound_folder_id=outbound_folder_id)
-                # cases_dict = self.hackney_cases_to_dict(data_frame=hackney_cases)
-                # print(cases_dict)
+
+
+                # print('--  --  start adding to api --  --  --  --  --')
+                # self.add_hackney_cases_to_app.execute(hackney_cases)
+                # print('--  --  send adding to api --  --  --  --  -- ')
+
+                output_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
+                    outbound_folder_id, f'Hackney_CT_FOR_UPLOAD_{today}')
+
+                self.gspread_drive_gateway.populate_spreadsheet(
+                    data_frame=output_data_frames, spreadsheet_key=output_spreadsheet_key)
+
+                city_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
+                    outbound_folder_id, f'city_CT_FOR_UPLOAD_{today}')
+
+                self.gspread_drive_gateway.populate_spreadsheet(
+                    data_frame=city_data_frames, spreadsheet_key=city_spreadsheet_key)
+
 
             else:
                 print(

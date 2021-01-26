@@ -36,9 +36,7 @@ class PygsheetsGateway:
         'Date Updated',
         'Date Time Extracted']
 
-    def __init__(self, key_file_location, google_drive_gateway):
-
-        self.google_drive_gateway = google_drive_gateway
+    def __init__(self, key_file_location):
 
         self.gsheet_service = pygsheets.authorize(service_file=key_file_location)
 
@@ -65,50 +63,15 @@ class PygsheetsGateway:
         data_frame['Account ID'] = data_frame['Account ID'].astype(str)
         return data_frame
 
-    def create_output_spreadsheet(self, data_frame, outbound_folder_id):
-        # print("[create_output_spreadsheet]")
-        # get today's date for new filename
-        today = datetime.today().strftime('%d/%m/%Y')
-        # create new filename
-        new_spreadsheet_name = f'Hackney_CT_FOR_UPLOAD_{today}'
-        # create a new spreadsheet TODO this only writes to personal drive so
-        # need way to write to shared drive - service account better for this?
-
-        spreadsheet = self.gsheet_service.open_by_key(
-            self.google_drive_gateway.create_spreadsheet(
-                outbound_folder_id, new_spreadsheet_name))
-        # print(spreadsheet)
-
+    def populate_spreadsheet(self, data_frame, spreadsheet_key):
+        spreadsheet = self.gsheet_service.open_by_key(spreadsheet_key)
         # loop through each created dataframe and populate spreadsheet
         for i in data_frame:
-            # print(i[1])
-            self.populate_output_sheets(spreadsheet=spreadsheet, data_frame=i[0], title=i[1])
-        sheet1 = spreadsheet.worksheet('title', 'Sheet1')  # CHANGEINCODE - different worksheet pull
-        spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
-
-        print(f'spreadsheet {new_spreadsheet_name} created.')
-
-    def create_city_spreadsheet(self, data_frame, outbound_folder_id):
-        # print("[create_city_spreadsheet]")
-        # get today's date for new filename
-        today = datetime.today().strftime('%d/%m/%Y')
-        # create new filename
-        new_spreadsheet_name = f'city_CT_FOR_UPLOAD_{today}'
-        # create a new spreadsheet TODO this only writes to personal drive so
-        # need way to write to shared drive - service account better for this?
-        spreadsheet = self.gsheet_service.open_by_key(
-            self.google_drive_gateway.create_spreadsheet(
-                outbound_folder_id, new_spreadsheet_name))
-        # loop through each created dataframe and populate spreadsheet
-        for i in data_frame:
-            print(i[1])
             self.populate_output_sheets(spreadsheet=spreadsheet, data_frame=i[0], title=i[1])
 
         sheet1 = spreadsheet.worksheet('title', 'Sheet1')  # CHANGEINCODE - different worksheet pull
-        spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
-        # print(f'spreadsheet {new_spreadsheet_name} created.')
 
-        # should we update this to write to csv or xlsx?
+        spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
 
     def populate_output_sheets(self, spreadsheet, data_frame, title):
         # print("[populate_output_sheets]")

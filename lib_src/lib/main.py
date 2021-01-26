@@ -31,8 +31,7 @@ def lambda_handler(event, context):
     google_drive_gateway = GoogleDriveGateway(key_file_location)
 
     pygsheets_gateway = PygsheetsGateway(
-        key_file_location,
-        google_drive_gateway
+        key_file_location
     )
 
     add_hackney_cases_to_app = AddHackneyCasesToApp(create_help_request)

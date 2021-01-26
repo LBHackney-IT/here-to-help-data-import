@@ -1,5 +1,3 @@
-import datetime
-
 class AddHackneyCasesToApp:
     def __init__(self, create_help_request):
         self.create_help_request = create_help_request
@@ -31,7 +29,6 @@ class AddHackneyCasesToApp:
                     "EmailAddress":  row["Email"],
                     "CallbackRequired": True,
                     "CaseNotes": row["Comments"],
-                    "DateTimeRecorded": datetime.datetime.utcnow().isoformat(),
                     "HelpNeeded": "Contact Tracing",
                     "NhsNumber": row["NHS Number"],
                     "NhsCtasId": row["Account ID"]

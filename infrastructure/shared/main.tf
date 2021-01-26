@@ -34,6 +34,10 @@ data "aws_ssm_parameter" "api_key" {
   name = "/cv-19-res-support-v3/${var.stage}/api-key"
 }
 
+data "aws_ssm_parameter" "api_base_url" {
+  name = "/cv-19-res-support-v3/${var.stage}/api-base-url"
+}
+
 data "aws_ssm_parameter" "inbound_folder_id" {
   name = "/cv-19-res-support-v3/${var.stage}/inbound_folder_id"
 }
@@ -83,7 +87,7 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   }
   environment {
     variables = {
-      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_URL = var.api_url
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
       INBOUND_FOLDER_ID = data.aws_ssm_parameter.inbound_folder_id.value
       OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.outbound_folder_id.value

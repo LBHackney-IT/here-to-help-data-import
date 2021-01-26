@@ -59,7 +59,6 @@ commands:
       - persist_to_workspace:
           root: *workspace_root
           paths:
-            - project/lib_src/lib/key_file.json
             - .aws
   retrieve-key-file-from-ssm:
     description: "Retrieves key file from ssm"

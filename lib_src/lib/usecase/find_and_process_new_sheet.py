@@ -28,18 +28,15 @@ class FindAndProcessNewSheet:
         self.add_hackney_cases_to_app = add_hackney_cases_to_app
 
     def execute(self, inbound_folder_id, outbound_folder_id):
-        today = dt.datetime.now().date().strftime('%Y-%m-%d')
+        inbound_spread_sheet_id = self.google_drive_gateway.search_folder(
+                inbound_folder_id, "spreadsheet")
 
-        if self.google_drive_gateway.search_folder(
-                inbound_folder_id, today, "spreadsheet"):
+        if inbound_spread_sheet_id:
             if not self.google_drive_gateway.search_folder(
-                    outbound_folder_id, today, "spreadsheet"):
+                    outbound_folder_id, "spreadsheet"):
 
-                found_file_id = self.google_drive_gateway.get_file(
-                    inbound_folder_id, today, "spreadsheet")
-
-                data_frame = self.gspread_drive_gateway.get_data_frame_from_sheet\
-                    (found_file_id, 'A3')
+                data_frame = self.gspread_drive_gateway.get_data_frame_from_sheet(
+                    inbound_spread_sheet_id, 'A3')
 
                 data_frame = self.clean_data(data_frame=data_frame)
 
@@ -68,6 +65,8 @@ class FindAndProcessNewSheet:
 
                 self.add_hackney_cases_to_app.execute(hackney_cases)
 
+                today = dt.datetime.now().date().strftime('%Y-%m-%d')
+
                 hackney_output_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
                     outbound_folder_id, f'Hackney_CT_FOR_UPLOAD_{today}')
 
@@ -90,7 +89,7 @@ class FindAndProcessNewSheet:
                 "No File found for todays PowerBI Output in \
                 folder: https://drive.google.com/drive/folders/%s " %
                 (inbound_folder_id))
-            print("Will Abort" % dt.datetime.now())
+            print("Will Abort")
 
     @classmethod
     def get_city_cases(cls, data_frame):

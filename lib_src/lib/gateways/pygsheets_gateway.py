@@ -66,20 +66,15 @@ class PygsheetsGateway:
     def populate_spreadsheet(self, data_frame, spreadsheet_key):
         spreadsheet = self.gsheet_service.open_by_key(spreadsheet_key)
         # loop through each created dataframe and populate spreadsheet
-        for i in data_frame:
-            self.populate_output_sheets(spreadsheet=spreadsheet, data_frame=i[0], title=i[1])
+        for sheet in data_frame:
+            data_frame = sheet[0]
+            title = sheet[1]
+            worksheet = spreadsheet.add_worksheet(title=title)
+            worksheet.set_dataframe(df=data_frame, start='A1', fit=True)
 
         sheet1 = spreadsheet.worksheet('title', 'Sheet1')  # CHANGEINCODE - different worksheet pull
 
         spreadsheet.del_worksheet(sheet1)  # CHANGEINCODE - different worksheet delete
-
-    def populate_output_sheets(self, spreadsheet, data_frame, title):
-        # print("[populate_output_sheets]")
-        # add a tab for each file and write each dataframe
-
-        worksheet = spreadsheet.add_worksheet(title=title)
-
-        return worksheet.set_dataframe(df=data_frame, start='A1', fit=True)
 
     def next_available_row(self, worksheet):
         # print("[next_available_row]")

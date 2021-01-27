@@ -1,7 +1,26 @@
 import datetime as dt
-
+import numpy as np
 
 class FindAndProcessNewSheet:
+    # have also included NHS Number, 'Date Updated', 'Date Time Extracted' as
+    # would be useful for data warehouse etc
+    COLS = [
+        'Account ID',
+        'NHS Number',
+        'Forename',
+        'Surname',
+        'Gender',
+        'Date of Birth',
+        'House Number',
+        'Postcode',
+        'Email',
+        'Phone',
+        'Phone2',
+        'First Symptomatic At',
+        'Date Tested',
+        'Comments',
+        'Date Updated',
+        'Date Time Extracted']
 
     def __init__(self, google_drive_gateway, gspread_drive_gateway, add_hackney_cases_to_app):
         self.google_drive_gateway = google_drive_gateway
@@ -11,67 +30,67 @@ class FindAndProcessNewSheet:
     def execute(self, inbound_folder_id, outbound_folder_id):
         today = dt.datetime.now().date().strftime('%Y-%m-%d')
 
-        # print("[CheckLogic: %s] Begin Check" % dt.datetime.now())
-
         if self.google_drive_gateway.search_folder(
                 inbound_folder_id, today, "spreadsheet"):
             if not self.google_drive_gateway.search_folder(
                     outbound_folder_id, today, "spreadsheet"):
-                # print(
-                #     "[CheckLogic: %s] Run DataWrangleScript" %
-                #     dt.datetime.now())
+
                 found_file_id = self.google_drive_gateway.get_file(
                     inbound_folder_id, today, "spreadsheet")
 
-                data_frame = self.gspread_drive_gateway.get_cases_from_gsheet(
-                    found_file_id)
+                data_frame = self.gspread_drive_gateway.get_data_frame_from_sheet\
+                    (found_file_id, 'A3')
+
+                data_frame = self.clean_data(data_frame=data_frame)
+
                 city_cases = self.get_city_cases(data_frame=data_frame)
+
                 hackney_cases = self.get_hackney_cases(data_frame=data_frame)
-                # text_list = self.get_text_message_list(data_frame=hackney_cases)
+
                 address_list, email_list = self.get_address_email_lists(
                     data_frame=hackney_cases)
-                city_data_frames = [[city_cases, 'city_cases']]
-                output_data_frames = [[email_list, 'email_list'], [
-                    address_list, 'address_list'], [hackney_cases, 'hackney_cases']]
 
+                city_spreadsheet = [{
+                    'sheet_title': 'city_cases',
+                    'data_frame': city_cases
+                }]
 
-                # print('--  --  start adding to api --  --  --  --  --')
-                # self.add_hackney_cases_to_app.execute(hackney_cases)
-                # print('--  --  send adding to api --  --  --  --  -- ')
+                hackney_spreadsheet = [{
+                    'sheet_title': 'email_list',
+                    'data_frame': email_list
+                }, {
+                    'sheet_title': 'address_list',
+                    'data_frame': address_list
+                }, {
+                    'sheet_title': 'hackney_cases',
+                    'data_frame': hackney_cases
+                }]
 
-                output_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
+                self.add_hackney_cases_to_app.execute(hackney_cases)
+
+                hackney_output_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
                     outbound_folder_id, f'Hackney_CT_FOR_UPLOAD_{today}')
 
                 self.gspread_drive_gateway.populate_spreadsheet(
-                    data_frame=output_data_frames, spreadsheet_key=output_spreadsheet_key)
+                    hackney_spreadsheet, spreadsheet_key=hackney_output_spreadsheet_key)
 
                 city_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
                     outbound_folder_id, f'city_CT_FOR_UPLOAD_{today}')
 
                 self.gspread_drive_gateway.populate_spreadsheet(
-                    data_frame=city_data_frames, spreadsheet_key=city_spreadsheet_key)
-
-
+                    city_spreadsheet, spreadsheet_key=city_spreadsheet_key)
             else:
                 print(
-                    "[CheckLogic: %s] A file has been found in the \
+                    "A file has been found in the \
                     output folder: https://drive.google.com/drive/folders/%s " %
-                    (dt.datetime.now(), outbound_folder_id))
-                print("[CheckLogic: %s] Will Abort")
+                    (outbound_folder_id))
+                print("Will Abort")
         else:
             print(
-                "[CheckLogic: %s] No File found for todays PowerBI Output in \
+                "No File found for todays PowerBI Output in \
                 folder: https://drive.google.com/drive/folders/%s " %
-                (dt.datetime.now(), inbound_folder_id))
-            print("[CheckLogic: %s] Will Abort" % dt.datetime.now())
-
-    # results =
-    #   drive_service.files().list(supportsAllDrives=True,
-    #   includeItemsFromAllDrives=True,
-    #   q="parents in '{folder_id}' and trashed = false",
-    #   fields = "nextPageToken, files(id, name)").execute()
-
-    # q: mimeType = 'application/vnd.google-apps.folder'
+                (inbound_folder_id))
+            print("Will Abort" % dt.datetime.now())
 
     @classmethod
     def get_city_cases(cls, data_frame):
@@ -86,7 +105,7 @@ class FindAndProcessNewSheet:
         hack_data_frame = hack_data_frame[(~hack_data_frame['Phone'].isna()) |
                           (~hack_data_frame['Phone2'].isna())]
         # ensures there is at least one Phone Number
-        hack_data_frame = hack_data_frame[self.gspread_drive_gateway.COLS]
+        hack_data_frame = hack_data_frame[self.COLS]
         return hack_data_frame
 
     @classmethod
@@ -127,12 +146,11 @@ class FindAndProcessNewSheet:
         # print(email_list)
         return address_list, email_list
 
-    @classmethod
-    def hackney_cases_to_dict(cls, data_frame):
-        """
-        data_frame: (dataframe)
-        returns:
+    def clean_data(self, data_frame):  # takes whole sheet and lints data
+        for i in self.COLS:
+            data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'\s+', '')
+            data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'nan', np.nan)
 
-        """
-        cases_dict = data_frame.to_dict(orient="records")
-        return cases_dict
+        # some account ids are just numbers, we need them to be string
+        data_frame['Account ID'] = data_frame['Account ID'].astype(str)
+        return data_frame

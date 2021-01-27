@@ -24,8 +24,9 @@ class GoogleDriveGateway:
 
         self.drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
 
-    def search_folder(self, folder_id: str, target_date: str, file_type: str):
-        """returns true/false if there are new files that match the date given."""
+    def search_folder(self, folder_id: str, file_type: str):
+        """returns new file id if there are new files that match the date given."""
+        today = dt.datetime.now().date().strftime('%Y-%m-%d')
 
         # Drive_service(call google api).Files(the files part of the api).List(list function)
         # includeItemsFromAllDrives=True,supportsAllDrives=True
@@ -67,64 +68,17 @@ class GoogleDriveGateway:
 
         items = filelist.get('files', [])
 
-        for j in items:
-            # anotherTestTime = j.get('createdTime')
-            # print(anotherTestTime)
-            testime = j.get('createdTime')[0:10]
-            if testime == target_date:
-                file_name = j.get('name')
-                # # print("[CheckFile: %s] Found a file: %s" %(dt.datetime.now(), file_name))
+        for file in items:
+            if file.get('createdTime')[0:10] == today:
+                file_name = file.get('name')
+                file_id = file.get('id')
+                print("[CheckFile: %s] Found a file: %s" %(dt.datetime.now(), file_name))
                 foundcount += 1
 
         if foundcount > 0:
-            # print( "[CheckFile: %s] Files Found. Will Return True" % dt.datetime.now())
-            return True
-
-        # print( "[CheckFile: %s] No File Found. Will return false" % dt.datetime.now())
-        return False
-
-    # returns file id to be used to read file
-    def get_file(self, folder_id: str, target_date: str, file_type: str):
-        file_id = ""
-        # Note: I have no idea what it does if two files are made in there at the same time.
-        # I expect horrific stuff
-        # made it so if 0 or 2+ files are found. dont return file ID
-
-        foundcount = 0
-        # print(
-        #     "[get_file: %s] Looking for files in folder: \
-        #     https://drive.google.com/drive/folders/%s" %
-        #     (dt.datetime.now(), folder_id))
-        filelist = self.drive_service.files().list(
-            includeItemsFromAllDrives=True,
-            supportsAllDrives=True,
-            q="'%s' in parents and trashed=False and mimeType = 'application/vnd.google-apps.%s'" %
-            (folder_id,
-             file_type),
-            fields="files(id, name, createdTime)").execute()
-        items = filelist.get('files', [])
-
-        for j in items:
-            # anotherTestTime = j.get('createdTime')
-            # print(anotherTestTime)
-            testime = j.get('createdTime')[0:10]
-            if testime == target_date:
-                file_id = j.get('id')
-                # print(
-                #     "[get_file: %s] Found ID: %s" %
-                #     (dt.datetime.now(), file_id))
-                foundcount += 1
-
-        if foundcount == 1:
-            # print(
-            #     "[get_file: %s] Only ONE file found. Will return ID" %
-            #     dt.datetime.now())
             return file_id
 
-        # print(
-        #     "[get_file: %s] Error: 0 or more than 1 file found." %
-        #     dt.datetime.now())
-        return ""
+        return False
 
     def create_spreadsheet(self, destination_folder, file_name):
         folder_id = destination_folder
@@ -138,5 +92,4 @@ class GoogleDriveGateway:
             supportsAllDrives=True, body=file_metadata, fields='id').execute()
 
         file_id = spreadsheet.get('id')
-        # print(file_id)
         return file_id

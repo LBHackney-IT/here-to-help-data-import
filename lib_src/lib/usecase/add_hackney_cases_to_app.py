@@ -16,7 +16,7 @@ class AddHackneyCasesToApp:
 
             help_request = [
                 {
-                    "Postcode": row['Postcode'],
+                    "Postcode": row['Postcode'].upper(),
                     "AddressFirstLine": row['House Number'],
                     "HelpWithSomethingElse": True,
                     "FirstName": row["Forename"].capitalize() if row['Forename'] else '',

@@ -1,7 +1,7 @@
 import datetime as dt
 import numpy as np
 
-class FindAndProcessNewSheet:
+class ProcessContactTracingCalls:
     # have also included NHS Number, 'Date Updated', 'Date Time Extracted' as
     # would be useful for data warehouse etc
     COLS = [
@@ -22,9 +22,9 @@ class FindAndProcessNewSheet:
         'Date Updated',
         'Date Time Extracted']
 
-    def __init__(self, google_drive_gateway, gspread_drive_gateway, add_hackney_cases_to_app):
+    def __init__(self, google_drive_gateway, pygsheet_gateway, add_hackney_cases_to_app):
         self.google_drive_gateway = google_drive_gateway
-        self.gspread_drive_gateway = gspread_drive_gateway
+        self.pygsheet_gateway = pygsheet_gateway
         self.add_hackney_cases_to_app = add_hackney_cases_to_app
 
     def execute(self, inbound_folder_id, outbound_folder_id):
@@ -35,7 +35,7 @@ class FindAndProcessNewSheet:
             if not self.google_drive_gateway.search_folder(
                     outbound_folder_id, "spreadsheet"):
 
-                data_frame = self.gspread_drive_gateway.get_data_frame_from_sheet(
+                data_frame = self.pygsheet_gateway.get_data_frame_from_sheet(
                     inbound_spread_sheet_id, 'A3')
 
                 data_frame = self.clean_data(data_frame=data_frame)
@@ -70,13 +70,13 @@ class FindAndProcessNewSheet:
                 hackney_output_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
                     outbound_folder_id, f'Hackney_CT_FOR_UPLOAD_{today}')
 
-                self.gspread_drive_gateway.populate_spreadsheet(
+                self.pygsheet_gateway.populate_spreadsheet(
                     hackney_spreadsheet, spreadsheet_key=hackney_output_spreadsheet_key)
 
                 city_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
                     outbound_folder_id, f'city_CT_FOR_UPLOAD_{today}')
 
-                self.gspread_drive_gateway.populate_spreadsheet(
+                self.pygsheet_gateway.populate_spreadsheet(
                     city_spreadsheet, spreadsheet_key=city_spreadsheet_key)
             else:
                 print(

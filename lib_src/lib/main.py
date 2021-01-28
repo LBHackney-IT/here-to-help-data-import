@@ -3,7 +3,7 @@ from .gateways.here_to_help_api import HereToHelpGateway
 from .gateways.pygsheets_gateway import PygsheetsGateway
 from .gateways.google_drive_gateway import GoogleDriveGateway
 from .usecase.create_help_requests import CreateHelpRequest
-from .usecase.find_and_process_new_sheet import FindAndProcessNewSheet
+from .usecase.process_contact_tracing_calls import ProcessContactTracingCalls
 # from .lambda_handler import LambdaHandler
 from .usecase.add_hackney_cases_to_app import AddHackneyCasesToApp
 from os import getenv
@@ -36,7 +36,7 @@ def lambda_handler(event, context):
 
     add_hackney_cases_to_app = AddHackneyCasesToApp(create_help_request)
 
-    find_and_process_new_sheet = FindAndProcessNewSheet(
+    find_and_process_new_sheet = ProcessContactTracingCalls(
         google_drive_gateway, pygsheets_gateway, add_hackney_cases_to_app)
 
     inbound_folder_id = getenv("INBOUND_FOLDER_ID")

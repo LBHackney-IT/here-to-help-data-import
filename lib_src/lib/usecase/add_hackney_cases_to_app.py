@@ -1,3 +1,5 @@
+from dateutil import parser
+
 class AddHackneyCasesToApp:
     def __init__(self, create_help_request):
         self.create_help_request = create_help_request
@@ -8,12 +10,6 @@ class AddHackneyCasesToApp:
         for index, row in data_frame.iterrows():
             row = row.to_dict()
 
-            dob = row['Date of Birth'].split('-')
-
-            dob_day = dob[0] if row['Date of Birth'] else ''
-            dob_month = dob[1] if row['Date of Birth'] else ''
-            dob_year = dob[2] if row['Date of Birth'] else ''
-
             help_request = [
                 {
                     "Postcode": row['Postcode'].upper(),
@@ -21,9 +17,9 @@ class AddHackneyCasesToApp:
                     "HelpWithSomethingElse": True,
                     "FirstName": row["Forename"].capitalize() if row['Forename'] else '',
                     "LastName": row["Surname"].capitalize() if row['Surname'] else '',
-                    "DobDay": dob_day,
-                    "DobMonth": dob_month,
-                    "DobYear": dob_year,
+                    "DobDay": parser.parse(row['Date of Birth'], dayfirst=True).day if row['Date of Birth'] else '',
+                    "DobMonth": parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else '',
+                    "DobYear": parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else '',
                     "ContactTelephoneNumber":  row["Phone"],
                     "ContactMobileNumber":  row["Phone2"],
                     "EmailAddress":  row["Email"],
@@ -31,7 +27,7 @@ class AddHackneyCasesToApp:
                     "CaseNotes": row["Comments"],
                     "HelpNeeded": "Contact Tracing",
                     "NhsNumber": row["NHS Number"],
-                    "NhsCtasId": row["Account ID"]
+                    "NhsCtasId": row["Account ID"].upper()
                 }
             ]
 

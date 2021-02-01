@@ -8,7 +8,7 @@ class AddHackneyCasesToApp:
         for index, row in data_frame.iterrows():
             row = row.to_dict()
 
-            dob = row['Date of Birth'].split('/')
+            dob = row['Date of Birth'].split('-')
 
             dob_day = dob[0] if row['Date of Birth'] else ''
             dob_month = dob[1] if row['Date of Birth'] else ''

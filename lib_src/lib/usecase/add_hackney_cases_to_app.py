@@ -10,6 +10,10 @@ class AddHackneyCasesToApp:
         for index, row in data_frame.iterrows():
             row = row.to_dict()
 
+            dob_day = parser.parse(row['Date of Birth'], dayfirst=True).day if row['Date of Birth'] else '',
+            dob_month = parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else '',
+            dob_year = parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else '',
+
             help_request = [
                 {
                     "Postcode": row['Postcode'].upper(),
@@ -17,9 +21,9 @@ class AddHackneyCasesToApp:
                     "HelpWithSomethingElse": True,
                     "FirstName": row["Forename"].capitalize() if row['Forename'] else '',
                     "LastName": row["Surname"].capitalize() if row['Surname'] else '',
-                    "DobDay": parser.parse(row['Date of Birth'], dayfirst=True).day if row['Date of Birth'] else '',
-                    "DobMonth": parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else '',
-                    "DobYear": parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else '',
+                    "DobDay": f'{dob_day}',
+                    "DobMonth": f'{dob_month}',
+                    "DobYear": f'{dob_year}',
                     "ContactTelephoneNumber":  row["Phone"],
                     "ContactMobileNumber":  row["Phone2"],
                     "EmailAddress":  row["Email"],

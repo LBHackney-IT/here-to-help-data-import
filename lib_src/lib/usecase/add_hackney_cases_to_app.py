@@ -31,7 +31,7 @@ class AddHackneyCasesToApp:
                     "CaseNotes": row["Comments"],
                     "HelpNeeded": "Contact Tracing",
                     "NhsNumber": row["NHS Number"],
-                    "NhsCtasId": row["Account ID"].upper()
+                    "NhsCtasId": row["Account ID"]
                 }
             ]
 

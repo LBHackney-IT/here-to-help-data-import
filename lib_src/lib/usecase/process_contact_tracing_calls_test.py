@@ -1,71 +1,26 @@
-import pandas as pd
 import datetime as dt
 from process_contact_tracing_calls import ProcessContactTracingCalls
+from fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
+from fakes.fake_pygsheet_gateway import FakePygsheetGateway
+from fakes.fake_add_hackney_cases_to_app import FakeAddHackneyCasesToApp
 
-
-class FakeGoogleDriveGateway:
-    def __init__(self, return_inbound, return_outbound):
-        self.count = 1
-        self.return_inbound = return_inbound
-        self.return_outbound = return_outbound
-        self.search_folder_calls = []
-        self.created_spreadsheets = []
-
-    def search_folder(self, folder_id, file_type):
-        self.search_folder_calls.append([folder_id, file_type])
-
-        if self.return_outbound & (folder_id == 'outbound_folder_id'):
-            return folder_id
-        if self.return_inbound & (folder_id == 'inbound_folder_id'):
-            return folder_id
-        return False
-
-    def create_spreadsheet(self, folder_id, spreadsheet_name):
-        self.created_spreadsheets.append({
-            'folder_id': folder_id,
-            'spreadsheet_name': spreadsheet_name
-        })
-        return spreadsheet_name+folder_id
-
-class FakePygsheetGateway:
-    def __init__(self):
-        self.get_data_frame_from_sheet_called_with = []
-        self.populate_spreadsheet_called_with = []
-
-    def get_data_frame_from_sheet(self, spreadsheet_id, start_cell):
-        self.get_data_frame_from_sheet_called_with.append(
-            [spreadsheet_id, start_cell]
-        )
-        # ['Category', 'ID', 'Account ID', 'CDR Specimen Request sk', 'Exposer ID',
-        #  'Exposure Group', 'Matched Person ID', 'Matched Exposer ID',
-        #  'Date Created', 'NHS Number', 'Forename', 'Surname', 'Gender',
-        #  'Date of Birth', 'Ethnicity', 'House Number', 'Postcode',
-        #  'Postcode Area ID', 'Email', 'Phone', 'Phone2', 'UTLA', 'UTLA Index',
-        #  'UTLA from Index', 'LTLA', 'LTLA Index', 'LTLA from Index',
-        #  'PHE Centre', 'PHE Centre Index', 'First Symptomatic At', 'Date Tested',
-        #  'Number of Contacts', 'Number of Occupations', 'Occupation',
-        #  'Occupation Type', 'Job Title', 'Job Postcode', 'Job Description',
-        #  'Activity Details', 'Care Home', 'Residence Type', 'HPT Code', 'Status',
-        #  'Status Report', 'Initial Tier', 'Final Tier', 'Call Centre Outcome',
-        #  'LA Support Required', 'LA Support Received',
-        #  'LA Support Letter Received', 'LA Support Filter', 'Comments',
-        #  'Day 4 Outcome', 'Day 7 Outcome', 'Day 10 Outcome', 'Day 13 Outcome',
-        #  'Isolation Follow Up', 'Isolation Start Date',
-        #  'Combined Date Completed', 'Delay Creation Completion Days',
-        #  'Date Failed Uncontactable', 'Date Updated', 'Date Time Extracted']
-
-        return pd.DataFrame(data=POWER_BI)
-
-    def populate_spreadsheet(self, spreadsheet, spreadsheet_key):
-        self.populate_spreadsheet_called_with.append([spreadsheet, spreadsheet_key])
-
-class FakeAddHackneyCasesToApp:
-    def __init__(self):
-        self.execute_called_with = []
-
-    def execute(self, cases):
-        self.execute_called_with.append(cases)
-
+# ['Category', 'ID', 'Account ID', 'CDR Specimen Request sk', 'Exposer ID',
+#  'Exposure Group', 'Matched Person ID', 'Matched Exposer ID',
+#  'Date Created', 'NHS Number', 'Forename', 'Surname', 'Gender',
+#  'Date of Birth', 'Ethnicity', 'House Number', 'Postcode',
+#  'Postcode Area ID', 'Email', 'Phone', 'Phone2', 'UTLA', 'UTLA Index',
+#  'UTLA from Index', 'LTLA', 'LTLA Index', 'LTLA from Index',
+#  'PHE Centre', 'PHE Centre Index', 'First Symptomatic At', 'Date Tested',
+#  'Number of Contacts', 'Number of Occupations', 'Occupation',
+#  'Occupation Type', 'Job Title', 'Job Postcode', 'Job Description',
+#  'Activity Details', 'Care Home', 'Residence Type', 'HPT Code', 'Status',
+#  'Status Report', 'Initial Tier', 'Final Tier', 'Call Centre Outcome',
+#  'LA Support Required', 'LA Support Received',
+#  'LA Support Letter Received', 'LA Support Filter', 'Comments',
+#  'Day 4 Outcome', 'Day 7 Outcome', 'Day 10 Outcome', 'Day 13 Outcome',
+#  'Isolation Follow Up', 'Isolation Start Date',
+#  'Combined Date Completed', 'Delay Creation Completion Days',
+#  'Date Failed Uncontactable', 'Date Updated', 'Date Time Extracted']
 POWER_BI = {
             'Category': ['case'],
             'ID': ['5270010'],
@@ -134,7 +89,7 @@ POWER_BI = {
 
 def test_processing_new_power_bi_spreadsheet():
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
-    fake_pygsheet_gateway = FakePygsheetGateway()
+    fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
     fake_add_hackney_cases_to_app = FakeAddHackneyCasesToApp()
 
     use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_hackney_cases_to_app)
@@ -160,7 +115,7 @@ def test_processing_new_power_bi_spreadsheet():
 
 def test_new_power_bi_spreadsheet_but_it_has_been_processed():
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, True)
-    fake_pygsheet_gateway = FakePygsheetGateway()
+    fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
     fake_add_hackney_cases_to_app = FakeAddHackneyCasesToApp()
 
     use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_hackney_cases_to_app)
@@ -179,7 +134,7 @@ def test_new_power_bi_spreadsheet_but_it_has_been_processed():
 
 def test_no_new_power_bi_spreadsheet_to_process():
     fake_google_drive_gateway = FakeGoogleDriveGateway(False, False)
-    fake_pygsheet_gateway = FakePygsheetGateway()
+    fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
     fake_add_hackney_cases_to_app = FakeAddHackneyCasesToApp()
 
     use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_hackney_cases_to_app)

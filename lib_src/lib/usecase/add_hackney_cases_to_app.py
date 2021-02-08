@@ -10,9 +10,9 @@ class AddHackneyCasesToApp:
         for index, row in data_frame.iterrows():
             row = row.to_dict()
 
-            dob_day = parser.parse(row['Date of Birth'], dayfirst=True).day if row['Date of Birth'] else '',
-            dob_month = parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else '',
-            dob_year = parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else '',
+            dob_day = parser.parse(row['Date of Birth'], dayfirst=True).day if row['Date of Birth'] else ''
+            dob_month = parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else ''
+            dob_year = parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else ''
 
             metadata = {
                 "first_symptomatic_at": row["First Symptomatic At"],

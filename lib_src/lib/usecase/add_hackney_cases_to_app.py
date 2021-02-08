@@ -14,6 +14,11 @@ class AddHackneyCasesToApp:
             dob_month = parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else '',
             dob_year = parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else '',
 
+            metadata = {
+                "first_symptomatic_at": row["First Symptomatic At"],
+                "date_tested": row["Date Tested"]
+            }
+
             help_request = [
                 {
                     "Postcode": row['Postcode'].upper(),
@@ -31,6 +36,7 @@ class AddHackneyCasesToApp:
                     "CaseNotes": row["Comments"],
                     "HelpNeeded": "Contact Tracing",
                     "NhsNumber": row["NHS Number"],
+                    "Metadata": metadata,
                     "NhsCtasId": row["Account ID"]
                 }
             ]

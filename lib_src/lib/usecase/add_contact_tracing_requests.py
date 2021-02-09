@@ -1,6 +1,7 @@
 from dateutil import parser
 
-class AddHackneyCasesToApp:
+
+class AddContactTracingRequests:
     def __init__(self, create_help_request):
         self.create_help_request = create_help_request
 

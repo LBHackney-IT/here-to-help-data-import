@@ -1,4 +1,4 @@
-from add_hackney_cases_to_app import AddHackneyCasesToApp
+from add_contact_tracing_requests import AddContactTracingRequests
 import pandas as pd
 from fakes.fake_create_help_request import FakeCreateHelpRequest
 
@@ -74,7 +74,7 @@ def test_create_help_request():
 
     data_frame = pd.DataFrame(POWER_BI)
 
-    use_case = AddHackneyCasesToApp(create_Help_request)
+    use_case = AddContactTracingRequests(create_Help_request)
     use_case.execute(data_frame=data_frame)
 
     assert len(create_Help_request.received_help_requests) == 1

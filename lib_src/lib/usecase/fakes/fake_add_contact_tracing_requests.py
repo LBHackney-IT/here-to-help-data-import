@@ -1,4 +1,4 @@
-class FakeAddHackneyCasesToApp:
+class FakeAddContactTracingRequests:
     def __init__(self):
         self.execute_called_with = []
 

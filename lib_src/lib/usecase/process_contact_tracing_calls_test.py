@@ -2,7 +2,7 @@ import datetime as dt
 from process_contact_tracing_calls import ProcessContactTracingCalls
 from fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
 from fakes.fake_pygsheet_gateway import FakePygsheetGateway
-from fakes.fake_add_hackney_cases_to_app import FakeAddHackneyCasesToApp
+from fakes.fake_add_contact_tracing_requests import FakeAddContactTracingRequests
 
 # ['Category', 'ID', 'Account ID', 'CDR Specimen Request sk', 'Exposer ID',
 #  'Exposure Group', 'Matched Person ID', 'Matched Exposer ID',
@@ -90,9 +90,9 @@ POWER_BI = {
 def test_processing_new_power_bi_spreadsheet():
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
     fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
-    fake_add_hackney_cases_to_app = FakeAddHackneyCasesToApp()
+    fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
-    use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_hackney_cases_to_app)
+    use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_contact_tracing_requests)
 
     use_case.execute('inbound_folder_id', 'outbound_folder_id')
 
@@ -111,14 +111,14 @@ def test_processing_new_power_bi_spreadsheet():
 
     assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 2
 
-    assert len(fake_add_hackney_cases_to_app.execute_called_with) == 1
+    assert len(fake_add_contact_tracing_requests.execute_called_with) == 1
 
 def test_new_power_bi_spreadsheet_but_it_has_been_processed():
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, True)
     fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
-    fake_add_hackney_cases_to_app = FakeAddHackneyCasesToApp()
+    fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
-    use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_hackney_cases_to_app)
+    use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_contact_tracing_requests)
 
     use_case.execute('inbound_folder_id', 'outbound_folder_id')
 
@@ -130,14 +130,14 @@ def test_new_power_bi_spreadsheet_but_it_has_been_processed():
 
     assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 0
 
-    assert len(fake_add_hackney_cases_to_app.execute_called_with) == 0
+    assert len(fake_add_contact_tracing_requests.execute_called_with) == 0
 
 def test_no_new_power_bi_spreadsheet_to_process():
     fake_google_drive_gateway = FakeGoogleDriveGateway(False, False)
     fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
-    fake_add_hackney_cases_to_app = FakeAddHackneyCasesToApp()
+    fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
-    use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_hackney_cases_to_app)
+    use_case = ProcessContactTracingCalls(fake_google_drive_gateway,fake_pygsheet_gateway,fake_add_contact_tracing_requests)
 
     use_case.execute('inbound_folder_id', 'outbound_folder_id')
 
@@ -149,4 +149,4 @@ def test_no_new_power_bi_spreadsheet_to_process():
 
     assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 0
 
-    assert len(fake_add_hackney_cases_to_app.execute_called_with) == 0
+    assert len(fake_add_contact_tracing_requests.execute_called_with) == 0

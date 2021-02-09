@@ -22,10 +22,10 @@ class ProcessContactTracingCalls:
         'Date Updated',
         'Date Time Extracted']
 
-    def __init__(self, google_drive_gateway, pygsheet_gateway, add_hackney_cases_to_app):
+    def __init__(self, google_drive_gateway, pygsheet_gateway, add_contact_tracing_requests):
         self.google_drive_gateway = google_drive_gateway
         self.pygsheet_gateway = pygsheet_gateway
-        self.add_hackney_cases_to_app = add_hackney_cases_to_app
+        self.add_contact_tracing_requests = add_contact_tracing_requests
 
     def execute(self, inbound_folder_id, outbound_folder_id):
         inbound_spread_sheet_id = self.google_drive_gateway.search_folder(
@@ -63,7 +63,7 @@ class ProcessContactTracingCalls:
                     'data_frame': hackney_cases
                 }]
 
-                self.add_hackney_cases_to_app.execute(hackney_cases)
+                self.add_contact_tracing_requests.execute(hackney_cases)
 
                 today = dt.datetime.now().date().strftime('%Y-%m-%d')
 

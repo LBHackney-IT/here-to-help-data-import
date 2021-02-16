@@ -46,6 +46,14 @@ data "aws_ssm_parameter" "ct_outbound_folder_id" {
   name = "/cv-19-res-support-v3/${var.stage}/ct_outbound_folder_id"
 }
 
+data "aws_ssm_parameter" "cev_inbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/cev_inbound_folder_id"
+}
+
+data "aws_ssm_parameter" "cev_outbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/cev_outbound_folder_id"
+}
+
 data "archive_file" "lib_zip_file" {
   type        = "zip"
   source_dir = "../../lib_src"
@@ -91,8 +99,8 @@ resource "aws_lambda_function" "here-to-help-lambda" {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
       CT_INBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_inbound_folder_id.value
       CT_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_outbound_folder_id.value
-//      CEV_INBOUND_FOLDER_ID
-//      CEV_OUTBOUND_FOLDER_ID
+      CEV_INBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_inbound_folder_id.value
+      CEV_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_outbound_folder_id.value
     }
   }
    depends_on = [

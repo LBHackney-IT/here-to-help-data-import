@@ -1,4 +1,5 @@
 from dateutil import parser
+import datetime
 
 
 class AddCEVRequests:
@@ -14,21 +15,19 @@ class AddCEVRequests:
             dob_month = parser.parse(row.date_of_birth, dayfirst=True).month if row.date_of_birth else ''
             dob_year = parser.parse(row.date_of_birth, dayfirst=True).year if row.date_of_birth else ''
 
-            # metadata = {
-            #     "first_symptomatic_at": row["First Symptomatic At"],
-            #     "date_tested": row["Date Tested"]
-            # }
+            metadata = {
+                "nsss_id": row["ID"]
+            }
 
             help_request = [
                 {
-                    # "Metadata": metadata,
+                    "Metadata": metadata,
                     "Uprn": row.address_uprn,
                     "Postcode": row.address_postcode.upper(),
                     "AddressFirstLine": row.address_line1,
                     "AddressSecondLine": row.address_line2,
                     "AddressThirdLine": row.address_town_city,
-                    "CaseNotes": "Imported from National Shielding Service System list",
-                    "HelpWithAccessingSupermarketFood": self.help_needed_with_supermarket_deliveries(row),
+                    "CaseNotes": self.get_case_note(row),
                     "HelpWithSomethingElse": True,
                     "FirstName": row.first_name.capitalize() if row.first_name else '',
                     "LastName": row.last_name.capitalize() if row.last_name else '',
@@ -54,5 +53,14 @@ class AddCEVRequests:
     def is_called_required(self, row):
         return True if row['do_you_need_someone_to_contact_you_about_local_support'].lower() == 'yes' else False
 
-    def help_needed_with_supermarket_deliveries(self, row):
-        return True if row['do_you_want_supermarket_deliveries'].lower() == 'yes' else False
+    def get_case_note(self, row):
+        author = "Data Ingestion: National Shielding Service System list"
+        note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
+        case_note = 'CEV: Dec 2020 Tier 4 '
+        if self.is_called_required(row):
+            case_note += f'NSSS Submitted on:  ' + str(row['submission_datetime']) + '. '
+            case_note += 'Do you want supermarket deliveries? ' + row['do_you_want_supermarket_deliveries'] + '. '
+            case_note += 'Do you have someone to go shopping for you? ' + row[
+                'do_you_have_someone_to_go_shopping_for_you'] + '. '
+
+        return f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}'

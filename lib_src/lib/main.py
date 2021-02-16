@@ -18,9 +18,6 @@ def lambda_handler(event, context):
     here_to_help_gateway = HereToHelpGateway()
 
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
-    # handler = LambdaHandler(create_help_request)
-    #
-    # response = handler.execute(event, context)
 
     key_file_location = path.relpath('lib/key_file.json')
 
@@ -32,15 +29,15 @@ def lambda_handler(event, context):
 
     add_contact_tracing_requests = AddContactTracingRequests(create_help_request)
 
-    find_and_process_new_sheet = ProcessContactTracingCalls(
+    find_and_process_contact_tracing = ProcessContactTracingCalls(
         google_drive_gateway, pygsheets_gateway, add_contact_tracing_requests)
 
-    inbound_folder_id = getenv("INBOUND_FOLDER_ID")
-    outbound_folder_id = getenv("OUTBOUND_FOLDER_ID")
+    ct_inbound_folder_id = getenv("CT_INBOUND_FOLDER_ID")
+    ct_outbound_folder_id = getenv("CT_OUTBOUND_FOLDER_ID")
 
-    response = find_and_process_new_sheet.execute(
-        inbound_folder_id,
-        outbound_folder_id
+    response = find_and_process_contact_tracing.execute(
+        ct_inbound_folder_id,
+        ct_outbound_folder_id
     )
 
     return response

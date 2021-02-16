@@ -4,6 +4,14 @@ This tool is used to ingest and transform data from a google sheet into the here
 ## Stack
 - pytest test framework
 - terraform to provision resources for the lambda
+
+## How it works
+This lambda is executed every 30min and looks for new spreadsheets in google drive.
+
+Currently processing:
+- Power BI spreadsheets that should be uploaded to `https://drive.google.com/drive/folders/CT_INBOUND_FOLDER_ID`
+- National Shielding Service spreadsheet that should be uploaded to `https://drive.google.com/drive/folders/CEV_INBOUND_FOLDER_ID`
+
 ## Getting started
 
 To create the virtual environment 

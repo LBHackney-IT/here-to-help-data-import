@@ -1,6 +1,7 @@
 from faker import Faker
 import datetime
 
+
 class LambdaHandler:
     def __init__(self, create_help_request):
         self.create_help_request = create_help_request
@@ -47,8 +48,10 @@ class LambdaHandler:
                 "UrgentEssentialsAnythingElse": "This is a newly added db field",
                 "CurrentSupport": "Test",
                 "CurrentSupportFeedback": "Test",
-                "FirstName": "Test: %s" % self.fake.first_name(),
-                "LastName": "Test: %s" % self.fake.last_name(),
+                "FirstName": "Test: %s" %
+                self.fake.first_name(),
+                "LastName": "Test: %s" %
+                self.fake.last_name(),
                 "DobMonth": self.fake.month(),
                 "DobYear": self.fake.year(),
                 "DobDay": self.fake.day_of_month(),
@@ -64,9 +67,7 @@ class LambdaHandler:
                 "CallbackRequired": True,
                 "CaseNotes": None,
                 "AdviceNotes": None,
-                "HelpNeeded": "Contact Tracing"
-            }
-        ]
+                "HelpNeeded": "Contact Tracing"}]
         # get the files
         # clean the files
         # help_request=get the format that we need

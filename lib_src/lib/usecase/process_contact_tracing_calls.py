@@ -1,6 +1,7 @@
 import datetime as dt
 import numpy as np
 
+
 class ProcessContactTracingCalls:
     # have also included NHS Number, 'Date Updated', 'Date Time Extracted' as
     # would be useful for data warehouse etc
@@ -22,14 +23,18 @@ class ProcessContactTracingCalls:
         'Date Updated',
         'Date Time Extracted']
 
-    def __init__(self, google_drive_gateway, pygsheet_gateway, add_contact_tracing_requests):
+    def __init__(
+            self,
+            google_drive_gateway,
+            pygsheet_gateway,
+            add_contact_tracing_requests):
         self.google_drive_gateway = google_drive_gateway
         self.pygsheet_gateway = pygsheet_gateway
         self.add_contact_tracing_requests = add_contact_tracing_requests
 
     def execute(self, inbound_folder_id, outbound_folder_id):
         inbound_spread_sheet_id = self.google_drive_gateway.search_folder(
-                inbound_folder_id, "spreadsheet")
+            inbound_folder_id, "spreadsheet")
 
         if inbound_spread_sheet_id:
             if not self.google_drive_gateway.search_folder(
@@ -102,7 +107,7 @@ class ProcessContactTracingCalls:
         # print("[get_hackney_cases] Creating Hackney Case Dataframe")
         hack_data_frame = data_frame[data_frame['UTLA'] == 'Hackney']
         hack_data_frame = hack_data_frame[(~hack_data_frame['Phone'].isna()) |
-                          (~hack_data_frame['Phone2'].isna())]
+                                          (~hack_data_frame['Phone2'].isna())]
         # ensures there is at least one Phone Number
         hack_data_frame = hack_data_frame[self.COLS]
         return hack_data_frame
@@ -121,10 +126,10 @@ class ProcessContactTracingCalls:
     def get_address_email_lists(cls, data_frame):
         # print(
         #     "[get_address_email_lists] Only returns cases that don't have any phone number")
-        address_list =  data_frame[(data_frame['House Number'].str.len() > 0)
-                                   & (data_frame['Postcode'].str.len() > 0)
-                                   & (data_frame['Phone'].str.len() == 0)
-                                   & (data_frame['Phone2'].str.len() == 0)]
+        address_list = data_frame[(data_frame['House Number'].str.len() > 0)
+                                  & (data_frame['Postcode'].str.len() > 0)
+                                  & (data_frame['Phone'].str.len() == 0)
+                                  & (data_frame['Phone2'].str.len() == 0)]
 
         address_list = address_list[[
             'Date Time Extracted',
@@ -147,8 +152,10 @@ class ProcessContactTracingCalls:
 
     def clean_data(self, data_frame):  # takes whole sheet and lints data
         for i in self.COLS:
-            data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'\s+', '')
-            data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'nan', np.nan)
+            data_frame[i] = data_frame[i].astype(
+                str).str.strip().replace(r'\s+', '')
+            data_frame[i] = data_frame[i].astype(
+                str).str.strip().replace(r'nan', np.nan)
 
         # some account ids are just numbers, we need them to be string
         data_frame['Account ID'] = data_frame['Account ID'].astype(str)

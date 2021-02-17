@@ -1,6 +1,7 @@
 import datetime as dt
 import numpy as np
 
+
 class ProcessCevCalls:
     COLS = [
         'nhs_number',
@@ -38,14 +39,18 @@ class ProcessCevCalls:
         # 'help_request_id'
     ]
 
-    def __init__(self, google_drive_gateway, pygsheet_gateway, add_cev_requests):
+    def __init__(
+            self,
+            google_drive_gateway,
+            pygsheet_gateway,
+            add_cev_requests):
         self.google_drive_gateway = google_drive_gateway
         self.pygsheet_gateway = pygsheet_gateway
         self.add_cev_requests = add_cev_requests
 
     def execute(self, inbound_folder_id, outbound_folder_id):
         inbound_spread_sheet_id = self.google_drive_gateway.search_folder(
-                inbound_folder_id, "spreadsheet")
+            inbound_folder_id, "spreadsheet")
 
         if inbound_spread_sheet_id:
             if not self.google_drive_gateway.search_folder(
@@ -56,7 +61,8 @@ class ProcessCevCalls:
 
                 data_frame = self.clean_data(data_frame=data_frame)
 
-                processed_data_frame = self.add_cev_requests.execute(data_frame)
+                processed_data_frame = self.add_cev_requests.execute(
+                    data_frame)
 
                 output = [{
                     'sheet_title': 'hackney_cases',
@@ -86,7 +92,9 @@ class ProcessCevCalls:
 
     def clean_data(self, data_frame):
         for i in self.COLS:
-            data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'\s+', '')
-            data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'nan', np.nan)
+            data_frame[i] = data_frame[i].astype(
+                str).str.strip().replace(r'\s+', '')
+            data_frame[i] = data_frame[i].astype(
+                str).str.strip().replace(r'nan', np.nan)
 
         return data_frame

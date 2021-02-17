@@ -11,9 +11,15 @@ class AddCEVRequests:
 
         for index, row in data_frame.iterrows():
 
-            dob_day = parser.parse(row.date_of_birth, dayfirst=True).day if row.date_of_birth else ''
-            dob_month = parser.parse(row.date_of_birth, dayfirst=True).month if row.date_of_birth else ''
-            dob_year = parser.parse(row.date_of_birth, dayfirst=True).year if row.date_of_birth else ''
+            dob_day = parser.parse(
+                row.date_of_birth,
+                dayfirst=True).day if row.date_of_birth else ''
+            dob_month = parser.parse(
+                row.date_of_birth,
+                dayfirst=True).month if row.date_of_birth else ''
+            dob_year = parser.parse(
+                row.date_of_birth,
+                dayfirst=True).year if row.date_of_birth else ''
 
             metadata = {
                 "nsss_id": row["ID"]
@@ -39,27 +45,30 @@ class AddCEVRequests:
                     "EmailAddress": row.contact_email,
                     "CallbackRequired": self.is_called_required(row),
                     "HelpNeeded": "Shielding",
-                    "NhsNumber": row.nhs_number
-                }
-            ]
+                    "NhsNumber": row.nhs_number}]
 
-            response = self.create_help_request.execute(help_requests=help_request)
+            response = self.create_help_request.execute(
+                help_requests=help_request)
 
             if response['created_help_request_ids']:
-                data_frame.at[index, 'help_request_id'] = response['created_help_request_ids'][0]
+                data_frame.at[index,
+                              'help_request_id'] = response['created_help_request_ids'][0]
 
         return data_frame
 
     def is_called_required(self, row):
-        return True if row['do_you_need_someone_to_contact_you_about_local_support'].lower() == 'yes' else False
+        return True if row['do_you_need_someone_to_contact_you_about_local_support'].lower(
+        ) == 'yes' else False
 
     def get_case_note(self, row):
         author = "Data Ingestion: National Shielding Service System list"
         note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
         case_note = 'CEV: Dec 2020 Tier 4 '
         if self.is_called_required(row):
-            case_note += f'NSSS Submitted on:  ' + str(row['submission_datetime']) + '. '
-            case_note += 'Do you want supermarket deliveries? ' + row['do_you_want_supermarket_deliveries'] + '. '
+            case_note += f'NSSS Submitted on:  ' + \
+                str(row['submission_datetime']) + '. '
+            case_note += 'Do you want supermarket deliveries? ' + \
+                row['do_you_want_supermarket_deliveries'] + '. '
             case_note += 'Do you have someone to go shopping for you? ' + row[
                 'do_you_have_someone_to_go_shopping_for_you'] + '. '
 

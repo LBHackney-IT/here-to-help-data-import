@@ -11,9 +11,15 @@ class AddContactTracingRequests:
         for index, row in data_frame.iterrows():
             row = row.to_dict()
 
-            dob_day = parser.parse(row['Date of Birth'], dayfirst=True).day if row['Date of Birth'] else ''
-            dob_month = parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else ''
-            dob_year = parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else ''
+            dob_day = parser.parse(
+                row['Date of Birth'],
+                dayfirst=True).day if row['Date of Birth'] else ''
+            dob_month = parser.parse(
+                row['Date of Birth'],
+                dayfirst=True).month if row['Date of Birth'] else ''
+            dob_year = parser.parse(
+                row['Date of Birth'],
+                dayfirst=True).year if row['Date of Birth'] else ''
 
             metadata = {
                 "first_symptomatic_at": row["First Symptomatic At"],
@@ -30,18 +36,18 @@ class AddContactTracingRequests:
                     "DobDay": f'{dob_day}',
                     "DobMonth": f'{dob_month}',
                     "DobYear": f'{dob_year}',
-                    "ContactTelephoneNumber":  row["Phone"],
-                    "ContactMobileNumber":  row["Phone2"],
-                    "EmailAddress":  row["Email"],
+                    "ContactTelephoneNumber": row["Phone"],
+                    "ContactMobileNumber": row["Phone2"],
+                    "EmailAddress": row["Email"],
                     "CallbackRequired": True,
                     "CaseNotes": row["Comments"],
                     "HelpNeeded": "Contact Tracing",
                     "NhsNumber": row["NHS Number"],
                     "Metadata": metadata,
-                    "NhsCtasId": row["Account ID"]
-                }
-            ]
+                    "NhsCtasId": row["Account ID"]}]
 
-            responses.append(self.create_help_request.execute(help_requests=help_request))
+            responses.append(
+                self.create_help_request.execute(
+                    help_requests=help_request))
 
         return responses

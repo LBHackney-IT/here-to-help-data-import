@@ -22,7 +22,11 @@ class GoogleDriveGateway:
             scopes=scopes
         )
 
-        self.drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
+        self.drive_service = build(
+            'drive',
+            'v3',
+            credentials=credentials,
+            cache_discovery=False)
 
     def search_folder(self, folder_id: str, file_type: str):
         """returns new file id if there are new files that match the date given."""
@@ -72,7 +76,9 @@ class GoogleDriveGateway:
             if file.get('createdTime')[0:10] == today:
                 file_name = file.get('name')
                 file_id = file.get('id')
-                print("[CheckFile: %s] Found a file: %s" %(dt.datetime.now(), file_name))
+                print(
+                    "[CheckFile: %s] Found a file: %s" %
+                    (dt.datetime.now(), file_name))
                 foundcount += 1
 
         if foundcount > 0:

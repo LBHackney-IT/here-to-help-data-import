@@ -12,6 +12,7 @@ from os import path
 
 load_dotenv()
 
+
 def lambda_handler(event, context):
 
     print('- -start up - -')
@@ -28,7 +29,8 @@ def lambda_handler(event, context):
         key_file_location
     )
 
-    add_contact_tracing_requests = AddContactTracingRequests(create_help_request)
+    add_contact_tracing_requests = AddContactTracingRequests(
+        create_help_request)
 
     find_and_process_contact_tracing = ProcessContactTracingCalls(
         google_drive_gateway, pygsheets_gateway, add_contact_tracing_requests)

@@ -36,15 +36,16 @@ def test_create_help_request():
 
     assert create_Help_request.received_help_requests[0] == {
         'Uprn': '',
-        'Metadata': {'nsss_id': '123123'},
+        'Metadata': {
+            'nsss_id': '123123'},
         'Postcode': 'BR2 9FF',
         'AddressFirstLine': '45 Cave Stone Road',
         'AddressSecondLine': '',
         'AddressThirdLine': 'Bedrock',
         'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
-                     f'{datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")}","note":"CEV: Dec 2020 Tier 4 '
-                     f'NSSS Submitted on:  27/01/2021 14:14:56. Do you want supermarket deliveries? yes. Do you have '
-                     f'someone to go shopping for you? no. "}}',
+        f'{datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")}","note":"CEV: Dec 2020 Tier 4 '
+        f'NSSS Submitted on:  27/01/2021 14:14:56. Do you want supermarket deliveries? yes. Do you have '
+        f'someone to go shopping for you? no. "}}',
         'HelpWithSomethingElse': True,
         'FirstName': 'Fred',
         'LastName': 'Flintstone',
@@ -56,7 +57,6 @@ def test_create_help_request():
         'EmailAddress': 'fred@rocks.st',
         'CallbackRequired': True,
         'HelpNeeded': 'Shielding',
-        'NhsNumber': '1234567890'
-    }
+        'NhsNumber': '1234567890'}
 
     assert processed_data_frame.iloc[0].help_request_id == 123

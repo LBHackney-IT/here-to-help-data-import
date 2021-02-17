@@ -48,6 +48,11 @@ class AddCEVRequests:
             if response['created_help_request_ids']:
                 data_frame.at[index, 'help_request_id'] = response['created_help_request_ids'][0]
 
+        #     get the help_request by id
+        #        check if last case note is the same as new case note
+        #           if not post new case note /api/v4/residents/{id}/help-requests/{help-request-id}
+        #                   f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}
+
         return data_frame
 
     def is_called_required(self, row):
@@ -62,5 +67,7 @@ class AddCEVRequests:
             case_note += 'Do you want supermarket deliveries? ' + row['do_you_want_supermarket_deliveries'] + '. '
             case_note += 'Do you have someone to go shopping for you? ' + row[
                 'do_you_have_someone_to_go_shopping_for_you'] + '. '
+            case_note += 'Do you need someone to contact you about local support? ' + \
+                row['do_you_need_someone_to_contact_you_about_local_support'] + '.'
 
         return f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}'

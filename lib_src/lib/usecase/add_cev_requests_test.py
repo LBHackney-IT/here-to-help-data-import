@@ -44,7 +44,7 @@ def test_create_help_request():
         'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
                      f'{datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")}","note":"CEV: Dec 2020 Tier 4 '
                      f'NSSS Submitted on:  27/01/2021 14:14:56. Do you want supermarket deliveries? yes. Do you have '
-                     f'someone to go shopping for you? no. "}}',
+                     f'someone to go shopping for you? no. Do you need someone to contact you about local support? yes."}}',
         'HelpWithSomethingElse': True,
         'FirstName': 'Fred',
         'LastName': 'Flintstone',

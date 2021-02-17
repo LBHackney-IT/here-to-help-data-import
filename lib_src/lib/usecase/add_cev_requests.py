@@ -50,7 +50,7 @@ class AddCEVRequests:
 
         #     get the help_request by id
         #        check if last case note is the same as new case note
-        #           if not post new case note /api/v4/residents/{id}/help-requests/{help-request-id}
+        #           if not post new case note /api/v4/residents/{id}/help-requests/{help-request-id} - gateway added
         #                   f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}
 
         return data_frame

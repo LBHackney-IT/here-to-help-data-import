@@ -22,6 +22,10 @@ To activate the virtual envirment
 ```bash
 . venv/bin/activate
 ```
+To install pipenv (Mac OS)
+```bash
+brew install pipenv 
+```
 
 To install dependencies
 ```bash

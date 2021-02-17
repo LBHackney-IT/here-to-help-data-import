@@ -9,14 +9,16 @@ load_dotenv()
 
 
 class HereToHelpGateway:
+    def __init__(self):
+        self.base_url = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL")
+        self.api_key = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY")
 
     def create_help_request(self, help_request):
         try:
-            help_requests_url = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL")+"v3/help-requests"
-            help_requests_api_key = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY")
+            help_requests_url = f'{self.base_url}v3/help-requests'
             headers = {
                 'Content-Type': 'application/json',
-                'x-api-key': help_requests_api_key
+                'x-api-key': self.api_key
             }
             data = json.dumps(help_request)
             response = requests.request("POST", help_requests_url, headers=headers, data=data)
@@ -34,3 +36,13 @@ class HereToHelpGateway:
             return {"Error": err}
 
         return result
+
+    def get_help_request(self, help_request_id):
+        help_requests_url = f'{self.base_url}v3/help-requests/{help_request_id}'
+        headers = {
+            'Content-Type': 'application/json',
+            'x-api-key': self.api_key
+        }
+        response = requests.request("GET", help_requests_url, headers=headers)
+        return help_request_id
+

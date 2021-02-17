@@ -46,3 +46,26 @@ class HereToHelpGateway:
         response = requests.request("GET", help_requests_url, headers=headers)
         return help_request_id
 
+    def create_case_note(self, resident_id, help_request_id, case_note):
+        try:
+            help_requests_url = f'{self.base_url}v4/residents/{resident_id}/help-requests/{help_request_id}/case-notes'
+            headers = {
+                'Content-Type': 'application/json',
+                'x-api-key': self.api_key
+            }
+            data = json.dumps(case_note)
+            response = requests.request("POST", help_requests_url, headers=headers, data=data)
+            if response.status_code == 403:
+                print("Authentication error", response)
+                return {"Error": json.dumps(response.json())}
+            print("Response from the backend", response.text)
+            result = eval(response.text)
+            print("Evaluated result", result)
+        except HTTPError as err:
+            print("Could not create case not: ", case_note, err.msg)
+            return {"Error": err.msg}
+        except Exception as err:
+            print("Case note was not created", case_note)
+            return {"Error": err}
+
+        return result

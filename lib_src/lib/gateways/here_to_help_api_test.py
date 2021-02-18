@@ -127,12 +127,18 @@ def test_get_help_request(requests_mock):
         "RecordStatus": None,
         "InitialCallbackCompleted": None,
         "CallbackRequired": True,
-        "CaseNotes": {
-            "author": "Data Ingestion: National Shielding Service System list",
-            "noteDate": " Wed, 17 Feb 2021 09:29:24 ",
-            "note": "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. "
-                    "Do you want supermarket deliveries? No. Do you have someone to go "
-                    "shopping for you? No. "},
+        "CaseNotes": [{'author': 'Data Ingestion: National Shielding Service System '
+                       'list',
+                       'note': 'CEV: Dec 2020 Tier 4 NSSS Submitted on:  '
+                        '2020-04-30T22:46:43Z. Do you want supermarket '
+                        'deliveries? No. Do you have someone to go shopping '
+                        'for you? No. Do you need someone to contact you about '
+                        'local support? Yes.',
+                       'noteDate': ' Thu, 18 Feb 2021 12:16:21 '},
+                      {'author': 'J. Cole',
+                       'note': 'Ut facile earum sensus appareat. quod in homine '
+                       'multo.',
+                       'noteDate': 'Thu, 18 Feb 2021 14:11:51 GMT'}],
         "AdviceNotes": None,
         "HelpNeeded": "Shielding",
         "NhsNumber": "7919366992",

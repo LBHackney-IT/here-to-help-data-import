@@ -62,6 +62,10 @@ def test_a_new_help_request_is_added():
 
     assert processed_data_frame.iloc[0].help_request_id == 123
 
+    assert len(here_to_help_api.get_help_request_called_with) == 1
+
+    assert here_to_help_api.get_help_request_called_with[0] == 123
+
     assert len(here_to_help_api.create_case_note_called_with) == 0
 
 
@@ -122,6 +126,10 @@ def test_case_note_is_added_when_answers_have_changed():
         'NhsNumber': '1234567890'}
 
     assert processed_data_frame.iloc[0].help_request_id == 123
+
+    assert len(here_to_help_api.get_help_request_called_with) == 1
+
+    assert here_to_help_api.get_help_request_called_with[0] == 123
 
     assert len(here_to_help_api.create_case_note_called_with) == 1
 

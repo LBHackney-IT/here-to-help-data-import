@@ -46,17 +46,14 @@ class HereToHelpGateway:
             }
             response = requests.request("GET", help_requests_url, headers=headers)
             
-            return json.loads(response.text)
             if response.status_code == 403:
                 print("Authentication error", response)
                 return {"Error": json.dumps(response.json())}
-            print("Response from the backend", response.text)
-            result = json.dumps(response.text)
-            # result["CaseNotes"] = json.dumps(result["CaseNotes"])
 
-            print('----------')
-            print(result["AddressSecondLine"])
-            print('----------')
+            print("Response from the backend", response.text)
+            result = json.loads(response.text)
+            result["CaseNotes"] = json.loads(result["CaseNotes"]) if result["CaseNotes"] else {}
+            result["Metadata"] = json.loads(result["Metadata"]) if result["Metadata"] else {}
 
             print("Evaluated result", result)
         except HTTPError as err:

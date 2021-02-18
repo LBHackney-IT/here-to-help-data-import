@@ -11,7 +11,10 @@ gateway = HereToHelpGateway()
 
 
 def test_create_help_request(requests_mock):
-    requests_mock.register_uri('POST', POST_HELP_REQUESTS_URL, text='{"Id": "1"}')
+    requests_mock.register_uri(
+        'POST',
+        POST_HELP_REQUESTS_URL,
+        text='{"Id": "1"}')
     assert gateway.create_help_request(help_request={}) == {"Id": "1"}
 
 
@@ -43,7 +46,10 @@ def test_create_help_request_other_http_error_handling(requests_mock):
 
 
 def test_create_help_request_general_error_handling(requests_mock):
-    requests_mock.register_uri('POST', POST_HELP_REQUESTS_URL, exc=Exception("Exception"))
+    requests_mock.register_uri(
+        'POST',
+        POST_HELP_REQUESTS_URL,
+        exc=Exception("Exception"))
     assert gateway.create_help_request(help_request={})["Error"] is not None
 
 
@@ -53,8 +59,9 @@ def test_create_help_request_handle_non_json_responses(requests_mock):
 
 
 GET_URL = "localhost:3000/v3/help-requests/50"
+
+
 def test_get_help_request(requests_mock):
-    
 
     dirname = os.path.dirname(__file__)
 
@@ -63,77 +70,79 @@ def test_get_help_request(requests_mock):
 
     requests_mock.register_uri('GET', GET_URL, text=mock_response)
 
-    assert gateway.get_help_request(help_request_id=50) == \
-    {
-      "Id": 50,
-      "ResidentId": 1162,
-      "IsOnBehalf": None,
-      "ConsentToCompleteOnBehalf": None,
-      "OnBehalfFirstName": None,
-      "OnBehalfLastName": None,
-      "OnBehalfEmailAddress": None,
-      "OnBehalfContactNumber": None,
-      "RelationshipWithResident": None,
-      "Postcode": "YF2 9MI",
-      "Uprn": "5088439290",
-      "Ward": None,
-      "AddressFirstLine": "30",
-      "AddressSecondLine": "Morningstar",
-      "AddressThirdLine": "Yasothon",
-      "GettingInTouchReason": None,
-      "HelpWithAccessingFood": None,
-      "HelpWithAccessingSupermarketFood": None,
-      "HelpWithCompletingNssForm": None,
-      "HelpWithShieldingGuidance": None,
-      "HelpWithNoNeedsIdentified": None,
-      "HelpWithAccessingMedicine": None,
-      "HelpWithAccessingOtherEssentials": None,
-      "HelpWithDebtAndMoney": None,
-      "HelpWithHealth": None,
-      "HelpWithMentalHealth": None,
-      "HelpWithAccessingInternet": None,
-      "HelpWithHousing": None,
-      "HelpWithJobsOrTraining": None,
-      "HelpWithChildrenAndSchools": None,
-      "HelpWithDisabilities": None,
-      "HelpWithSomethingElse": True,
-      "MedicineDeliveryHelpNeeded": None,
-      "IsPharmacistAbleToDeliver": None,
-      "WhenIsMedicinesDelivered": None,
-      "NameAddressPharmacist": None,
-      "UrgentEssentials": None,
-      "UrgentEssentialsAnythingElse": None,
-      "CurrentSupport": None,
-      "CurrentSupportFeedback": None,
-      "FirstName": "Natalee",
-      "LastName": "Landon",
-      "DobMonth": "4",
-      "DobYear": "2013",
-      "DobDay": "3",
-      "ContactTelephoneNumber": "4338718059",
-      "ContactMobileNumber": "5486383574",
-      "EmailAddress": "nlandon7@flickr.com",
-      "GpSurgeryDetails": None,
-      "NumberOfChildrenUnder18": None,
-      "ConsentToShare": None,
-      "DateTimeRecorded": "2021-02-17T09:29:24.814513",
-      "RecordStatus": None,
-      "InitialCallbackCompleted": None,
-      "CallbackRequired": True,
-      "CaseNotes": {
-        "author": "Data Ingestion: National Shielding Service System list",
-        "noteDate": " Wed, 17 Feb 2021 09:29:24 ",
-        "note": "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. Do you want supermarket \
-        deliveries? No. Do you have someone to go shopping for you? No. "
+    response = gateway.get_help_request(help_request_id=50)
+    assert response == {
+        "Id": 50,
+        "ResidentId": 1162,
+        "IsOnBehalf": None,
+        "ConsentToCompleteOnBehalf": None,
+        "OnBehalfFirstName": None,
+        "OnBehalfLastName": None,
+        "OnBehalfEmailAddress": None,
+        "OnBehalfContactNumber": None,
+        "RelationshipWithResident": None,
+        "Postcode": "YF2 9MI",
+        "Uprn": "5088439290",
+        "Ward": None,
+        "AddressFirstLine": "30",
+        "AddressSecondLine": "Morningstar",
+        "AddressThirdLine": "Yasothon",
+        "GettingInTouchReason": None,
+        "HelpWithAccessingFood": None,
+        "HelpWithAccessingSupermarketFood": None,
+        "HelpWithCompletingNssForm": None,
+        "HelpWithShieldingGuidance": None,
+        "HelpWithNoNeedsIdentified": None,
+        "HelpWithAccessingMedicine": None,
+        "HelpWithAccessingOtherEssentials": None,
+        "HelpWithDebtAndMoney": None,
+        "HelpWithHealth": None,
+        "HelpWithMentalHealth": None,
+        "HelpWithAccessingInternet": None,
+        "HelpWithHousing": None,
+        "HelpWithJobsOrTraining": None,
+        "HelpWithChildrenAndSchools": None,
+        "HelpWithDisabilities": None,
+        "HelpWithSomethingElse": True,
+        "MedicineDeliveryHelpNeeded": None,
+        "IsPharmacistAbleToDeliver": None,
+        "WhenIsMedicinesDelivered": None,
+        "NameAddressPharmacist": None,
+        "UrgentEssentials": None,
+        "UrgentEssentialsAnythingElse": None,
+        "CurrentSupport": None,
+        "CurrentSupportFeedback": None,
+        "FirstName": "Natalee",
+        "LastName": "Landon",
+        "DobMonth": "4",
+        "DobYear": "2013",
+        "DobDay": "3",
+        "ContactTelephoneNumber": "4338718059",
+        "ContactMobileNumber": "5486383574",
+        "EmailAddress": "nlandon7@flickr.com",
+        "GpSurgeryDetails": None,
+        "NumberOfChildrenUnder18": None,
+        "ConsentToShare": None,
+        "DateTimeRecorded": "2021-02-17T09:29:24.814513",
+        "RecordStatus": None,
+        "InitialCallbackCompleted": None,
+        "CallbackRequired": True,
+        "CaseNotes": {
+            "author": "Data Ingestion: National Shielding Service System list",
+            "noteDate": " Wed, 17 Feb 2021 09:29:24 ",
+            "note": "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. "
+                    "Do you want supermarket deliveries? No. Do you have someone to go "
+                    "shopping for you? No. "},
+        "AdviceNotes": None,
+        "HelpNeeded": "Shielding",
+        "NhsNumber": "7919366992",
+        "NhsCtasId": None,
+        "AssignedTo": None,
+        "Metadata": {
+            "nsss_id": "a00c886c-6994-45ce-92f0-dc64fe8f631c"
         },
-      "AdviceNotes": None,
-      "HelpNeeded": "Shielding",
-      "NhsNumber": "7919366992",
-      "NhsCtasId": None,
-      "AssignedTo": None,
-      "Metadata": "{\"nsss_id\": \"a00c886c-6994-45ce-92f0-dc64fe8f631c\"}",
-      "HelpRequestCalls": []
-    }
+        "HelpRequestCalls": []}
+
 
 def test_get_help_request_authentication_error_handling(requests_mock):
     requests_mock.register_uri(
@@ -173,6 +182,7 @@ def test_get_help_request_handle_non_json_responses(requests_mock):
 
 
 POST_CASE_NOTES_URL = 'localhost:3000/v4/residents/2/help-requests/3/case-notes'
+
 
 def test_create_case_note(requests_mock):
     requests_mock.register_uri(

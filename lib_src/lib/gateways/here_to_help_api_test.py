@@ -52,91 +52,124 @@ def test_create_help_request_handle_non_json_responses(requests_mock):
     assert gateway.create_help_request(help_request={})["Error"] is not None
 
 
+GET_URL = "localhost:3000/v3/help-requests/50"
 def test_get_help_request(requests_mock):
-    get_url = "localhost:3000/v3/help-requests/50"
+    
 
     dirname = os.path.dirname(__file__)
 
     with open(os.path.join(dirname, 'fixture.json'), 'r') as file:
         mock_response = file.read()
 
-    requests_mock.register_uri('GET', get_url, text=mock_response)
+    requests_mock.register_uri('GET', GET_URL, text=mock_response)
 
     assert gateway.get_help_request(help_request_id=50) == \
     {
       "Id": 50,
-      "ResidentId": 0,
-      "IsOnBehalf": True,
-      "ConsentToCompleteOnBehalf": True,
-      "OnBehalfFirstName": "string",
-      "OnBehalfLastName": "string",
-      "OnBehalfEmailAddress": "string",
-      "OnBehalfContactNumber": "string",
-      "RelationshipWithResident": "string",
-      "Postcode": "string",
-      "Uprn": "string",
-      "Ward": "string",
-      "AddressFirstLine": "string",
-      "AddressSecondLine": "string",
-      "AddressThirdLine": "string",
-      "GettingInTouchReason": "string",
-      "HelpWithAccessingFood": True,
-      "HelpWithAccessingSupermarketFood": True,
-      "HelpWithCompletingNssForm": True,
-      "HelpWithShieldingGuidance": True,
-      "HelpWithNoNeedsIdentified": True,
-      "HelpWithAccessingMedicine": True,
-      "HelpWithAccessingOtherEssentials": True,
-      "HelpWithDebtAndMoney": True,
-      "HelpWithHealth": True,
-      "HelpWithMentalHealth": True,
-      "HelpWithAccessingInternet": True,
-      "HelpWithHousing": True,
-      "HelpWithJobsOrTraining": True,
-      "HelpWithChildrenAndSchools": True,
-      "HelpWithDisabilities": True,
+      "ResidentId": 1162,
+      "IsOnBehalf": None,
+      "ConsentToCompleteOnBehalf": None,
+      "OnBehalfFirstName": None,
+      "OnBehalfLastName": None,
+      "OnBehalfEmailAddress": None,
+      "OnBehalfContactNumber": None,
+      "RelationshipWithResident": None,
+      "Postcode": "YF2 9MI",
+      "Uprn": "5088439290",
+      "Ward": None,
+      "AddressFirstLine": "30",
+      "AddressSecondLine": "Morningstar",
+      "AddressThirdLine": "Yasothon",
+      "GettingInTouchReason": None,
+      "HelpWithAccessingFood": None,
+      "HelpWithAccessingSupermarketFood": None,
+      "HelpWithCompletingNssForm": None,
+      "HelpWithShieldingGuidance": None,
+      "HelpWithNoNeedsIdentified": None,
+      "HelpWithAccessingMedicine": None,
+      "HelpWithAccessingOtherEssentials": None,
+      "HelpWithDebtAndMoney": None,
+      "HelpWithHealth": None,
+      "HelpWithMentalHealth": None,
+      "HelpWithAccessingInternet": None,
+      "HelpWithHousing": None,
+      "HelpWithJobsOrTraining": None,
+      "HelpWithChildrenAndSchools": None,
+      "HelpWithDisabilities": None,
       "HelpWithSomethingElse": True,
-      "MedicineDeliveryHelpNeeded": True,
-      "IsPharmacistAbleToDeliver": True,
-      "WhenIsMedicinesDelivered": "string",
-      "NameAddressPharmacist": "string",
-      "UrgentEssentials": "string",
-      "UrgentEssentialsAnythingElse": "string",
-      "CurrentSupport": "string",
-      "CurrentSupportFeedback": "string",
-      "FirstName": "string",
-      "LastName": "string",
-      "DobMonth": "string",
-      "DobYear": "string",
-      "DobDay": "string",
-      "ContactTelephoneNumber": "string",
-      "ContactMobileNumber": "string",
-      "EmailAddress": "string",
-      "GpSurgeryDetails": "string",
-      "NumberOfChildrenUnder18": "string",
-      "ConsentToShare": True,
-      "DateTimeRecorded": "2021-02-17T16:14:40.351Z",
-      "RecordStatus": "string",
-      "InitialCallbackCompleted": True,
+      "MedicineDeliveryHelpNeeded": None,
+      "IsPharmacistAbleToDeliver": None,
+      "WhenIsMedicinesDelivered": None,
+      "NameAddressPharmacist": None,
+      "UrgentEssentials": None,
+      "UrgentEssentialsAnythingElse": None,
+      "CurrentSupport": None,
+      "CurrentSupportFeedback": None,
+      "FirstName": "Natalee",
+      "LastName": "Landon",
+      "DobMonth": "4",
+      "DobYear": "2013",
+      "DobDay": "3",
+      "ContactTelephoneNumber": "4338718059",
+      "ContactMobileNumber": "5486383574",
+      "EmailAddress": "nlandon7@flickr.com",
+      "GpSurgeryDetails": None,
+      "NumberOfChildrenUnder18": None,
+      "ConsentToShare": None,
+      "DateTimeRecorded": "2021-02-17T09:29:24.814513",
+      "RecordStatus": None,
+      "InitialCallbackCompleted": None,
       "CallbackRequired": True,
-      "CaseNotes": "string",
-      "AdviceNotes": "string",
-      "HelpNeeded": "string",
-      "NhsNumber": "string",
-      "NhsCtasId": "string",
-      "AssignedTo": "string",
-      "HelpRequestCalls": [
-        {
-          "Id": 0,
-          "HelpRequestId": 0,
-          "CallType": "string",
-          "CallDirection": "string",
-          "CallOutcome": "string",
-          "CallDateTime": "2021-02-17T16:14:40.351Z",
-          "CallHandler": "string"
-        }
-      ]
+      "CaseNotes": {
+        "author": "Data Ingestion: National Shielding Service System list",
+        "noteDate": " Wed, 17 Feb 2021 09:29:24 ",
+        "note": "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. Do you want supermarket \
+        deliveries? No. Do you have someone to go shopping for you? No. "
+        },
+      "AdviceNotes": None,
+      "HelpNeeded": "Shielding",
+      "NhsNumber": "7919366992",
+      "NhsCtasId": None,
+      "AssignedTo": None,
+      "Metadata": "{\"nsss_id\": \"a00c886c-6994-45ce-92f0-dc64fe8f631c\"}",
+      "HelpRequestCalls": []
     }
+
+def test_get_help_request_authentication_error_handling(requests_mock):
+    requests_mock.register_uri(
+        'GET',
+        GET_URL,
+        exc=HTTPError(
+            url="",
+            code=403,
+            msg="Forbidden",
+            hdrs={},
+            fp=None))
+    assert gateway.get_help_request(help_request_id=50)["Error"] == "Forbidden"
+
+
+def test_get_help_request_other_http_error_handling(requests_mock):
+    requests_mock.register_uri(
+        'GET',
+        GET_URL,
+        exc=HTTPError(
+            url="",
+            code=500,
+            msg="Connection error",
+            hdrs={},
+            fp=None))
+    assert gateway.get_help_request(
+        help_request_id=50)["Error"] == "Connection error"
+
+
+def test_get_help_request_general_error_handling(requests_mock):
+    requests_mock.register_uri('GET', GET_URL, exc=Exception("Exception"))
+    assert gateway.get_help_request(help_request_id=50)["Error"] is not None
+
+
+def test_get_help_request_handle_non_json_responses(requests_mock):
+    requests_mock.register_uri('GET', GET_URL, text="{{}}")
+    assert gateway.get_help_request(help_request_id=50)["Error"] is not None
 
 
 POST_CASE_NOTES_URL = 'localhost:3000/v4/residents/2/help-requests/3/case-notes'

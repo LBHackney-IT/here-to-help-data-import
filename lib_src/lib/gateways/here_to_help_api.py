@@ -38,13 +38,36 @@ class HereToHelpGateway:
         return result
 
     def get_help_request(self, help_request_id):
-        help_requests_url = f'{self.base_url}v3/help-requests/{help_request_id}'
-        headers = {
-            'Content-Type': 'application/json',
-            'x-api-key': self.api_key
-        }
-        response = requests.request("GET", help_requests_url, headers=headers)
-        return help_request_id
+        try:
+            help_requests_url = f'{self.base_url}v3/help-requests/{help_request_id}'
+            headers = {
+                'Content-Type': 'application/json',
+                'x-api-key': self.api_key
+            }
+            response = requests.request("GET", help_requests_url, headers=headers)
+            
+            return json.loads(response.text)
+            if response.status_code == 403:
+                print("Authentication error", response)
+                return {"Error": json.dumps(response.json())}
+            print("Response from the backend", response.text)
+            result = json.dumps(response.text)
+            # result["CaseNotes"] = json.dumps(result["CaseNotes"])
+
+            print('----------')
+            print(result["AddressSecondLine"])
+            print('----------')
+
+            print("Evaluated result", result)
+        except HTTPError as err:
+            print("Could not get help request id: ", help_request_id, err.msg)
+            return {"Error": err.msg}
+        except Exception as err:
+            print("Help request was not found", help_request_id)
+            return {"Error": err}
+
+        return result
+
 
     def create_case_note(self, resident_id, help_request_id, case_note):
         try:

@@ -73,12 +73,12 @@ class FakeHereToHelpGateway:
             "RecordStatus": None,
             "InitialCallbackCompleted": None,
             "CallbackRequired": True,
-            "CaseNotes": {
+            "CaseNotes": [{
                 "author": "Data Ingestion: National Shielding Service System list",
                 "noteDate": " Wed, 17 Feb 2021 09:29:24 ",
                 "note": "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. "
-                "Do you want supermarket deliveries? No. Do you have someone to go "
-                "shopping for you? No. Do you need someone to contact you about local support? yes."},
+                        "Do you want supermarket deliveries? No. Do you have someone to go "
+                        "shopping for you? No. Do you need someone to contact you about local support? yes."}],
             "AdviceNotes": None,
             "HelpNeeded": "Shielding",
             "NhsNumber": "7919366992",

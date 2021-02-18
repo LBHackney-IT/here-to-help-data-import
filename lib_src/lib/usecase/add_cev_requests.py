@@ -3,8 +3,9 @@ import datetime
 
 
 class AddCEVRequests:
-    def __init__(self, create_help_request):
+    def __init__(self, create_help_request, here_to_help_api):
         self.create_help_request = create_help_request
+        self.here_to_help_api = here_to_help_api
 
     def execute(self, data_frame):
         data_frame.insert(0, 'help_request_id', '')
@@ -18,7 +19,7 @@ class AddCEVRequests:
             metadata = {
                 "nsss_id": row["ID"]
             }
-
+            author, note_date, case_note = self.get_case_note(row)
             help_request = [
                 {
                     "Metadata": metadata,
@@ -27,7 +28,7 @@ class AddCEVRequests:
                     "AddressFirstLine": row.address_line1,
                     "AddressSecondLine": row.address_line2,
                     "AddressThirdLine": row.address_town_city,
-                    "CaseNotes": self.get_case_note(row),
+                    "CaseNotes":  f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}',
                     "HelpWithSomethingElse": True,
                     "FirstName": row.first_name.capitalize() if row.first_name else '',
                     "LastName": row.last_name.capitalize() if row.last_name else '',
@@ -46,10 +47,18 @@ class AddCEVRequests:
             response = self.create_help_request.execute(help_requests=help_request)
 
             if response['created_help_request_ids']:
-                data_frame.at[index, 'help_request_id'] = response['created_help_request_ids'][0]
+                help_request_id = response['created_help_request_ids'][0]
 
-        #     get the help_request by id
-        #        check if last case note is the same as new case note
+                data_frame.at[index, 'help_request_id'] = help_request_id
+                request = self.here_to_help_api.get_help_request(help_request_id)
+
+                if request['CaseNotes']['note'] != case_note:
+                    resident_id = request["ResidentId"]
+                    self.here_to_help_api.create_case_note(resident_id, help_request_id, case_note)
+
+
+        #     get the help_request by id -- got gateway....
+        #        check if last case note is the same as new case note .....
         #           if not post new case note /api/v4/residents/{id}/help-requests/{help-request-id} - gateway added
         #                   f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}
 
@@ -70,4 +79,5 @@ class AddCEVRequests:
             case_note += 'Do you need someone to contact you about local support? ' + \
                 row['do_you_need_someone_to_contact_you_about_local_support'] + '.'
 
-        return f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}'
+        # return f'{{"author":"{author}","noteDate":" {note_date}","note":"{case_note}"}}'
+        return author, note_date, case_note

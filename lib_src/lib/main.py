@@ -41,7 +41,7 @@ def lambda_handler(event, context):
         ct_outbound_folder_id
     )
 
-    add_cev_requests = AddCEVRequests(create_help_request)
+    add_cev_requests = AddCEVRequests(create_help_request, here_to_help_gateway)
 
     process_new_sheet_cev_calls = ProcessCevCalls(
         google_drive_gateway, pygsheets_gateway, add_cev_requests)

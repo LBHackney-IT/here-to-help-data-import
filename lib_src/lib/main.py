@@ -4,7 +4,8 @@ from .gateways.pygsheets_gateway import PygsheetsGateway
 from .gateways.google_drive_gateway import GoogleDriveGateway
 from .usecase.create_help_requests import CreateHelpRequest
 from .usecase.process_contact_tracing_calls import ProcessContactTracingCalls
-# from .lambda_handler import LambdaHandler
+from .usecase.process_cev_calls import ProcessCevCalls
+from .usecase.add_cev_requests import AddCEVRequests
 from .usecase.add_contact_tracing_requests import AddContactTracingRequests
 from os import getenv
 from os import path
@@ -40,4 +41,17 @@ def lambda_handler(event, context):
         ct_outbound_folder_id
     )
 
-    return response
+    add_cev_requests = AddCEVRequests(create_help_request, here_to_help_gateway)
+
+    process_new_sheet_cev_calls = ProcessCevCalls(
+        google_drive_gateway, pygsheets_gateway, add_cev_requests)
+
+    cev_inbound_folder_id = getenv("CEV_INBOUND_FOLDER_ID")
+    cev_outbound_folder_id = getenv("CEV_OUTBOUND_FOLDER_ID")
+
+    cev_response = process_new_sheet_cev_calls.execute(
+        cev_inbound_folder_id,
+        cev_outbound_folder_id
+    )
+
+    return [response, cev_response]

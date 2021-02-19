@@ -13,6 +13,18 @@ class HereToHelpGateway:
         self.base_url = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL")
         self.api_key = os.getenv("CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY")
 
+        try:
+            api_url = f'{self.base_url}v3/healthcheck/ping'
+            headers = {
+                'Content-Type': 'application/json',
+                'x-api-key': self.api_key
+            }
+            response = requests.request("GET", api_url, headers=headers)
+
+            print('api test: ', response.status_code)
+        except Exception as err:
+            print(err)
+
     def create_help_request(self, help_request):
         try:
             help_requests_url = f'{self.base_url}v3/help-requests'

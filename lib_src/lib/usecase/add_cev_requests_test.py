@@ -1,7 +1,7 @@
-from add_cev_requests import AddCEVRequests
+from .add_cev_requests import AddCEVRequests
 import pandas as pd
-from fakes.fake_create_help_request import FakeCreateHelpRequest
-from fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
+from .fakes.fake_create_help_request import FakeCreateHelpRequest
+from .fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
 import datetime
 
 

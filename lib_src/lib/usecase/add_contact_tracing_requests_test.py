@@ -1,6 +1,6 @@
-from add_contact_tracing_requests import AddContactTracingRequests
+from .add_contact_tracing_requests import AddContactTracingRequests
 import pandas as pd
-from fakes.fake_create_help_request import FakeCreateHelpRequest
+from .fakes.fake_create_help_request import FakeCreateHelpRequest
 
 POWER_BI = {
             'Category': ['case'],

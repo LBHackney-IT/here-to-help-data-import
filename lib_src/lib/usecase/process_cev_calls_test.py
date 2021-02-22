@@ -1,8 +1,8 @@
 import datetime as dt
-from process_cev_calls import ProcessCevCalls
-from fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
-from fakes.fake_pygsheet_gateway import FakePygsheetGateway
-from fakes.fake_add_cev_requests import FakeAddCEVRequests
+from .process_cev_calls import ProcessCevCalls
+from .fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
+from .fakes.fake_pygsheet_gateway import FakePygsheetGateway
+from .fakes.fake_add_cev_requests import FakeAddCEVRequests
 
 NSSS = {
         'ID': ['123123'],

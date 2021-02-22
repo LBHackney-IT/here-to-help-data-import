@@ -1,5 +1,5 @@
-from .create_help_requests import CreateHelpRequest
-from .fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
+from lib_src.lib.usecase.create_help_requests import CreateHelpRequest
+from lib_src.tests.fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
 
 def test_create_help_request():
     gateway = FakeHereToHelpGateway()

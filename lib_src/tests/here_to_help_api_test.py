@@ -1,7 +1,7 @@
 from urllib.error import HTTPError
 import os
-from here_to_help_api import HereToHelpGateway
 from dotenv import load_dotenv
+from lib_src.lib.gateways.here_to_help_api import HereToHelpGateway
 
 load_dotenv()
 os.environ['CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL'] = "localhost:3000/"

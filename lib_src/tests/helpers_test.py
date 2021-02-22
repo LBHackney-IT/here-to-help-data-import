@@ -1,7 +1,7 @@
-from .helpers import parse_date_of_birth
+from ..lib.usecase.helpers import parse_date_of_birth
 
 def test_parse_date_of_birth_year_first_no_separators():
-    
+
     test_date = '19830502'
     dob_day, dob_month, dob_year = parse_date_of_birth(test_date, year_first=True)
 
@@ -10,7 +10,7 @@ def test_parse_date_of_birth_year_first_no_separators():
     assert dob_year == 1983
 
 def test_parse_date_of_birth_year_first_with_separators():
-    
+
     test_date = '1983-05-02'
     dob_day, dob_month, dob_year = parse_date_of_birth(test_date)
 
@@ -19,7 +19,7 @@ def test_parse_date_of_birth_year_first_with_separators():
     assert dob_year == 1983
 
 def test_parse_date_of_birth_day_first_with_separators():
-    
+
     test_date = '11/10/1989'
     dob_day, dob_month, dob_year = parse_date_of_birth(test_date, day_first=True)
 

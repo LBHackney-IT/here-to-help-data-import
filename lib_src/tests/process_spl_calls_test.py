@@ -1,8 +1,8 @@
 import datetime as dt
-from .process_spl_calls import ProcessSPLCalls
-from .fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
-from .fakes.fake_pygsheet_gateway import FakePygsheetGateway
-from .fakes.fake_add_cev_requests import FakeAddCEVRequests
+from lib_src.lib.usecase.process_spl_calls import ProcessSPLCalls
+from lib_src.tests.fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
+from lib_src.tests.fakes.fake_pygsheet_gateway import FakePygsheetGateway
+from lib_src.tests.fakes.fake_add_cev_requests import FakeAddCEVRequests
 
 SPL = {
     'Traced_NHSNUMBER': ['2649260211'],

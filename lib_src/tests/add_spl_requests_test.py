@@ -1,6 +1,6 @@
-from .add_spl_requests import AddSPLRequests
+from lib_src.lib.usecase.add_spl_requests import AddSPLRequests
 import pandas as pd
-from .fakes.fake_create_help_request import FakeCreateHelpRequest
+from lib_src.tests.fakes.fake_create_help_request import FakeCreateHelpRequest
 import datetime
 
 

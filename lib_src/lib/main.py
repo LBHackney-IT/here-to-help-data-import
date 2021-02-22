@@ -7,6 +7,8 @@ from .usecase.process_contact_tracing_calls import ProcessContactTracingCalls
 from .usecase.process_cev_calls import ProcessCevCalls
 from .usecase.add_cev_requests import AddCEVRequests
 from .usecase.add_contact_tracing_requests import AddContactTracingRequests
+from .usecase.add_spl_requests import AddSPLRequests
+from .usecase.process_spl_calls import ProcessSPLCalls
 from os import getenv
 from os import path
 
@@ -41,6 +43,18 @@ def lambda_handler(event, context):
         ct_outbound_folder_id
     )
 
+    add_spl_requests = AddSPLRequests(create_help_request)
+
+    process_spl_calls = ProcessSPLCalls(google_drive_gateway, pygsheets_gateway, add_spl_requests)
+
+    spl_inbound_folder_id = getenv("SPL_INBOUND_FOLDER_ID")
+    spl_outbound_folder_id = getenv("SPL_OUTBOUND_FOLDER_ID")
+
+    spl_response = process_spl_calls.execute(
+        spl_inbound_folder_id,
+        spl_outbound_folder_id
+    )
+
     # add_cev_requests = AddCEVRequests(create_help_request, here_to_help_gateway)
     #
     # process_new_sheet_cev_calls = ProcessCevCalls(
@@ -54,4 +68,4 @@ def lambda_handler(event, context):
     #     cev_outbound_folder_id
     # )
 
-    return [response]
+    return [response, spl_response]

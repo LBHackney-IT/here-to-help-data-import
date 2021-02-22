@@ -11,7 +11,8 @@ class AddSPLRequests:
 
         for index, row in data_frame.iterrows():
 
-            dob_day, dob_month, dob_year = parse_date_of_birth(row.DateOfBirth, year_first=True)
+            dob_day, dob_month, dob_year = parse_date_of_birth(
+                row.DateOfBirth, year_first=True)
 
             metadata = {
                 "spl_id": row.Traced_NHSNUMBER
@@ -54,6 +55,9 @@ class AddSPLRequests:
     def get_case_note(self, row):
         author = "Data Ingestion: Shielding Patient List"
         note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
-        case_note = f'SPL Category: {row.category}'
+        case_note = f'SPL Category: {row.category}.'
+
+        if row.DateOfDeath:
+            case_note += f' Date of death: {row.DateOfDeath}'
 
         return author, note_date, case_note

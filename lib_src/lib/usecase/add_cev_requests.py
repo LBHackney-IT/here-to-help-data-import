@@ -64,7 +64,8 @@ class AddCEVRequests:
                         case_note['note'] == nsss_case_note for case_note in request['CaseNotes']):
                     resident_id = request["ResidentId"]
                     self.here_to_help_api.create_case_note(
-                        resident_id, help_request_id, {"author": author,"noteDate": note_date,"note":nsss_case_note})
+                        resident_id, help_request_id, {
+                            "author": author, "noteDate": note_date, "note": nsss_case_note})
 
         return data_frame
 

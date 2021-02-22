@@ -4,6 +4,7 @@ from fakes.fake_create_help_request import FakeCreateHelpRequest
 from fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
 import datetime
 
+
 def test_a_new_help_request_is_added():
     create_Help_request = FakeCreateHelpRequest()
     here_to_help_api = FakeHereToHelpGateway()
@@ -37,6 +38,8 @@ def test_a_new_help_request_is_added():
                 "No. Do you have someone to go shopping for you? No. Do you need someone to contact you about local " \
                 "support? yes."
 
+    note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
+
     assert create_Help_request.received_help_requests[0] == {
         'Uprn': '',
         'Metadata': {
@@ -46,7 +49,7 @@ def test_a_new_help_request_is_added():
         'AddressSecondLine': '',
         'AddressThirdLine': 'Bedrock',
         'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
-        f'{datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")}","note":"{case_note}"}}',
+        f'{note_date}","note":"{case_note}"}}',
         'HelpWithSomethingElse': True,
         'FirstName': 'Fred',
         'LastName': 'Flintstone',
@@ -102,6 +105,7 @@ def test_case_note_is_added_when_answers_have_changed():
                 "yes. Do you have someone to go shopping for you? no. Do you need someone to contact you about local " \
                 "support? yes."
 
+    note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
     assert create_Help_request.received_help_requests[0] == {
         'Uprn': '',
         'Metadata': {
@@ -111,7 +115,7 @@ def test_case_note_is_added_when_answers_have_changed():
         'AddressSecondLine': '',
         'AddressThirdLine': 'Bedrock',
         'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
-        f'{datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")}","note":"{case_note}"}}',
+        f'{note_date}","note":"{case_note}"}}',
         'HelpWithSomethingElse': True,
         'FirstName': 'Fred',
         'LastName': 'Flintstone',
@@ -134,4 +138,10 @@ def test_case_note_is_added_when_answers_have_changed():
     assert len(here_to_help_api.create_case_note_called_with) == 1
 
     assert here_to_help_api.create_case_note_called_with[0] == {
-        'resident_id': 1162, 'help_request_id': 123, 'case_note': case_note}
+        'case_note': {
+            'author': 'Data Ingestion: National Shielding Service System '
+            'list',
+            'note': case_note,
+            'noteDate': note_date},
+        'help_request_id': 123,
+        'resident_id': 1162}

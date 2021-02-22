@@ -41,17 +41,17 @@ def lambda_handler(event, context):
         ct_outbound_folder_id
     )
 
-    add_cev_requests = AddCEVRequests(create_help_request, here_to_help_gateway)
+    # add_cev_requests = AddCEVRequests(create_help_request, here_to_help_gateway)
+    #
+    # process_new_sheet_cev_calls = ProcessCevCalls(
+    #     google_drive_gateway, pygsheets_gateway, add_cev_requests)
+    #
+    # cev_inbound_folder_id = getenv("CEV_INBOUND_FOLDER_ID")
+    # cev_outbound_folder_id = getenv("CEV_OUTBOUND_FOLDER_ID")
+    #
+    # cev_response = process_new_sheet_cev_calls.execute(
+    #     cev_inbound_folder_id,
+    #     cev_outbound_folder_id
+    # )
 
-    process_new_sheet_cev_calls = ProcessCevCalls(
-        google_drive_gateway, pygsheets_gateway, add_cev_requests)
-
-    cev_inbound_folder_id = getenv("CEV_INBOUND_FOLDER_ID")
-    cev_outbound_folder_id = getenv("CEV_OUTBOUND_FOLDER_ID")
-
-    cev_response = process_new_sheet_cev_calls.execute(
-        cev_inbound_folder_id,
-        cev_outbound_folder_id
-    )
-
-    return [response, cev_response]
+    return [response]

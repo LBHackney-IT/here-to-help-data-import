@@ -2,16 +2,16 @@ from dateutil import parser
 import numpy as np
 
 
-def parse_date_of_birth(date_of_birth):
+def parse_date_of_birth(date_of_birth, year_first=False, day_first=False):
     dob_day = parser.parse(
         date_of_birth,
-        dayfirst=True).day if date_of_birth else ''
+        yearfirst=year_first, dayfirst=day_first).day if date_of_birth else ''
     dob_month = parser.parse(
         date_of_birth,
-        dayfirst=True).month if date_of_birth else ''
+        yearfirst=year_first, dayfirst=day_first).month if date_of_birth else ''
     dob_year = parser.parse(
         date_of_birth,
-        dayfirst=True).year if date_of_birth else ''
+        yearfirst=year_first, dayfirst=day_first).year if date_of_birth else ''
 
     return dob_day, dob_month, dob_year
 

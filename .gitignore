@@ -16,6 +16,7 @@ infrastructure/production/.terraform
 lambda.zip
 .DS_Store
 lib_src/__pycache__/
-lib_src/lib/usecase/fakes/__pycache__/*
+lib_src/tests/fakes/__pycache__/*
 lib_src/lib/key_file.json
 lib_src/lib/local_main.py
+lib_src/tests/__pycache__/*

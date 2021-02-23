@@ -1,5 +1,6 @@
 import os
 from urllib.error import HTTPError
+import datetime
 
 import requests
 import json
@@ -85,7 +86,15 @@ class HereToHelpGateway:
                 'Content-Type': 'application/json',
                 'x-api-key': self.api_key
             }
-            data = json.dumps(case_note)
+
+            case_note = json.dumps({
+                "author": case_note["author"],
+                "noteDate": datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z"),
+                "note": case_note["case_note"]
+            })
+
+            data = json.dumps({'CaseNote': case_note})
+
             response = requests.request("POST", help_requests_url, headers=headers, data=data)
             if response.status_code == 403:
                 print("Authentication error", response)

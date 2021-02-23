@@ -198,7 +198,8 @@ def test_create_case_note(requests_mock):
     assert gateway.create_case_note(
         case_note={
             "author": "Name",
-            "caseNote": "note"},
+            "case_note": "note",
+        },
         resident_id=2,
         help_request_id=3) == {
             "Id": "1"}
@@ -217,7 +218,8 @@ def test_create_case_note_authentication_error_handling(requests_mock):
     assert gateway.create_case_note(
         case_note={
             "author": "Name",
-            "caseNote": "note"},
+            "case_note": "note",
+        },
         resident_id=2,
         help_request_id=3)["Error"] == "Forbidden"
 
@@ -235,7 +237,8 @@ def test_create_case_note_other_http_error_handling(requests_mock):
     assert gateway.create_case_note(
         case_note={
             "author": "Name",
-            "caseNote": "note"},
+            "case_note": "note",
+        },
         resident_id=2,
         help_request_id=3)["Error"] == "Connection error"
 

@@ -43,7 +43,7 @@ def lambda_handler(event, context):
         ct_outbound_folder_id
     )
 
-    add_spl_requests = AddSPLRequests(create_help_request)
+    add_spl_requests = AddSPLRequests(create_help_request, here_to_help_gateway)
 
     process_spl_calls = ProcessSPLCalls(google_drive_gateway, pygsheets_gateway, add_spl_requests)
 

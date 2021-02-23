@@ -1,7 +1,9 @@
 class FakeHereToHelpGateway:
-    def __init__(self, error=False):
+    def __init__(self, error=False, test_resident_id=1162, test_case_note=""):
         self.count = 0
         self.error = error
+        self.resident_id = test_resident_id
+        self.case_note = test_case_note
         self.get_help_request_called_with = []
         self.create_case_note_called_with = []
 
@@ -17,9 +19,11 @@ class FakeHereToHelpGateway:
     def get_help_request(self, help_request_id):
         self.get_help_request_called_with.append(help_request_id)
 
+        default_case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. Do you want supermarket deliveries? No. Do you have someone to go shopping for you? No. Do you need someone to contact you about local support? yes."
+
         return {
-            "Id": 50,
-            "ResidentId": 1162,
+            "Id": help_request_id,
+            "ResidentId": self.resident_id,
             "IsOnBehalf": None,
             "ConsentToCompleteOnBehalf": None,
             "OnBehalfFirstName": None,
@@ -76,9 +80,7 @@ class FakeHereToHelpGateway:
             "CaseNotes": [{
                 "author": "Data Ingestion: National Shielding Service System list",
                 "noteDate": " Wed, 17 Feb 2021 09:29:24 ",
-                "note": "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. "
-                        "Do you want supermarket deliveries? No. Do you have someone to go "
-                        "shopping for you? No. Do you need someone to contact you about local support? yes."}],
+                "note": self.case_note if self.case_note else default_case_note}],
             "AdviceNotes": None,
             "HelpNeeded": "Shielding",
             "NhsNumber": "7919366992",

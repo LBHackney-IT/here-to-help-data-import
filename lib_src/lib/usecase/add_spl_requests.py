@@ -1,10 +1,10 @@
-import datetime
 from .helpers import parse_date_of_birth
 
 
 class AddSPLRequests:
-    def __init__(self, create_help_request):
+    def __init__(self, create_help_request, here_to_help_api):
         self.create_help_request = create_help_request
+        self.here_to_help_api = here_to_help_api
 
     def execute(self, data_frame):
         data_frame.insert(0, 'help_request_id', '')
@@ -18,8 +18,6 @@ class AddSPLRequests:
                 "spl_id": row.Traced_NHSNUMBER
             }
 
-            author, note_date, nsss_case_note = self.get_case_note(row)
-
             help_request = [
                 {
                     "Metadata": metadata,
@@ -28,7 +26,6 @@ class AddSPLRequests:
                     "AddressFirstLine": row.PatientAddress_Line1,
                     "AddressSecondLine": row.PatientAddress_Line2,
                     "AddressThirdLine": row.PatientAddress_Line3,
-                    "CaseNotes": f'{{"author":"{author}","noteDate":" {note_date}","note":"{nsss_case_note}"}}',
                     "HelpWithSomethingElse": True,
                     "FirstName": row.PatientFirstName.capitalize() if row.PatientFirstName else '',
                     "LastName": row.PatientSurname.capitalize() if row.PatientSurname else '',
@@ -45,19 +42,31 @@ class AddSPLRequests:
             response = self.create_help_request.execute(
                 help_requests=help_request)
 
+            author, spl_case_note = self.get_case_note(row)
+
             if response['created_help_request_ids']:
                 help_request_id = response['created_help_request_ids'][0]
 
                 data_frame.at[index, 'help_request_id'] = help_request_id
+                request = self.here_to_help_api.get_help_request(
+                    help_request_id)
+
+                if not any(
+                        case_note['note'] == spl_case_note for case_note in request['CaseNotes']):
+                    resident_id = request["ResidentId"]
+                    self.here_to_help_api.create_case_note(
+                        resident_id, help_request_id, {
+                            "author": author, "note": spl_case_note})
+
+                    # "CaseNotes": f'{{"author":"{author}","noteDate":" {note_date}","note":"{nsss_case_note}"}}',
 
         return data_frame
 
     def get_case_note(self, row):
         author = "Data Ingestion: Shielding Patient List"
-        note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
         case_note = f'SPL Category: {row.category}.'
 
         if row.DateOfDeath:
             case_note += f' Date of death: {row.DateOfDeath}'
 
-        return author, note_date, case_note
+        return author, case_note

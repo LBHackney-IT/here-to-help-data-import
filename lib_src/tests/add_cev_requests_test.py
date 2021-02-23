@@ -6,7 +6,7 @@ import datetime
 
 
 def test_a_new_help_request_is_added():
-    create_Help_request = FakeCreateHelpRequest()
+    create_help_request = FakeCreateHelpRequest()
     here_to_help_api = FakeHereToHelpGateway()
 
     data_frame = pd.DataFrame({
@@ -29,10 +29,10 @@ def test_a_new_help_request_is_added():
         'do_you_have_someone_to_go_shopping_for_you': ['No']
     })
 
-    use_case = AddCEVRequests(create_Help_request, here_to_help_api)
+    use_case = AddCEVRequests(create_help_request, here_to_help_api)
     processed_data_frame = use_case.execute(data_frame=data_frame)
 
-    assert len(create_Help_request.received_help_requests) == 1
+    assert len(create_help_request.received_help_requests) == 1
 
     case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. Do you want supermarket deliveries? " \
                 "No. Do you have someone to go shopping for you? No. Do you need someone to contact you about local " \
@@ -40,7 +40,7 @@ def test_a_new_help_request_is_added():
 
     note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
 
-    assert create_Help_request.received_help_requests[0] == {
+    assert create_help_request.received_help_requests[0] == {
         'Uprn': '',
         'Metadata': {
             'nsss_id': '123123'},
@@ -63,17 +63,20 @@ def test_a_new_help_request_is_added():
         'HelpNeeded': 'Shielding',
         'NhsNumber': '1234567890'}
 
-    assert processed_data_frame.iloc[0].help_request_id == 123
+
+    created_test_help_request_id = create_help_request.get_returned_id()
+
+    assert processed_data_frame.iloc[0].help_request_id == created_test_help_request_id
 
     assert len(here_to_help_api.get_help_request_called_with) == 1
 
-    assert here_to_help_api.get_help_request_called_with[0] == 123
+    assert here_to_help_api.get_help_request_called_with[0] == created_test_help_request_id
 
     assert len(here_to_help_api.create_case_note_called_with) == 0
 
 
 def test_case_note_is_added_when_answers_have_changed():
-    create_Help_request = FakeCreateHelpRequest()
+    create_help_request = FakeCreateHelpRequest()
     here_to_help_api = FakeHereToHelpGateway()
 
     data_frame = pd.DataFrame({
@@ -96,17 +99,17 @@ def test_case_note_is_added_when_answers_have_changed():
         'do_you_have_someone_to_go_shopping_for_you': ['no']
     })
 
-    use_case = AddCEVRequests(create_Help_request, here_to_help_api)
+    use_case = AddCEVRequests(create_help_request, here_to_help_api)
     processed_data_frame = use_case.execute(data_frame=data_frame)
 
-    assert len(create_Help_request.received_help_requests) == 1
+    assert len(create_help_request.received_help_requests) == 1
 
     case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  27/01/2021 14:14:56. Do you want supermarket deliveries? " \
                 "yes. Do you have someone to go shopping for you? no. Do you need someone to contact you about local " \
                 "support? yes."
 
     note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
-    assert create_Help_request.received_help_requests[0] == {
+    assert create_help_request.received_help_requests[0] == {
         'Uprn': '',
         'Metadata': {
             'nsss_id': '123123'},
@@ -129,11 +132,13 @@ def test_case_note_is_added_when_answers_have_changed():
         'HelpNeeded': 'Shielding',
         'NhsNumber': '1234567890'}
 
-    assert processed_data_frame.iloc[0].help_request_id == 123
+    created_test_help_request_id = create_help_request.get_returned_id()
+
+    assert processed_data_frame.iloc[0].help_request_id == created_test_help_request_id
 
     assert len(here_to_help_api.get_help_request_called_with) == 1
 
-    assert here_to_help_api.get_help_request_called_with[0] == 123
+    assert here_to_help_api.get_help_request_called_with[0] == created_test_help_request_id
 
     assert len(here_to_help_api.create_case_note_called_with) == 1
 
@@ -143,5 +148,5 @@ def test_case_note_is_added_when_answers_have_changed():
             'list',
             'note': case_note,
             'noteDate': note_date},
-        'help_request_id': 123,
+        'help_request_id': created_test_help_request_id,
         'resident_id': 1162}

@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class FakePygsheetGateway:
     def __init__(self, return_dataframe):
         self.return_dataframe = return_dataframe
@@ -14,4 +15,5 @@ class FakePygsheetGateway:
         return pd.DataFrame(data=self.return_dataframe)
 
     def populate_spreadsheet(self, spreadsheet, spreadsheet_key):
-        self.populate_spreadsheet_called_with.append([spreadsheet, spreadsheet_key])
+        self.populate_spreadsheet_called_with.append(
+            [spreadsheet, spreadsheet_key])

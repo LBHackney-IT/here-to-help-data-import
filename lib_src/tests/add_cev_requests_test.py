@@ -63,7 +63,6 @@ def test_a_new_help_request_is_added():
         'HelpNeeded': 'Shielding',
         'NhsNumber': '1234567890'}
 
-
     created_test_help_request_id = create_help_request.get_returned_id()
 
     assert processed_data_frame.iloc[0].help_request_id == created_test_help_request_id

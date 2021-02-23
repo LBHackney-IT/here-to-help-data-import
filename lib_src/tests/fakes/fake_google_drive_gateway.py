@@ -20,4 +20,4 @@ class FakeGoogleDriveGateway:
             'folder_id': folder_id,
             'spreadsheet_name': spreadsheet_name
         })
-        return spreadsheet_name+folder_id
+        return spreadsheet_name + folder_id

@@ -11,7 +11,7 @@ def test_a_new_help_request_and_case_note_is_added():
     here_to_help_api = FakeHereToHelpGateway(test_resident_id)
 
     data_frame = pd.DataFrame({
-                'Traced_NHSNUMBER': ['2649260211'],
+        'Traced_NHSNUMBER': ['2649260211'],
         'PatientFirstName': ['Homer'],
         'PatientOtherName': ['Jay'],
         'PatientSurname': ['Simpson'],
@@ -95,11 +95,9 @@ def test_a_new_help_request_and_case_note_is_added():
     assert here_to_help_api.create_case_note_called_with[0] == {
         'case_note': {
             'author': 'Data Ingestion: Shielding Patient List',
-            'note': 'SPL Category: Added by COVID-19 Population Risk Assessment.'
-        },
+            'note': 'SPL Category: Added by COVID-19 Population Risk Assessment.'},
         'help_request_id': test_help_request_id,
-        'resident_id': 1162
-    }
+        'resident_id': 1162}
 
     # assert here_to_help_api.create_case_note_called_with[1] == {
     #     'case_note': {
@@ -118,7 +116,8 @@ def test_a_new_help_request_and_no_new_case_note_is_added():
     test_resident_id = 312
     test_case_note = 'SPL Category: Deceased. Date of death: 21-02-2021'
 
-    here_to_help_api = FakeHereToHelpGateway(test_resident_id, test_case_note=test_case_note)
+    here_to_help_api = FakeHereToHelpGateway(
+        test_resident_id, test_case_note=test_case_note)
     data_frame = pd.DataFrame({
         'Traced_NHSNUMBER': ['1234567890'],
         'PatientFirstName': ['Shaco'],

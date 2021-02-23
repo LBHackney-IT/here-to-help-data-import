@@ -150,6 +150,9 @@ def test_get_help_request(requests_mock):
         },
         "HelpRequestCalls": []}
 
+#
+# "[{'author': 'Data Ingestion: Shielding Patient List', 'noteDate': 'Tue, 23 Feb 2021 15:18:33 ', 'note': 'SPL Category: No change to current status.'}]"
+
 
 def test_get_help_request_authentication_error_handling(requests_mock):
     requests_mock.register_uri(
@@ -207,7 +210,7 @@ def test_create_case_note(requests_mock):
 
     note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
 
-    assert requests_mock.last_request.text == '{"CaseNote": "{"author": "Ben", "noteDate": "'+note_date+'", "note": "Hello again"}"}'
+    assert requests_mock.last_request.text == '{"CaseNote": "{\\"author\\": \\"Ben\\", \\"noteDate\\": \\"'+note_date+'\\", \\"note\\": \\"Hello again\\"}"}'
 
     assert result  == {
             "Id": "1"}

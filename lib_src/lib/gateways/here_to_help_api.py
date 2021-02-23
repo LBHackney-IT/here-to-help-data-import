@@ -65,7 +65,13 @@ class HereToHelpGateway:
 
             print("Response from the backend", response.text)
             result = json.loads(response.text)
-            result["CaseNotes"] = json.loads(result["CaseNotes"]) if result["CaseNotes"] else {}
+            try:
+                result["CaseNotes"] =json.loads(result["CaseNotes"])
+            except Exception as err:
+                print('cant parse case notes: ', err)
+                result["CaseNotes"] = {}
+
+
             result["Metadata"] = json.loads(result["Metadata"]) if result["Metadata"] else {}
 
             print("Evaluated result", result)
@@ -95,11 +101,12 @@ class HereToHelpGateway:
             #     "note": case_note["case_note"]
             # }
 
-            case_note = '"{"author": "' + case_note["author"] + '", "noteDate": "' + note_date + '", "note": "' + case_note["note"] + '"}"'
+            case_note = "\"{\\\"author\\\": \\\"" + case_note["author"] + "\\\", \\\"noteDate\\\": \\\"" + note_date + "\\\", \\\"note\\\": \\\"" + case_note["note"] + "\\\"}\""
 
-            data = '{"CaseNote": '+case_note+'}'
+            body = '{"CaseNote": '+case_note+'}'
+            # {"CaseNote": "{\"author\": \"Ben\", \"noteDate\": \"Tue, 23 Feb 2021 13:47:19 \", \"note\": \"plz plz\"}"}
 
-            response = requests.request("POST", help_requests_url, headers=headers, data=data)
+            response = requests.request("POST", help_requests_url, headers=headers, data=body)
             if response.status_code == 403:
                 print("Authentication error", response)
                 return {"Error": json.dumps(response.json())}

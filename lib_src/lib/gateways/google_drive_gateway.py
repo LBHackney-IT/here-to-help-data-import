@@ -42,11 +42,6 @@ class GoogleDriveGateway:
 
         # Gives us a nice link to click and open the drive...in probably the wrong browser.
         # Copy Paste Recommended
-        print(
-            "[CheckFile: %s] Looking for files in \
-            folder: https://drive.google.com/drive/folders/%s" %
-            (dt.datetime.now(), folder_id)
-        )
 
         # This makes the file list with the fields we want. In the folder ID passed to it
         # Field parameters here -
@@ -72,7 +67,7 @@ class GoogleDriveGateway:
             if file.get('createdTime')[0:10] == today:
                 file_name = file.get('name')
                 file_id = file.get('id')
-                print("[CheckFile: %s] Found a file: %s" %(dt.datetime.now(), file_name))
+                print("Found a file: %s" %(file_name))
                 foundcount += 1
 
         if foundcount > 0:

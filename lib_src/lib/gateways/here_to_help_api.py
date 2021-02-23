@@ -58,7 +58,7 @@ class HereToHelpGateway:
                 'x-api-key': self.api_key
             }
             response = requests.request("GET", help_requests_url, headers=headers)
-            
+
             if response.status_code == 403:
                 print("Authentication error", response)
                 return {"Error": json.dumps(response.json())}
@@ -87,13 +87,17 @@ class HereToHelpGateway:
                 'x-api-key': self.api_key
             }
 
-            case_note = json.dumps({
-                "author": case_note["author"],
-                "noteDate": datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z"),
-                "note": case_note["case_note"]
-            })
+            note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
+            #
+            # case_note ={
+            #     "author": case_note["author"],
+            #     "noteDate": note_date,
+            #     "note": case_note["case_note"]
+            # }
 
-            data = json.dumps({'CaseNote': case_note})
+            case_note = '"{"author": "' + case_note["author"] + '", "noteDate": "' + note_date + '", "note": "' + case_note["note"] + '"}"'
+
+            data = '{"CaseNote": '+case_note+'}'
 
             response = requests.request("POST", help_requests_url, headers=headers, data=data)
             if response.status_code == 403:

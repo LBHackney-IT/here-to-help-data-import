@@ -2,6 +2,7 @@ from urllib.error import HTTPError
 import os
 from dotenv import load_dotenv
 from lib_src.lib.gateways.here_to_help_api import HereToHelpGateway
+import datetime
 
 load_dotenv()
 os.environ['CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL'] = "localhost:3000/"
@@ -195,13 +196,20 @@ def test_create_case_note(requests_mock):
         'POST',
         POST_CASE_NOTES_URL,
         text='{"Id": "1"}')
-    assert gateway.create_case_note(
+
+    result = gateway.create_case_note(
         case_note={
-            "author": "Name",
-            "case_note": "note",
+            "author": "Ben",
+            "note": "Hello again",
         },
         resident_id=2,
-        help_request_id=3) == {
+        help_request_id=3)
+
+    note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
+
+    assert requests_mock.last_request.text == '{"CaseNote": "{"author": "Ben", "noteDate": "'+note_date+'", "note": "Hello again"}"}'
+
+    assert result  == {
             "Id": "1"}
 
 
@@ -218,7 +226,7 @@ def test_create_case_note_authentication_error_handling(requests_mock):
     assert gateway.create_case_note(
         case_note={
             "author": "Name",
-            "case_note": "note",
+            "note": "note",
         },
         resident_id=2,
         help_request_id=3)["Error"] == "Forbidden"
@@ -237,7 +245,7 @@ def test_create_case_note_other_http_error_handling(requests_mock):
     assert gateway.create_case_note(
         case_note={
             "author": "Name",
-            "case_note": "note",
+            "note": "note",
         },
         resident_id=2,
         help_request_id=3)["Error"] == "Connection error"

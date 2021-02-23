@@ -1,4 +1,4 @@
-from lib_src.lib.usecase.helpers import parse_date_of_birth
+from lib_src.lib.helpers import parse_date_of_birth
 
 
 class TestParseDateOfBirth:

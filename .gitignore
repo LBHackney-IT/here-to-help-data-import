@@ -2,9 +2,6 @@
 infrastructure/.terraform/*
 infrastructure/.terraform.lock.hcl
 infrastructure/venv/*
-lib_src/lib/__pycache__/*
-lib_src/lib/gateways/__pycache__/*
-lib_src/lib/usecase/__pycache__/*
 venv/*
 .env
 infrastructure/development/.terraform.lock.hcl
@@ -15,8 +12,6 @@ infrastructure/production/.terraform.lock.hcl
 infrastructure/production/.terraform
 lambda.zip
 .DS_Store
-lib_src/__pycache__/
-lib_src/tests/fakes/__pycache__/*
 lib_src/lib/key_file.json
 lib_src/lib/local_main.py
-lib_src/tests/__pycache__/*
+__pycache__/

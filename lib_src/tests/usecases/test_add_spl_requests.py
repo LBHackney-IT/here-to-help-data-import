@@ -1,7 +1,7 @@
 from lib_src.lib.usecase.add_spl_requests import AddSPLRequests
 import pandas as pd
 from lib_src.tests.fakes.fake_create_help_request import FakeCreateHelpRequest
-from .fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
+from lib_src.tests.fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
 
 
 def test_a_new_help_request_and_case_note_is_added():

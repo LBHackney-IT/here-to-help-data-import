@@ -1,4 +1,4 @@
-from .helpers import parse_date_of_birth
+from ..helpers import parse_date_of_birth
 
 
 class AddSPLRequests:

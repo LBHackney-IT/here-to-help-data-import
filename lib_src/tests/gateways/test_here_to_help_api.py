@@ -71,7 +71,7 @@ class TestGetHelpRequest:
     def test(self, requests_mock):
         dirname = os.path.dirname(__file__)
 
-        with open(os.path.join(dirname, 'fixture.json'), 'r') as file:
+        with open(os.path.join(dirname, '../fixture.json'), 'r') as file:
             mock_response = file.read()
 
         requests_mock.register_uri('GET', self.GET_URL, text=mock_response)

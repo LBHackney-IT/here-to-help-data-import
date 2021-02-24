@@ -8,7 +8,7 @@ def test_a_new_help_request_and_case_note_is_added():
     create_help_request = FakeCreateHelpRequest()
 
     test_resident_id = 121231
-    here_to_help_api = FakeHereToHelpGateway(test_resident_id)
+    here_to_help_api = FakeHereToHelpGateway(test_resident_id=test_resident_id)
 
     data_frame = pd.DataFrame({
         'Traced_NHSNUMBER': ['2649260211'],
@@ -62,27 +62,6 @@ def test_a_new_help_request_and_case_note_is_added():
         'CallbackRequired': False,
         'HelpNeeded': 'Shielding',
         'NhsNumber': '2649260211'}
-    # assert create_help_request.received_help_requests[1] == {
-    #     'Metadata': {
-    #         'spl_id': '1234567890'},
-    #     'Uprn': '02938372719',
-    #     'Postcode': 'CH5 5AP',
-    #     'AddressFirstLine': '404 Summoner rf',
-    #     'AddressSecondLine': '',
-    #     'AddressThirdLine': 'Black Hole',
-    #     # 'CaseNotes': f'{{"author":"Data Ingestion: Shielding Patient List","noteDate":" {note_date}","note":"SPL Category: Deceased. Date of death: 21-02-2021"}}',
-    #     'HelpWithSomethingElse': True,
-    #     'FirstName': 'Shaco',
-    #     'LastName': 'N00b',
-    #     'DobDay': '29',
-    #     'DobMonth': '3',
-    #     'DobYear': '1993',
-    #     'ContactTelephoneNumber': '021234567890',
-    #     'ContactMobileNumber': '07123456789',
-    #     'EmailAddress': 'n00b4lyfe@mail.com',
-    #     'CallbackRequired': False,
-    #     'HelpNeeded': 'Shielding',
-    #     'NhsNumber': '1234567890'}
 
     test_help_request_id = create_help_request.get_returned_id()
 
@@ -97,17 +76,11 @@ def test_a_new_help_request_and_case_note_is_added():
             'author': 'Data Ingestion: Shielding Patient List',
             'note': 'SPL Category: Added by COVID-19 Population Risk Assessment.'},
         'help_request_id': test_help_request_id,
-        'resident_id': 1162}
+        'resident_id': test_resident_id}
 
-    # assert here_to_help_api.create_case_note_called_with[1] == {
-    #     'case_note': {
-    #         'author': 'Data Ingestion: Shielding Patient List',
-    #         'note': 'SPL Category: Deceased. Date of death: 21-02-2021'
-    #     },
-    #     'help_request_id': 123,
-    #     'resident_id': 1162
-    # }
     assert processed_data_frame.iloc[0].help_request_id == test_help_request_id
+
+    assert processed_data_frame.iloc[0].resident_id == test_resident_id
 
 
 def test_a_new_help_request_and_no_new_case_note_is_added():
@@ -117,7 +90,7 @@ def test_a_new_help_request_and_no_new_case_note_is_added():
     test_case_note = 'SPL Category: Deceased. Date of death: 21-02-2021'
 
     here_to_help_api = FakeHereToHelpGateway(
-        test_resident_id, test_case_note=test_case_note)
+        test_resident_id=test_resident_id, test_case_note=test_case_note)
     data_frame = pd.DataFrame({
         'Traced_NHSNUMBER': ['1234567890'],
         'PatientFirstName': ['Shaco'],
@@ -180,3 +153,5 @@ def test_a_new_help_request_and_no_new_case_note_is_added():
     assert len(here_to_help_api.create_case_note_called_with) == 0
 
     assert processed_data_frame.iloc[0].help_request_id == test_help_request_id
+
+    assert processed_data_frame.iloc[0].resident_id == test_resident_id

@@ -1,6 +1,5 @@
-from dateutil import parser
 import datetime
-from ..helpers import parse_date_of_birth
+from ..helpers import parse_date_of_birth, case_note_needs_an_update
 
 
 class AddCEVRequests:
@@ -10,6 +9,7 @@ class AddCEVRequests:
 
     def execute(self, data_frame):
         data_frame.insert(0, 'help_request_id', '')
+        data_frame.insert(0, 'resident_id', '')
 
         for index, row in data_frame.iterrows():
 
@@ -30,7 +30,6 @@ class AddCEVRequests:
                     "AddressFirstLine": row.address_line1,
                     "AddressSecondLine": row.address_line2,
                     "AddressThirdLine": row.address_town_city,
-                    "CaseNotes": f'{{"author":"{author}","noteDate":" {note_date}","note":"{nsss_case_note}"}}',
                     "HelpWithSomethingElse": True,
                     "FirstName": row.first_name.capitalize() if row.first_name else '',
                     "LastName": row.last_name.capitalize() if row.last_name else '',
@@ -49,20 +48,21 @@ class AddCEVRequests:
 
             if response['created_help_request_ids']:
                 help_request_id = response['created_help_request_ids'][0]
-                resident_id = request["ResidentId"]
-
-                print(f'Added CEV {index+1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
-
-                data_frame.at[index, 'help_request_id'] = help_request_id
 
                 request = self.here_to_help_api.get_help_request(
                     help_request_id)
 
-                if not any(
-                        case_note['note'] == nsss_case_note for case_note in request['CaseNotes']):
+                resident_id = request["ResidentId"]
+
+                data_frame.at[index, 'help_request_id'] = help_request_id
+                data_frame.at[index, 'resident_id'] = resident_id
+
+                print(f'Added CEV {index+1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
+
+                if case_note_needs_an_update(request['CaseNotes'], nsss_case_note):
                     self.here_to_help_api.create_case_note(
                         resident_id, help_request_id, {
-                            "author": author, "noteDate": note_date, "note": nsss_case_note})
+                            "author": author, "note": nsss_case_note})
 
         return data_frame
 
@@ -71,7 +71,7 @@ class AddCEVRequests:
         ) == 'yes' else False
 
     def get_case_note(self, row):
-        author = "Data Ingestion: National Shielding Service System list"
+        author = "Data Ingestion: National Shielding Service System"
         note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
         case_note = 'CEV: Dec 2020 Tier 4 '
         case_note += f'NSSS Submitted on:  ' + \

@@ -45,8 +45,6 @@ class TestANewHelpRequestIsAdded:
     def test_create_help_request_is_called(self):
         assert len(self.create_help_request.received_help_requests) == 1
 
-        note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
-
         assert self.create_help_request.received_help_requests[0] == {
             'Uprn': '',
             'Metadata': {
@@ -55,8 +53,6 @@ class TestANewHelpRequestIsAdded:
             'AddressFirstLine': '45 Cave Stone Road',
             'AddressSecondLine': '',
             'AddressThirdLine': 'Bedrock',
-            'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
-                         f'{note_date}","note":"{self.test_case_note}"}}',
             'HelpWithSomethingElse': True,
             'FirstName': 'Fred',
             'LastName': 'Flintstone',
@@ -131,8 +127,6 @@ class TestCaseNoteIsAddedWhenAnswersHaveChanged:
             'AddressFirstLine': '45 Cave Stone Road',
             'AddressSecondLine': '',
             'AddressThirdLine': 'Bedrock',
-            'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
-                         f'{self.test_note_date}","note":"{self.test_case_note}"}}',
             'HelpWithSomethingElse': True,
             'FirstName': 'Fred',
             'LastName': 'Flintstone',
@@ -156,9 +150,7 @@ class TestCaseNoteIsAddedWhenAnswersHaveChanged:
 
         assert self.here_to_help_api.create_case_note_called_with[0] == {
             'case_note': {
-                'author': 'Data Ingestion: National Shielding Service System '
-                          'list',
-                'note': self.test_case_note,
-                'noteDate': self.test_note_date},
+                'author': 'Data Ingestion: National Shielding Service System',
+                'note': self.test_case_note},
             'help_request_id': self.created_test_help_request_id,
             'resident_id': 1162}

@@ -197,6 +197,18 @@ resource "aws_cloudwatch_event_target" "check_google_sheet" {
   arn       = aws_lambda_function.here-to-help-lambda.arn
 }
 
+resource "aws_cloudwatch_event_target" "check_google_sheet_spl" {
+  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
+  target_id = "here-to-help-lambda"
+  arn       = aws_lambda_function.here-to-help-lambda-SPL.arn
+}
+
+resource "aws_cloudwatch_event_target" "check_google_sheet_nsss" {
+  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
+  target_id = "here-to-help-lambda"
+  arn       = aws_lambda_function.here-to-help-lambda-NSSS.arn
+}
+
 resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet" {
   statement_id_prefix  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"

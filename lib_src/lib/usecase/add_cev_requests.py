@@ -1,5 +1,6 @@
 from dateutil import parser
 import datetime
+from ..helpers import parse_date_of_birth
 
 
 class AddCEVRequests:
@@ -12,15 +13,8 @@ class AddCEVRequests:
 
         for index, row in data_frame.iterrows():
 
-            dob_day = parser.parse(
-                row.date_of_birth,
-                dayfirst=True).day if row.date_of_birth else ''
-            dob_month = parser.parse(
-                row.date_of_birth,
-                dayfirst=True).month if row.date_of_birth else ''
-            dob_year = parser.parse(
-                row.date_of_birth,
-                dayfirst=True).year if row.date_of_birth else ''
+            dob_day, dob_month, dob_year = parse_date_of_birth(
+                row.date_of_birth, year_first=True)
 
             metadata = {
                 "nsss_id": row["ID"]

@@ -80,7 +80,7 @@ class ProcessContactTracingCalls:
                     city_spreadsheet, spreadsheet_key=city_spreadsheet_key)
             else:
                 print(
-                    "A file has been found in the \
+                    "Contact Tracing output file found in \
                     output folder: https://drive.google.com/drive/folders/%s " %
                     (outbound_folder_id))
                 print("Will Abort")

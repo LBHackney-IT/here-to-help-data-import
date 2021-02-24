@@ -69,9 +69,8 @@ class TestParseDateOfBirth:
 
 
 class TestCaseNoteNeedsAnUpdate:
-    def setup_method(self, method):
-        self.fake = Faker(['en-GB', 'en_GB', 'en_GB', 'en-GB'])
-        print(method)
+    def setup_method(self):
+        self.fake = Faker()
 
     def test_case_notes_does_not_need_an_update(self):
         new_note = self.fake.sentence()

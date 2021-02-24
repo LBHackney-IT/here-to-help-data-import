@@ -63,7 +63,7 @@ class ProcessSPLCalls:
 
             else:
                 print(
-                    "A file has been found in the \
+                    "SPL output file found in \
                     output folder: https://drive.google.com/drive/folders/%s " %
                     (outbound_folder_id))
                 print("Will Abort")

@@ -54,6 +54,8 @@ class AddSPLRequests:
                 resident_id = request["ResidentId"]
                 data_frame.at[index, 'resident_id'] = resident_id
 
+                print(f'Added SPL {index+1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
+
                 author, spl_case_note = self.get_case_note(row)
 
                 if case_note_needs_an_update(request['CaseNotes'], spl_case_note):

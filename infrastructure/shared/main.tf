@@ -118,7 +118,7 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   ]
 }
 
-resource "aws_lambda_function" "here-to-help-lambda" {
+resource "aws_lambda_function" "here-to-help-lambda-SPL" {
   role             = aws_iam_role.here_to_help_role.arn
   handler          = var.handler
   runtime          = var.runtime
@@ -150,7 +150,7 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   ]
 }
 
-resource "aws_lambda_function" "here-to-help-lambda" {
+resource "aws_lambda_function" "here-to-help-lambda-NSSS" {
   role             = aws_iam_role.here_to_help_role.arn
   handler          = var.handler
   runtime          = var.runtime

@@ -16,6 +16,16 @@ def parse_date_of_birth(date_of_birth, year_first=False, day_first=False):
     return dob_day, dob_month, dob_year
 
 
+def case_note_needs_an_update(case_notes_on_request, new_case_note):
+    if not case_notes_on_request:
+        return True
+    else:
+        for case_note in case_notes_on_request:
+            if case_note.get('note', None) != new_case_note:
+                return True
+        return False
+
+
 def clean_data(columns, data_frame):
     for i in columns:
         data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'\s+', '')

@@ -1,4 +1,6 @@
-from lib_src.lib.helpers import parse_date_of_birth
+import pytest
+from faker import Faker
+from lib_src.lib.helpers import parse_date_of_birth, case_note_needs_an_update
 
 
 class TestParseDateOfBirth:
@@ -64,3 +66,51 @@ class TestParseDateOfBirth:
         assert dob_day == 20
         assert dob_month == 5
         assert dob_year == 2002
+
+
+class TestCaseNoteNeedsAnUpdate:
+    def setup_method(self, method):
+        self.fake = Faker(['en-GB', 'en_GB', 'en_GB', 'en-GB'])
+        print(method)
+
+    def test_case_notes_does_not_need_an_update(self):
+        new_note = self.fake.sentence()
+
+        case_notes_on_request = [{'author': self.fake.name(),
+                                  'noteDate': self.fake.date(),
+                                  'note': new_note}]
+
+        result = case_note_needs_an_update(case_notes_on_request, new_note)
+        assert result == False
+
+    def test_case_notes_need_an_update(self):
+        case_notes_on_request = [{'author': self.fake.name(),
+                                  'noteDate': self.fake.date(),
+                                  'note': self.fake.sentence()}]
+
+        new_note = self.fake.sentence()
+
+        result = case_note_needs_an_update(case_notes_on_request, new_note)
+        assert result
+
+    def test_case_notes_need_an_update_two(self):
+        case_notes_on_request = [
+            {'author': self.fake.name(),
+             'noteDate': self.fake.date(),
+             'note': self.fake.sentence()},
+            {'author': self.fake.name(),
+             'noteDate': self.fake.date(),
+             'note': self.fake.sentence()}
+        ]
+
+        new_note = self.fake.sentence()
+
+        result = case_note_needs_an_update(case_notes_on_request, new_note)
+        assert result
+
+    def test_case_notes_need_an_update_empty(self):
+        case_notes_on_request = []
+        new_note = self.fake.sentence()
+
+        result = case_note_needs_an_update(case_notes_on_request, new_note)
+        assert result

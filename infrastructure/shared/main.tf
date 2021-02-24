@@ -118,6 +118,70 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   ]
 }
 
+resource "aws_lambda_function" "here-to-help-lambda" {
+  role             = aws_iam_role.here_to_help_role.arn
+  handler          = var.handler
+  runtime          = var.runtime
+  function_name    = "${var.function_name}-SPL"
+  s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
+  s3_key           = aws_s3_bucket_object.handler.key
+  source_code_hash = data.archive_file.lib_zip_file.output_base64sha256
+  memory_size = 10240
+  timeout = 900
+
+  vpc_config {
+    subnet_ids         = lookup(var.subnet_ids_for_lambda, var.stage)
+    security_group_ids = lookup(var.sg_for_lambda, var.stage)
+  }
+  environment {
+    variables = {
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
+      CT_INBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_inbound_folder_id.value
+      CT_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_outbound_folder_id.value
+      CEV_INBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_inbound_folder_id.value
+      CEV_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_outbound_folder_id.value
+      SPL_INBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_inbound_folder_id.value
+      SPL_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_outbound_folder_id.value
+    }
+  }
+   depends_on = [
+    aws_s3_bucket_object.handler
+  ]
+}
+
+resource "aws_lambda_function" "here-to-help-lambda" {
+  role             = aws_iam_role.here_to_help_role.arn
+  handler          = var.handler
+  runtime          = var.runtime
+  function_name    = "${var.function_name}-NSSS"
+  s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
+  s3_key           = aws_s3_bucket_object.handler.key
+  source_code_hash = data.archive_file.lib_zip_file.output_base64sha256
+  memory_size = 10240
+  timeout = 900
+
+  vpc_config {
+    subnet_ids         = lookup(var.subnet_ids_for_lambda, var.stage)
+    security_group_ids = lookup(var.sg_for_lambda, var.stage)
+  }
+  environment {
+    variables = {
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
+      CT_INBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_inbound_folder_id.value
+      CT_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_outbound_folder_id.value
+      CEV_INBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_inbound_folder_id.value
+      CEV_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_outbound_folder_id.value
+      SPL_INBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_inbound_folder_id.value
+      SPL_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_outbound_folder_id.value
+    }
+  }
+   depends_on = [
+    aws_s3_bucket_object.handler
+  ]
+}
+
 # See also the following AWS managed policy: AWSLambdaBasicExecutionRole
 
 resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {

@@ -1,5 +1,6 @@
 from dateutil import parser
 
+from ..helpers import parse_date_of_birth
 
 class AddContactTracingRequests:
     def __init__(self, create_help_request):
@@ -11,9 +12,8 @@ class AddContactTracingRequests:
         for index, row in data_frame.iterrows():
             row = row.to_dict()
 
-            dob_day = parser.parse(row['Date of Birth'], dayfirst=True).day if row['Date of Birth'] else ''
-            dob_month = parser.parse(row['Date of Birth'], dayfirst=True).month if row['Date of Birth'] else ''
-            dob_year = parser.parse(row['Date of Birth'], dayfirst=True).year if row['Date of Birth'] else ''
+            dob_day, dob_month, dob_year = parse_date_of_birth(
+                row['Date of Birth'], day_first=True)
 
             metadata = {
                 "first_symptomatic_at": row["First Symptomatic At"],

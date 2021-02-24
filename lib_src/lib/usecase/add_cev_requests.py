@@ -14,7 +14,7 @@ class AddCEVRequests:
         for index, row in data_frame.iterrows():
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
-                row.date_of_birth, year_first=True)
+                row.date_of_birth, day_first=True)
 
             metadata = {
                 "nsss_id": row["ID"]

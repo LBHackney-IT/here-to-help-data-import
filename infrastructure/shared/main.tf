@@ -2,6 +2,14 @@ variable "function_name" {
   default = "here-to-help-data-ingestion"
 }
 
+variable "spl_handler" {
+  default = "lib.main.spl_lambda_handler"
+}
+
+variable "nsss_handler" {
+  default = "lib.main.nsss_lambda_handler"
+}
+
 variable "handler" {
   default = "lib.main.lambda_handler"
 }
@@ -120,7 +128,7 @@ resource "aws_lambda_function" "here-to-help-lambda" {
 
 resource "aws_lambda_function" "here-to-help-lambda-SPL" {
   role             = aws_iam_role.here_to_help_role.arn
-  handler          = var.handler
+  handler          = var.spl_handler
   runtime          = var.runtime
   function_name    = "${var.function_name}-SPL"
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
@@ -137,10 +145,6 @@ resource "aws_lambda_function" "here-to-help-lambda-SPL" {
     variables = {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
-      CT_INBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_inbound_folder_id.value
-      CT_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_outbound_folder_id.value
-      CEV_INBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_inbound_folder_id.value
-      CEV_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_outbound_folder_id.value
       SPL_INBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_inbound_folder_id.value
       SPL_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_outbound_folder_id.value
     }
@@ -152,7 +156,7 @@ resource "aws_lambda_function" "here-to-help-lambda-SPL" {
 
 resource "aws_lambda_function" "here-to-help-lambda-NSSS" {
   role             = aws_iam_role.here_to_help_role.arn
-  handler          = var.handler
+  handler          = var.nsss_handler
   runtime          = var.runtime
   function_name    = "${var.function_name}-NSSS"
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
@@ -169,12 +173,8 @@ resource "aws_lambda_function" "here-to-help-lambda-NSSS" {
     variables = {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
-      CT_INBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_inbound_folder_id.value
-      CT_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_outbound_folder_id.value
       CEV_INBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_inbound_folder_id.value
       CEV_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_outbound_folder_id.value
-      SPL_INBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_inbound_folder_id.value
-      SPL_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_outbound_folder_id.value
     }
   }
    depends_on = [

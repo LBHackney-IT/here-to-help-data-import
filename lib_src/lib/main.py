@@ -69,3 +69,13 @@ def lambda_handler(event, context):
     # )
 
     return [response, spl_response]
+
+def spl_lambda_handler(event, context):
+    print('- -spl_lambda_handler - -')
+
+    print(event, context)
+    
+def nsss_lambda_handler(event, context):
+    print('- -nsss_lambda_handler - -')
+
+    print(event, context)

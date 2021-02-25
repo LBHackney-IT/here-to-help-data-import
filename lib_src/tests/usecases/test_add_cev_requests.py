@@ -5,80 +5,86 @@ from lib_src.tests.fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
 import datetime
 
 
-def test_a_new_help_request_is_added():
-    create_help_request = FakeCreateHelpRequest()
-    here_to_help_api = FakeHereToHelpGateway()
+class TestANewHelpRequestIsAdded:
 
-    data_frame = pd.DataFrame({
-        'ID': ['123123'],
-        'nhs_number': ['1234567890'],
-        'first_name': ['Fred'],
-        'last_name': ['Flintstone'],
-        'date_of_birth': ['02/02/1963'],
-        'address_line1': ['45 Cave Stone Road'],
-        'address_line2': [''],
-        'address_town_city': ['Bedrock'],
-        'address_postcode': ['BR2 9FF'],
-        'address_uprn': [''],
-        'contact_number_calls': ['07344211233'],
-        'contact_number_texts': ['02344211233'],
-        'contact_email': ['fred@rocks.st'],
-        'do_you_want_supermarket_deliveries': ['No'],
-        'submission_datetime': ['2021-02-05T03:10:31Z'],
-        'do_you_need_someone_to_contact_you_about_local_support': ['yes'],
-        'do_you_have_someone_to_go_shopping_for_you': ['No']
-    })
+    def setup(self):
+        self.create_help_request = FakeCreateHelpRequest()
 
-    use_case = AddCEVRequests(create_help_request, here_to_help_api)
-    processed_data_frame = use_case.execute(data_frame=data_frame)
+        self.test_case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. Do you want supermarket deliveries? " \
+                    "No. Do you have someone to go shopping for you? No. Do you need someone to contact you about local " \
+                    "support? yes."
 
-    assert len(create_help_request.received_help_requests) == 1
+        self.here_to_help_api = FakeHereToHelpGateway(test_case_note=self.test_case_note)
 
-    case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. Do you want supermarket deliveries? " \
-                "No. Do you have someone to go shopping for you? No. Do you need someone to contact you about local " \
-                "support? yes."
+        data_frame = pd.DataFrame({
+            'ID': ['123123'],
+            'nhs_number': ['1234567890'],
+            'first_name': ['Fred'],
+            'last_name': ['Flintstone'],
+            'date_of_birth': ['22/02/1963'],
+            'address_line1': ['45 Cave Stone Road'],
+            'address_line2': [''],
+            'address_town_city': ['Bedrock'],
+            'address_postcode': ['BR2 9FF'],
+            'address_uprn': [''],
+            'contact_number_calls': ['07344211233'],
+            'contact_number_texts': ['02344211233'],
+            'contact_email': ['fred@rocks.st'],
+            'do_you_want_supermarket_deliveries': ['No'],
+            'submission_datetime': ['2021-02-05T03:10:31Z'],
+            'do_you_need_someone_to_contact_you_about_local_support': ['yes'],
+            'do_you_have_someone_to_go_shopping_for_you': ['No']
+        })
 
-    note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
+        use_case = AddCEVRequests(self.create_help_request, self.here_to_help_api)
 
-    assert create_help_request.received_help_requests[0] == {
-        'Uprn': '',
-        'Metadata': {
-            'nsss_id': '123123'},
-        'Postcode': 'BR2 9FF',
-        'AddressFirstLine': '45 Cave Stone Road',
-        'AddressSecondLine': '',
-        'AddressThirdLine': 'Bedrock',
-        'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
-        f'{note_date}","note":"{case_note}"}}',
-        'HelpWithSomethingElse': True,
-        'FirstName': 'Fred',
-        'LastName': 'Flintstone',
-        'DobDay': '2',
-        'DobMonth': '2',
-        'DobYear': '1963',
-        'ContactTelephoneNumber': '07344211233',
-        'ContactMobileNumber': '02344211233',
-        'EmailAddress': 'fred@rocks.st',
-        'CallbackRequired': True,
-        'HelpNeeded': 'Shielding',
-        'NhsNumber': '1234567890'}
+        self.processed_data_frame = use_case.execute(data_frame=data_frame)
 
-    created_test_help_request_id = create_help_request.get_returned_id()
+        self.created_test_help_request_id = self.create_help_request.get_returned_id()
 
-    assert processed_data_frame.iloc[0].help_request_id == created_test_help_request_id
+    def test_create_help_request_is_called(self):
+        assert len(self.create_help_request.received_help_requests) == 1
 
-    assert len(here_to_help_api.get_help_request_called_with) == 1
+        assert self.create_help_request.received_help_requests[0] == {
+            'Uprn': '',
+            'Metadata': {
+                'nsss_id': '123123'},
+            'Postcode': 'BR2 9FF',
+            'AddressFirstLine': '45 Cave Stone Road',
+            'AddressSecondLine': '',
+            'AddressThirdLine': 'Bedrock',
+            'HelpWithSomethingElse': True,
+            'FirstName': 'Fred',
+            'LastName': 'Flintstone',
+            'DobDay': '22',
+            'DobMonth': '2',
+            'DobYear': '1963',
+            'ContactTelephoneNumber': '07344211233',
+            'ContactMobileNumber': '02344211233',
+            'EmailAddress': 'fred@rocks.st',
+            'CallbackRequired': True,
+            'HelpNeeded': 'Shielding',
+            'NhsNumber': '1234567890'}
 
-    assert here_to_help_api.get_help_request_called_with[0] == created_test_help_request_id
+    def test_check_created_help_request_needs(self):
+        assert len(self.here_to_help_api.get_help_request_called_with) == 1
 
-    assert len(here_to_help_api.create_case_note_called_with) == 0
+        assert self.here_to_help_api.get_help_request_called_with[0] == self.created_test_help_request_id
+
+    def test_create_case_note_is_not_called(self):
+        assert len(self.here_to_help_api.create_case_note_called_with) == 0
+
+    def test_processed_data_frame_contains_new_data(self):
+        assert self.processed_data_frame.iloc[0].help_request_id == self.created_test_help_request_id
 
 
-def test_case_note_is_added_when_answers_have_changed():
-    create_help_request = FakeCreateHelpRequest()
-    here_to_help_api = FakeHereToHelpGateway()
+class TestCaseNoteIsAddedWhenAnswersHaveChanged:
 
-    data_frame = pd.DataFrame({
+    def setup(self):
+        self.create_help_request = FakeCreateHelpRequest()
+        self.here_to_help_api = FakeHereToHelpGateway()
+
+        data_frame = pd.DataFrame({
         'ID': ['123123'],
         'nhs_number': ['1234567890'],
         'first_name': ['Fred'],
@@ -98,54 +104,53 @@ def test_case_note_is_added_when_answers_have_changed():
         'do_you_have_someone_to_go_shopping_for_you': ['no']
     })
 
-    use_case = AddCEVRequests(create_help_request, here_to_help_api)
-    processed_data_frame = use_case.execute(data_frame=data_frame)
+        use_case = AddCEVRequests(self.create_help_request, self.here_to_help_api)
 
-    assert len(create_help_request.received_help_requests) == 1
+        self.processed_data_frame = use_case.execute(data_frame=data_frame)
 
-    case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  27/01/2021 14:14:56. Do you want supermarket deliveries? " \
-                "yes. Do you have someone to go shopping for you? no. Do you need someone to contact you about local " \
-                "support? yes."
+        self.created_test_help_request_id = self.create_help_request.get_returned_id()
 
-    note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
-    assert create_help_request.received_help_requests[0] == {
-        'Uprn': '',
-        'Metadata': {
-            'nsss_id': '123123'},
-        'Postcode': 'BR2 9FF',
-        'AddressFirstLine': '45 Cave Stone Road',
-        'AddressSecondLine': '',
-        'AddressThirdLine': 'Bedrock',
-        'CaseNotes': f'{{"author":"Data Ingestion: National Shielding Service System list","noteDate":" '
-        f'{note_date}","note":"{case_note}"}}',
-        'HelpWithSomethingElse': True,
-        'FirstName': 'Fred',
-        'LastName': 'Flintstone',
-        'DobDay': '2',
-        'DobMonth': '2',
-        'DobYear': '1963',
-        'ContactTelephoneNumber': '07344211233',
-        'ContactMobileNumber': '02344211233',
-        'EmailAddress': 'fred@rocks.st',
-        'CallbackRequired': True,
-        'HelpNeeded': 'Shielding',
-        'NhsNumber': '1234567890'}
+        self.test_case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  27/01/2021 14:14:56. Do you want supermarket deliveries? " \
+                    "yes. Do you have someone to go shopping for you? no. Do you need someone to contact you about local " \
+                    "support? yes."
 
-    created_test_help_request_id = create_help_request.get_returned_id()
+        self.test_note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
 
-    assert processed_data_frame.iloc[0].help_request_id == created_test_help_request_id
+    def test_create_help_request_is_called(self):
+        assert len(self.create_help_request.received_help_requests) == 1
 
-    assert len(here_to_help_api.get_help_request_called_with) == 1
+        assert self.create_help_request.received_help_requests[0] == {
+            'Uprn': '',
+            'Metadata': {
+                'nsss_id': '123123'},
+            'Postcode': 'BR2 9FF',
+            'AddressFirstLine': '45 Cave Stone Road',
+            'AddressSecondLine': '',
+            'AddressThirdLine': 'Bedrock',
+            'HelpWithSomethingElse': True,
+            'FirstName': 'Fred',
+            'LastName': 'Flintstone',
+            'DobDay': '2',
+            'DobMonth': '2',
+            'DobYear': '1963',
+            'ContactTelephoneNumber': '07344211233',
+            'ContactMobileNumber': '02344211233',
+            'EmailAddress': 'fred@rocks.st',
+            'CallbackRequired': True,
+            'HelpNeeded': 'Shielding',
+            'NhsNumber': '1234567890'}
 
-    assert here_to_help_api.get_help_request_called_with[0] == created_test_help_request_id
+    def test_check_created_help_request_needs(self):
+        assert len(self.here_to_help_api.get_help_request_called_with) == 1
 
-    assert len(here_to_help_api.create_case_note_called_with) == 1
+        assert self.here_to_help_api.get_help_request_called_with[0] == self.created_test_help_request_id
 
-    assert here_to_help_api.create_case_note_called_with[0] == {
-        'case_note': {
-            'author': 'Data Ingestion: National Shielding Service System '
-            'list',
-            'note': case_note,
-            'noteDate': note_date},
-        'help_request_id': created_test_help_request_id,
-        'resident_id': 1162}
+    def test_create_case_note_is_called(self):
+        assert len(self.here_to_help_api.create_case_note_called_with) == 1
+
+        assert self.here_to_help_api.create_case_note_called_with[0] == {
+            'case_note': {
+                'author': 'Data Ingestion: National Shielding Service System',
+                'note': self.test_case_note},
+            'help_request_id': self.created_test_help_request_id,
+            'resident_id': 1162}

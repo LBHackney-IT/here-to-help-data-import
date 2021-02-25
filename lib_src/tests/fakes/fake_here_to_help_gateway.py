@@ -1,5 +1,9 @@
+from faker import Faker
+
 class FakeHereToHelpGateway:
     def __init__(self, error=False, test_resident_id=1162, test_case_note=""):
+        self.fake = Faker(['en-GB', 'en_GB', 'en_GB', 'en-GB'])
+
         self.count = 0
         self.error = error
         self.resident_id = test_resident_id
@@ -19,24 +23,22 @@ class FakeHereToHelpGateway:
     def get_help_request(self, help_request_id):
         self.get_help_request_called_with.append(help_request_id)
 
-        default_case_note = "CEV: Dec 2020 Tier 4 NSSS Submitted on:  2021-02-05T03:10:31Z. Do you want supermarket deliveries? No. Do you have someone to go shopping for you? No. Do you need someone to contact you about local support? yes."
-
         return {
             "Id": help_request_id,
             "ResidentId": self.resident_id,
-            "IsOnBehalf": None,
-            "ConsentToCompleteOnBehalf": None,
-            "OnBehalfFirstName": None,
-            "OnBehalfLastName": None,
-            "OnBehalfEmailAddress": None,
-            "OnBehalfContactNumber": None,
+            "IsOnBehalf": self.fake.null_boolean(),
+            "ConsentToCompleteOnBehalf": self.fake.null_boolean(),
+            "OnBehalfFirstName": self.fake.first_name(),
+            "OnBehalfLastName": self.fake.last_name(),
+            "OnBehalfEmailAddress": self.fake.free_email(),
+            "OnBehalfContactNumber": self.fake.cellphone_number(),
             "RelationshipWithResident": None,
-            "Postcode": "YF2 9MI",
+            "Postcode": self.fake.postcode(),
             "Uprn": "5088439290",
             "Ward": None,
-            "AddressFirstLine": "30",
-            "AddressSecondLine": "Morningstar",
-            "AddressThirdLine": "Yasothon",
+            "AddressFirstLine": self.fake.street_address(),
+            "AddressSecondLine": "",
+            "AddressThirdLine": "",
             "GettingInTouchReason": None,
             "HelpWithAccessingFood": None,
             "HelpWithAccessingSupermarketFood": None,
@@ -53,7 +55,7 @@ class FakeHereToHelpGateway:
             "HelpWithJobsOrTraining": None,
             "HelpWithChildrenAndSchools": None,
             "HelpWithDisabilities": None,
-            "HelpWithSomethingElse": True,
+            "HelpWithSomethingElse": self.fake.boolean(),
             "MedicineDeliveryHelpNeeded": None,
             "IsPharmacistAbleToDeliver": None,
             "WhenIsMedicinesDelivered": None,
@@ -62,32 +64,32 @@ class FakeHereToHelpGateway:
             "UrgentEssentialsAnythingElse": None,
             "CurrentSupport": None,
             "CurrentSupportFeedback": None,
-            "FirstName": "Natalee",
-            "LastName": "Landon",
-            "DobMonth": "4",
-            "DobYear": "2013",
-            "DobDay": "3",
-            "ContactTelephoneNumber": "4338718059",
-            "ContactMobileNumber": "5486383574",
-            "EmailAddress": "nlandon7@flickr.com",
+            "FirstName": self.fake.first_name(),
+            "LastName": self.fake.last_name(),
+            "DobMonth": self.fake.month(),
+            "DobYear": self.fake.year(),
+            "DobDay": self.fake.day_of_month(),
+            "ContactTelephoneNumber": self.fake.phone_number(),
+            "ContactMobileNumber": self.fake.cellphone_number(),
+            "EmailAddress": self.fake.free_email(),
             "GpSurgeryDetails": None,
             "NumberOfChildrenUnder18": None,
             "ConsentToShare": None,
-            "DateTimeRecorded": "2021-02-17T09:29:24.814513",
+            "DateTimeRecorded": self.fake.date(),
             "RecordStatus": None,
             "InitialCallbackCompleted": None,
             "CallbackRequired": True,
             "CaseNotes": [{
-                "author": "Data Ingestion: National Shielding Service System list",
-                "noteDate": " Wed, 17 Feb 2021 09:29:24 ",
-                "note": self.case_note if self.case_note else default_case_note}],
+                "author": self.fake.name(),
+                "noteDate": self.fake.date(),
+                "note": self.case_note if self.case_note else self.fake.sentence()}],
             "AdviceNotes": None,
-            "HelpNeeded": "Shielding",
-            "NhsNumber": "7919366992",
-            "NhsCtasId": None,
-            "AssignedTo": None,
+            "HelpNeeded": self.fake.random_sample(elements=('Shielding', 'Contact Tracing', 'Welfare'), length=1)[0],
+            "NhsNumber": self.fake.numerify('############'),
+            "NhsCtasId": self.fake.uuid4(),
+            "AssignedTo": self.fake.name(),
             "Metadata": {
-                "nsss_id": "a00c886c-6994-45ce-92f0-dc64fe8f631c"},
+                "nsss_id": self.fake.uuid4()},
             "HelpRequestCalls": []}
 
     def create_case_note(self, resident_id, help_request_id, case_note):

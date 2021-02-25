@@ -73,7 +73,7 @@ class ProcessCevCalls:
 
             else:
                 print(
-                    "A file has been found in the \
+                    "NSSS output file found in \
                     output folder: https://drive.google.com/drive/folders/%s " %
                     (outbound_folder_id))
                 print("Will Abort")

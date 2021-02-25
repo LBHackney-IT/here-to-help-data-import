@@ -73,12 +73,12 @@ def spl_lambda_handler(event, context):
     )
     
     return [spl_response]	
-    
-    
 
 def nsss_lambda_handler(event, context):	
-    print('- -nsss_lambda_handler - -')	
-    
+    print('- -nsss_lambda_handler - -')
+    print(event)
+    print(context)
+
     here_to_help_gateway = HereToHelpGateway()
 
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
@@ -103,5 +103,10 @@ def nsss_lambda_handler(event, context):
         cev_inbound_folder_id,
         cev_outbound_folder_id
     )
-    
-    return [cev_response]
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": [cev_response]
+    }

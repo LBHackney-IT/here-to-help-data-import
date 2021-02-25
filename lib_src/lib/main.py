@@ -43,6 +43,23 @@ def lambda_handler(event, context):
         ct_outbound_folder_id
     )
 
+    return [response]
+    
+def spl_lambda_handler(event, context):	
+    print('- -spl_lambda_handler - -')	
+    
+    here_to_help_gateway = HereToHelpGateway()
+
+    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
+
+    key_file_location = path.relpath('lib/key_file.json')
+
+    google_drive_gateway = GoogleDriveGateway(key_file_location)
+
+    pygsheets_gateway = PygsheetsGateway(
+        key_file_location
+    )
+
     add_spl_requests = AddSPLRequests(create_help_request, here_to_help_gateway)
 
     process_spl_calls = ProcessSPLCalls(google_drive_gateway, pygsheets_gateway, add_spl_requests)
@@ -53,6 +70,25 @@ def lambda_handler(event, context):
     spl_response = process_spl_calls.execute(
         spl_inbound_folder_id,
         spl_outbound_folder_id
+    )
+    
+    return [spl_response]	
+    
+    
+
+def nsss_lambda_handler(event, context):	
+    print('- -nsss_lambda_handler - -')	
+    
+    here_to_help_gateway = HereToHelpGateway()
+
+    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
+
+    key_file_location = path.relpath('lib/key_file.json')
+
+    google_drive_gateway = GoogleDriveGateway(key_file_location)
+
+    pygsheets_gateway = PygsheetsGateway(
+        key_file_location
     )
 
     add_cev_requests = AddCEVRequests(create_help_request, here_to_help_gateway)
@@ -67,6 +103,5 @@ def lambda_handler(event, context):
         cev_inbound_folder_id,
         cev_outbound_folder_id
     )
-
-    return [response, spl_response, cev_response]
-  
+    
+    return [cev_response]

@@ -217,6 +217,22 @@ resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_she
   source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event.arn
 }
 
+resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet-SPL" {
+  statement_id_prefix  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.here-to-help-lambda-SPL.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event.arn
+}
+
+resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet-NSSS" {
+  statement_id_prefix  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.here-to-help-lambda-NSSS.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event.arn
+}
+
 resource "aws_iam_role" "here_to_help_role" {
   name               = "here-to-help-lambda-role"
   assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json

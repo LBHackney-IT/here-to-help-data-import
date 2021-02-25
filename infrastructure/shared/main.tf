@@ -191,6 +191,20 @@ resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
   is_enabled = true
 }
 
+resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-SPL" {
+  name                = "here-to-help-scheduled-event"
+  description         = "Fires every one minutes"
+  schedule_expression = "rate(30 minutes)"
+  is_enabled = true
+}
+
+resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-NSSS" {
+  name                = "here-to-help-scheduled-event"
+  description         = "Fires every one minutes"
+  schedule_expression = "rate(30 minutes)"
+  is_enabled = true
+}
+
 resource "aws_cloudwatch_event_target" "check_google_sheet" {
   rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
   target_id = "here-to-help-lambda"
@@ -198,13 +212,13 @@ resource "aws_cloudwatch_event_target" "check_google_sheet" {
 }
 
 resource "aws_cloudwatch_event_target" "check_google_sheet_spl" {
-  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
+  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event-SPL.name
   target_id = "here-to-help-lambda"
   arn       = aws_lambda_function.here-to-help-lambda-SPL.arn
 }
 
 resource "aws_cloudwatch_event_target" "check_google_sheet_nsss" {
-  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
+  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event-NSSS.name
   target_id = "here-to-help-lambda"
   arn       = aws_lambda_function.here-to-help-lambda-NSSS.arn
 }
@@ -222,7 +236,7 @@ resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_she
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.here-to-help-lambda-SPL.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event.arn
+  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event-SPL.arn
 }
 
 resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet-NSSS" {
@@ -230,7 +244,7 @@ resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_she
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.here-to-help-lambda-NSSS.function_name
   principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event.arn
+  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event-NSSS.arn
 }
 
 resource "aws_iam_role" "here_to_help_role" {

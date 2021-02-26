@@ -1,3 +1,5 @@
+import json
+
 from dotenv import load_dotenv
 from .gateways.here_to_help_api import HereToHelpGateway
 from .gateways.pygsheets_gateway import PygsheetsGateway
@@ -74,10 +76,11 @@ def spl_lambda_handler(event, context):
     
     return [spl_response]	
 
-def nsss_lambda_handler(event, context):	
+def nsss_lambda_handler(event, context, callback):
     print('- -nsss_lambda_handler - -')
     print(event)
     print(context)
+    print(callback)
 
     here_to_help_gateway = HereToHelpGateway()
 
@@ -103,10 +106,11 @@ def nsss_lambda_handler(event, context):
         cev_inbound_folder_id,
         cev_outbound_folder_id
     )
+
+    print(event)
+    print(context)
+    print(callback)
+
     return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": [cev_response]
+        "body": json.dumps([cev_response])
     }

@@ -213,13 +213,13 @@ resource "aws_cloudwatch_event_target" "check_google_sheet" {
 
 resource "aws_cloudwatch_event_target" "check_google_sheet_spl" {
   rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event-SPL.name
-  target_id = "here-to-help-lambda"
+  target_id = "here-to-help-lambda-spl"
   arn       = aws_lambda_function.here-to-help-lambda-SPL.arn
 }
 
 resource "aws_cloudwatch_event_target" "check_google_sheet_nsss" {
   rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event-NSSS.name
-  target_id = "here-to-help-lambda"
+  target_id = "here-to-help-lambda-nsss"
   arn       = aws_lambda_function.here-to-help-lambda-NSSS.arn
 }
 

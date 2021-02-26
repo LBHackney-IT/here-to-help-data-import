@@ -76,11 +76,10 @@ def spl_lambda_handler(event, context):
     
     return [spl_response]	
 
-def nsss_lambda_handler(event, context, callback):
+def nsss_lambda_handler(event, context):
     print('- -nsss_lambda_handler - -')
     print(event)
     print(context)
-    print(callback)
 
     here_to_help_gateway = HereToHelpGateway()
 
@@ -109,7 +108,6 @@ def nsss_lambda_handler(event, context, callback):
 
     print(event)
     print(context)
-    print(callback)
 
     return {
         "body": json.dumps([cev_response])

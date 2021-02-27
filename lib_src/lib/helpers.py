@@ -1,5 +1,6 @@
 from dateutil import parser
 import numpy as np
+import datetime as dt
 
 
 def parse_date_of_birth(date_of_birth, year_first=False, day_first=False):
@@ -24,6 +25,11 @@ def case_note_needs_an_update(case_notes_on_request, new_case_note):
             if case_note.get('note', None) != new_case_note:
                 return True
         return False
+
+
+def print_log(msg):
+    print(msg)
+    return f'[{dt.datetime.now()}]: {msg}'
 
 
 def clean_data(columns, data_frame):

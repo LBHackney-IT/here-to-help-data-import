@@ -45,7 +45,9 @@ def lambda_handler(event, context):
         ct_outbound_folder_id
     )
 
-    return [response]
+    return {
+        "body": json.dumps([response])
+    }
     
 def spl_lambda_handler(event, context):	
     print('- -spl_lambda_handler - -')	
@@ -73,8 +75,11 @@ def spl_lambda_handler(event, context):
         spl_inbound_folder_id,
         spl_outbound_folder_id
     )
-    
-    return [spl_response]	
+
+    return {
+        "body": json.dumps(spl_response)
+    }
+
 
 def nsss_lambda_handler(event, context):
     print('- -nsss_lambda_handler - -')
@@ -105,9 +110,6 @@ def nsss_lambda_handler(event, context):
         cev_inbound_folder_id,
         cev_outbound_folder_id
     )
-
-    print(event)
-    print(context)
 
     return {
         "body": json.dumps([cev_response])

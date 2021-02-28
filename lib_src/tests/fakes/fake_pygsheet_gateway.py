@@ -2,7 +2,7 @@ import pandas as pd
 
 
 class FakePygsheetGateway:
-    def __init__(self, return_dataframe):
+    def __init__(self, return_dataframe=''):
         self.return_dataframe = return_dataframe
         self.get_data_frame_from_sheet_called_with = []
         self.populate_spreadsheet_called_with = []

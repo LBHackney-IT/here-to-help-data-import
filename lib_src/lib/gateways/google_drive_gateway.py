@@ -15,6 +15,8 @@ from googleapiclient.discovery import build
 class GoogleDriveGateway:
 
     def __init__(self, key_file_location):
+        self.today = dt.datetime.now().date().strftime('%Y-%m-%d')
+
         scopes = ['https://www.googleapis.com/auth/drive']
 
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -22,11 +24,14 @@ class GoogleDriveGateway:
             scopes=scopes
         )
 
-        self.drive_service = build('drive', 'v3', credentials=credentials, cache_discovery=False)
+        self.drive_service = build(
+            'drive',
+            'v3',
+            credentials=credentials,
+            cache_discovery=False)
 
     def search_folder(self, folder_id: str, file_type: str):
         """returns new file id if there are new files that match the date given."""
-        today = dt.datetime.now().date().strftime('%Y-%m-%d')
 
         # Drive_service(call google api).Files(the files part of the api).List(list function)
         # includeItemsFromAllDrives=True,supportsAllDrives=True
@@ -64,16 +69,34 @@ class GoogleDriveGateway:
         items = filelist.get('files', [])
 
         for file in items:
-            if file.get('createdTime')[0:10] == today:
+            if file.get('createdTime')[0:10] == self.today:
                 file_name = file.get('name')
                 file_id = file.get('id')
-                print("Found a file: %s" %(file_name))
+                print("Found a file: %s" % (file_name))
                 foundcount += 1
 
         if foundcount > 0:
             return file_id
 
         return False
+
+    def get_list_of_files(self, folder_id: str):
+        file_list = self.drive_service.files().list(
+            includeItemsFromAllDrives=True,
+            supportsAllDrives=True,
+            q="'%s' in parents and trashed=False and mimeType = 'application/vnd.google-apps.%s'" %
+              (folder_id, "spreadsheet"),
+            fields="files(id, name, createdTime)").execute()
+
+        created_today = list(
+            filter(
+                lambda file: file.get('createdTime')[
+                    0:10] == self.today,
+                file_list.get(
+                    'files',
+                    [])))
+
+        return created_today
 
     def create_spreadsheet(self, destination_folder, file_name):
         folder_id = destination_folder

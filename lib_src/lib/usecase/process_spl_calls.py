@@ -1,5 +1,5 @@
-import datetime as dt
 from ..helpers import clean_data
+
 
 class ProcessSPLCalls:
     COLS = [
@@ -28,48 +28,12 @@ class ProcessSPLCalls:
         'uprn'
     ]
 
-    def __init__(self, google_drive_gateway, pygsheet_gateway, add_spl_requests):
-        self.google_drive_gateway = google_drive_gateway
-        self.pygsheet_gateway = pygsheet_gateway
+    def __init__(self, add_spl_requests):
         self.add_spl_requests = add_spl_requests
 
-    def execute(self, inbound_folder_id, outbound_folder_id):
-        inbound_spread_sheet_id = self.google_drive_gateway.search_folder(
-                inbound_folder_id, "spreadsheet")
+    def execute(self, data_frame):
+        data_frame = clean_data(columns=self.COLS, data_frame=data_frame)
 
-        if inbound_spread_sheet_id:
-            if not self.google_drive_gateway.search_folder(
-                    outbound_folder_id, "spreadsheet"):
+        processed_data_frame = self.add_spl_requests.execute(data_frame)
 
-                data_frame = self.pygsheet_gateway.get_data_frame_from_sheet(
-                    inbound_spread_sheet_id, 'A1')
-
-                data_frame = clean_data(columns=self.COLS, data_frame=data_frame)
-
-                processed_data_frame = self.add_spl_requests.execute(data_frame)
-
-                output = [{
-                    'sheet_title': 'hackney_cases',
-                    'data_frame': processed_data_frame
-                }]
-
-                today = dt.datetime.now().date().strftime('%Y-%m-%d')
-
-                hackney_output_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
-                    outbound_folder_id, f'Hackney_SPL_CASES_{today}')
-
-                self.pygsheet_gateway.populate_spreadsheet(
-                    output, spreadsheet_key=hackney_output_spreadsheet_key)
-
-            else:
-                print(
-                    "SPL output file found in \
-                    output folder: https://drive.google.com/drive/folders/%s " %
-                    (outbound_folder_id))
-                print("Will Abort")
-        else:
-            print(
-                "No File found for todays SPL Output in \
-                folder: https://drive.google.com/drive/folders/%s " %
-                (inbound_folder_id))
-            print("Will Abort")
+        return processed_data_frame

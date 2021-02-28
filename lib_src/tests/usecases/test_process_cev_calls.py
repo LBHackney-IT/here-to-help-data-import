@@ -1,8 +1,6 @@
-import datetime as dt
 from lib_src.lib.usecase.process_cev_calls import ProcessCevCalls
-from lib_src.tests.fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
-from lib_src.tests.fakes.fake_pygsheet_gateway import FakePygsheetGateway
 from lib_src.tests.fakes.fake_add_cev_requests import FakeAddCEVRequests
+import pandas as pd
 
 NSSS = {
     'ID': ['123123'],
@@ -45,76 +43,11 @@ NSSS = {
 # 'help_request_id'
 
 def test_processing_new_nsss_spreadsheet():
-    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
-    fake_pygsheet_gateway = FakePygsheetGateway(NSSS)
     fake_add_cev_requests = FakeAddCEVRequests()
 
     use_case = ProcessCevCalls(
-        fake_google_drive_gateway,
-        fake_pygsheet_gateway,
         fake_add_cev_requests)
 
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
-
-    today = dt.datetime.now().date().strftime('%Y-%m-%d')
-
-    assert len(fake_google_drive_gateway.search_folder_calls) == 2
-
-    assert len(fake_google_drive_gateway.created_spreadsheets) == 1
-
-    assert fake_google_drive_gateway.created_spreadsheets == [
-        {'folder_id': 'outbound_folder_id', 'spreadsheet_name': 'Hackney_NSSS_CASES_' + today}
-    ]
-
-    assert fake_pygsheet_gateway.get_data_frame_from_sheet_called_with == [
-        ['inbound_folder_id', 'A1']]
-
-    assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 1
+    use_case.execute(pd.DataFrame(data=[NSSS]))
 
     assert len(fake_add_cev_requests.execute_called_with) == 1
-
-
-def test_new_nsss_spreadsheet_but_it_has_been_processed():
-    fake_google_drive_gateway = FakeGoogleDriveGateway(True, True)
-    fake_pygsheet_gateway = FakePygsheetGateway(NSSS)
-    fake_add_cev_requests = FakeAddCEVRequests()
-
-    use_case = ProcessCevCalls(
-        fake_google_drive_gateway,
-        fake_pygsheet_gateway,
-        fake_add_cev_requests)
-
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
-
-    assert len(fake_google_drive_gateway.search_folder_calls) == 2
-
-    assert len(fake_google_drive_gateway.created_spreadsheets) == 0
-
-    assert len(fake_pygsheet_gateway.get_data_frame_from_sheet_called_with) == 0
-
-    assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 0
-
-    assert len(fake_add_cev_requests.execute_called_with) == 0
-
-
-def test_no_new_nsss_spreadsheet_to_process():
-    fake_google_drive_gateway = FakeGoogleDriveGateway(False, False)
-    fake_pygsheet_gateway = FakePygsheetGateway(NSSS)
-    fake_add_cev_requests = FakeAddCEVRequests()
-
-    use_case = ProcessCevCalls(
-        fake_google_drive_gateway,
-        fake_pygsheet_gateway,
-        fake_add_cev_requests)
-
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
-
-    assert len(fake_google_drive_gateway.search_folder_calls) == 1
-
-    assert len(fake_google_drive_gateway.created_spreadsheets) == 0
-
-    assert len(fake_pygsheet_gateway.get_data_frame_from_sheet_called_with) == 0
-
-    assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 0
-
-    assert len(fake_add_cev_requests.execute_called_with) == 0

@@ -306,3 +306,30 @@ resource "aws_iam_role_policy_attachment" "here-to-help-lambda-role-attachment" 
   role       = aws_iam_role.here_to_help_role.name
   policy_arn = aws_iam_policy.here_to_help_lambda_policy.arn
 }
+
+resource "aws_sns_topic" "here-to-help-data-ingestion-email-alert" {
+  name = "user-updates-topic"
+}
+
+resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
+  topic_arn = aws_sns_topic.here-to-help-data-ingestion-email-alert.arn
+  protocol  = "email"
+  endpoint  = "arn:aws:sqs:us-west-2:432981146916:terraform-queue-too" 
+}
+
+resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda-error-log" {
+  alarm_name                = "here-to-help-lambda-error-log"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "2"
+  metric_name               = "CPUUtilization"
+  namespace                 = "AWS/EC2"
+  period                    = "120"
+  statistic                 = "Average"
+  threshold                 = "1"
+  alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
+  alarm_actions             = [ "${aws_sns_topic.here-to-help-data-ingestion-email-alert.arn}" ]
+
+  dimensions {
+    FunctionName = "${aws_lambda_function.here-to-help-lambda.function_name}"
+  }
+}

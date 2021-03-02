@@ -291,7 +291,7 @@ data "aws_iam_policy_document" "here-to-help-lambda" {
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents"]
-    resources = ["arn:aws:logs:log-group:${aws_cloudwatch_log_group.here-to-help-lambda.name}:*"]
+    resources = ["arn:aws:logs:*:*:log-group:${aws_cloudwatch_log_group.here-to-help-lambda.name}:*"]
   }
   statement {
   actions = ["sts:AssumeRole"]
@@ -301,7 +301,8 @@ data "aws_iam_policy_document" "here-to-help-lambda" {
     type        = "Service"
     identifiers = ["lambda.amazonaws.com"]
   }
-}
+  }
+  depends_on = [aws_cloudwatch_log_group.here-to-help-lambda]
 }
 
 resource "aws_iam_policy" "here_to_help_lambda_policy" {
@@ -343,7 +344,7 @@ EOF
 }
 
 resource "aws_cloudwatch_log_group" "here-to-help-lambda" {
-  name = aws_lambda_function.here-to-help-lambda.function_name
+  name = "here-to-help-data-ingestion"
 }
 
 resource "aws_iam_role_policy_attachment" "here-to-help-lambda-role-attachment" {
@@ -371,6 +372,7 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
     namespace     = "here-to-help-lambda"
     value         = 1
   }
+  
 }
 
 resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda" {
@@ -382,11 +384,10 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda" {
   period                    = "120"
   statistic                 = "Sum"
   threshold                 = "1"
-  unit                      = "60"
   alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
   alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
 
-  dimensions {
+  dimensions = {
     FunctionName = aws_lambda_function.here-to-help-lambda.function_name
   }
 

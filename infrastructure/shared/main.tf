@@ -291,7 +291,7 @@ data "aws_iam_policy_document" "here-to-help-lambda" {
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents"]
-    resources = ["arn:aws:logs:log-group:${aws_cloudwatch_log_group.here-to-help-lambda-log-group.name}:*"]
+    resources = ["arn:aws:logs:log-group:${aws_cloudwatch_log_group.here-to-help-lambda.name}:*"]
   }
   statement {
   actions = ["sts:AssumeRole"]
@@ -364,7 +364,7 @@ resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-emai-subscrip
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   name           = "here-to-help-lambda-error-filter"
   pattern        = "ERROR"
-  log_group_name = aws_cloudwatch_log_group.here_to_help_lambda.name
+  log_group_name = aws_cloudwatch_log_group.here-to-help-lambda.name
 
   metric_transformation {
     name          = "CloudWatchLogError"

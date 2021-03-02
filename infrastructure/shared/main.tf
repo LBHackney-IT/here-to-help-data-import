@@ -95,7 +95,7 @@ resource "aws_s3_bucket_object" "handler" {
 }
 
 resource "aws_lambda_function" "here-to-help-lambda" {
-  role             = aws_iam_role.here_to_help_role.arn
+  role             = aws_iam_role.here_to_help_lambda_role.arn
   handler          = var.handler
   runtime          = var.runtime
   function_name    = var.function_name
@@ -194,14 +194,14 @@ resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
 resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-SPL" {
   name                = "here-to-help-scheduled-event"
   description         = "Fires every one minutes"
-  schedule_expression = "rate(30 minutes)"
+  schedule_expression = "rate(16 minutes)"
   is_enabled = true
 }
 
 resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-NSSS" {
   name                = "here-to-help-scheduled-event"
   description         = "Fires every one minutes"
-  schedule_expression = "rate(30 minutes)"
+  schedule_expression = "rate(16 minutes)"
   is_enabled = true
 }
 
@@ -252,6 +252,12 @@ resource "aws_iam_role" "here_to_help_role" {
   assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json
 }
 
+resource "aws_iam_role" "here_to_help_lambda_role" {
+  name               = "here-to-help-lambda"
+  assume_role_policy = data.aws_iam_policy_document.here-to-help-lambda.json
+}
+
+
 data "aws_iam_policy_document" "here_to_help_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -262,6 +268,40 @@ data "aws_iam_policy_document" "here_to_help_role" {
       identifiers = ["lambda.amazonaws.com"]
     }
   }
+}
+
+data "aws_iam_policy_document" "here-to-help-lambda" {
+  statement {
+    actions = [
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:DescribeInstances",
+      "ec2:AttachNetworkInterface",
+      "ec2:DescribeRouteTables",
+      "ec2:CreateRoute",
+      "ec2:DeleteRoute",
+      "ec2:ReplaceRoute",
+      "ssm:Describe*",
+      "ssm:Get*",
+      "ssm:List*"]
+    resources = ["*"]
+  }
+   statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"]
+    resources = ["arn:aws:logs:log-group:${aws_cloudwatch_log_group.here-to-help-lambda-log-group.name}:*"]
+  }
+  statement {
+  actions = ["sts:AssumeRole"]
+  effect  = "Allow"
+
+  principals {
+    type        = "Service"
+    identifiers = ["lambda.amazonaws.com"]
+  }
+}
 }
 
 resource "aws_iam_policy" "here_to_help_lambda_policy" {
@@ -302,7 +342,53 @@ resource "aws_iam_policy" "here_to_help_lambda_policy" {
 EOF
 }
 
+resource "aws_cloudwatch_log_group" "here-to-help-lambda" {
+  name = aws_lambda_function.here-to-help-lambda.function_name
+}
+
 resource "aws_iam_role_policy_attachment" "here-to-help-lambda-role-attachment" {
   role       = aws_iam_role.here_to_help_role.name
   policy_arn = aws_iam_policy.here_to_help_lambda_policy.arn
+}
+
+resource "aws_sns_topic" "here-to-help-data-ingestion" {
+  name = "here-to-help-data-ingestion"
+}
+
+resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-emai-subscriptionl" {
+  topic_arn = aws_sns_topic.here-to-help-data-ingestion.arn
+  protocol  = "email"
+  endpoint  = "maysa.kanoni@hackney.gov.uk" 
+}
+
+resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
+  name           = "here-to-help-lambda-error-filter"
+  pattern        = "ERROR"
+  log_group_name = aws_cloudwatch_log_group.here_to_help_lambda.name
+
+  metric_transformation {
+    name          = "CloudWatchLogError"
+    namespace     = "here-to-help-lambda"
+    value         = 1
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda" {
+  alarm_name                = "here-to-help-lambda-error"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "1"
+  metric_name               = "ErrorLogFilter"
+  namespace                 = "AWS/Lambda"
+  period                    = "120"
+  statistic                 = "Sum"
+  threshold                 = "1"
+  unit                      = "60"
+  alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
+  alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
+
+  dimensions {
+    FunctionName = aws_lambda_function.here-to-help-lambda.function_name
+  }
+
+  depends_on = [aws_sns_topic.here-to-help-data-ingestion]
 }

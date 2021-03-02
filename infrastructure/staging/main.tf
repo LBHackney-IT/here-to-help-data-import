@@ -6,11 +6,11 @@ terraform {
     }
   }
 
- backend "s3" {
-    region     = "eu-west-2"
-    key        = "tf-remote-state/here-to-help-data-ingestion"
-    bucket     = "here-to-help-data-ingestion-terraform-state-staging"
-    encrypt    = true
+  backend "s3" {
+    region  = "eu-west-2"
+    key     = "tf-remote-state/here-to-help-data-ingestion"
+    bucket  = "here-to-help-data-ingestion-terraform-state-staging"
+    encrypt = true
   }
 }
 
@@ -23,7 +23,7 @@ variable "api_url" {
 }
 
 module "all-resources" {
-  source = "../shared"
-  stage = "staging"
+  source  = "../shared"
+  stage   = "staging"
   api_url = var.api_url
 }

@@ -320,14 +320,16 @@ resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-emai-subscrip
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   name           = "here-to-help-lambda-error-filter"
   pattern        = "ERROR"
-  log_group_name = "/aws/lambda${var.function_name}"
+  log_group_name = "/aws/lambda/${var.function_name}"
 
   metric_transformation {
     name          = "CloudWatchLogError"
     namespace     = "here-to-help-lambda"
     value         = 1
   }
-  
+  depends_on = [
+    aws_lambda_function.here-to-help-lambda
+  ]
 }
 
 resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda" {

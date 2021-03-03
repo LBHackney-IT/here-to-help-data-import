@@ -1,8 +1,21 @@
 variable "function_name" {
   default = "here-to-help-data-ingestion"
 }
+
+variable "NSSS_function_name" {
+  default = "here-to-help-data-ingestion-NSSS"
+}
+
+variable "SPL_function_name" {
+  default = "here-to-help-data-ingestion-SPL"
+}
+
 variable "email_addresses" {
   default = ["maysa.kanoni@hackney.gov.uk", "ben.dalton@hackney.gov.uk"]
+}
+
+variable "data_ingestion_function_names" {
+  default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL"]
 }
 
 variable "spl_handler" {
@@ -133,7 +146,7 @@ resource "aws_lambda_function" "here-to-help-lambda-SPL" {
   role             = aws_iam_role.here_to_help_role.arn
   handler          = var.spl_handler
   runtime          = var.runtime
-  function_name    = "${var.function_name}-SPL"
+  function_name    = var.SPL_function_name
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
   s3_key           = aws_s3_bucket_object.handler.key
   source_code_hash = data.archive_file.lib_zip_file.output_base64sha256
@@ -161,7 +174,7 @@ resource "aws_lambda_function" "here-to-help-lambda-NSSS" {
   role             = aws_iam_role.here_to_help_role.arn
   handler          = var.nsss_handler
   runtime          = var.runtime
-  function_name    = "${var.function_name}-NSSS"
+  function_name    = var.NSSS_function_name
   s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
   s3_key           = aws_s3_bucket_object.handler.key
   source_code_hash = data.archive_file.lib_zip_file.output_base64sha256
@@ -322,9 +335,10 @@ resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-email-subscri
 }
 
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
-  name           = "here-to-help-lambda-error-filter"
+  count = length(var.data_ingestion_function_names)
+  name           = "${element(var.data_ingestion_function_names, count.index}-error-filter"
   pattern        = "ERROR"
-  log_group_name = "/aws/lambda/${var.function_name}"
+  log_group_name = "/aws/lambda/${element(var.data_ingestion_function_names, count.index)}"
 
   metric_transformation {
     name          = "CloudWatchLogError"
@@ -332,7 +346,9 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
     value         = 1
   }
   depends_on = [
-    aws_lambda_function.here-to-help-lambda
+    aws_lambda_function.here-to-help-lambda,
+    aws_lambda_function.here-to-help-lambda-SPL,
+    aws_lambda_function.here-to-help-lambda-NSSS    
   ]
 }
 

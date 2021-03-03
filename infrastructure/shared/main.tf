@@ -336,17 +336,14 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda" {
   alarm_name                = "here-to-help-lambda-error"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = "1"
-  metric_name               = "ErrorLogFilter"
+  metric_name               = "ErrorCount"
   namespace                 = "AWS/Lambda"
   period                    = "60"
   statistic                 = "Maximum"
   threshold                 = "0"
+  unit                      = "Count"
   alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
   alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
-
-  dimensions = {
-    FunctionName = aws_lambda_function.here-to-help-lambda.function_name
-  }
 
   depends_on = [aws_sns_topic.here-to-help-data-ingestion]
 }

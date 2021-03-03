@@ -338,9 +338,9 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda" {
   evaluation_periods        = "1"
   metric_name               = "ErrorLogFilter"
   namespace                 = "AWS/Lambda"
-  period                    = "120"
-  statistic                 = "Sum"
-  threshold                 = "1"
+  period                    = "60"
+  statistic                 = "Maximum"
+  threshold                 = "0"
   alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
   alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
 

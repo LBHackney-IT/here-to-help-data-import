@@ -122,7 +122,8 @@ resource "aws_lambda_function" "here-to-help-lambda" {
     }
   }
    depends_on = [
-    aws_s3_bucket_object.handler
+    aws_s3_bucket_object.handler,
+    aws_cloudwatch_log_group.here-to-help-lambda
   ]
 }
 
@@ -299,11 +300,12 @@ resource "aws_iam_policy" "here-to-help-lambda" {
       },
       {
         Action = [
-         "logs:CreateLogStream",
-        "logs:PutLogEvents"
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:logs:*:*:log-group:${aws_cloudwatch_log_group.here-to-help-lambda.name}:*"
+        Resource = "arn:aws:logs:*:*:*"
       },
     ]
   })

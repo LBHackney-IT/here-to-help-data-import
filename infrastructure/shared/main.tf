@@ -254,9 +254,8 @@ resource "aws_iam_role" "here_to_help_role" {
 
 resource "aws_iam_role" "here_to_help_lambda_role" {
   name               = "here-to-help-lambda"
-  assume_role_policy = data.aws_iam_policy_document.here-to-help-lambda.json
+  assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json
 }
-
 
 data "aws_iam_policy_document" "here_to_help_role" {
   statement {
@@ -274,38 +273,45 @@ resource "aws_cloudwatch_log_group" "here-to-help-lambda" {
   name = var.function_name
 }
 
-data "aws_iam_policy_document" "here-to-help-lambda" {
-  statement {
-    actions = [
-      "ec2:DescribeNetworkInterfaces",
-      "ec2:CreateNetworkInterface",
-      "ec2:DeleteNetworkInterface",
-      "ec2:DescribeInstances",
-      "ec2:AttachNetworkInterface",
-      "ec2:DescribeRouteTables",
-      "ec2:CreateRoute",
-      "ec2:DeleteRoute",
-      "ec2:ReplaceRoute",
-      "ssm:Describe*",
-      "ssm:Get*",
-      "ssm:List*"]
-    resources = ["*"]
-  }
-   statement {
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents"]
-    resources = ["arn:aws:logs:*:*:log-group:${aws_cloudwatch_log_group.here-to-help-lambda.name}:*"]
-  }
-  statement {
-  actions = ["sts:AssumeRole"]
-  effect  = "Allow"
+resource "aws_iam_policy" "here-to-help-lambda" {
+  name        = "here-to-help-lambda"
 
-  principals {
-    type        = "Service"
-    identifiers = ["lambda.amazonaws.com"]
-  }
-  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeInstances",
+          "ec2:AttachNetworkInterface",
+          "ec2:DescribeRouteTables",
+          "ec2:CreateRoute",
+          "ec2:DeleteRoute",
+          "ec2:ReplaceRoute",
+          "ssm:Describe*",
+          "ssm:Get*",
+          "ssm:List*"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+      {
+        Action = [
+         "logs:CreateLogStream",
+        "logs:PutLogEvents"
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:logs:*:*:log-group:${aws_cloudwatch_log_group.here-to-help-lambda.name}:*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "here-to-help-lambda-attachment" {
+  role       = aws_iam_role.here_to_help_lambda_role.name
+  policy_arn = aws_iam_policy.here-to-help-lambda.arn
 }
 
 resource "aws_iam_policy" "here_to_help_lambda_policy" {

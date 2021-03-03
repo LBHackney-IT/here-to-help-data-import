@@ -95,7 +95,7 @@ resource "aws_s3_bucket_object" "handler" {
 }
 
 resource "aws_lambda_function" "here-to-help-lambda" {
-  role             = aws_iam_role.here_to_help_lambda_role.arn
+  role             = aws_iam_role.here_to_help_role.arn
   handler          = var.handler
   runtime          = var.runtime
   function_name    = var.function_name
@@ -123,7 +123,6 @@ resource "aws_lambda_function" "here-to-help-lambda" {
   }
    depends_on = [
     aws_s3_bucket_object.handler,
-    aws_cloudwatch_log_group.here-to-help-lambda
   ]
 }
 
@@ -253,11 +252,6 @@ resource "aws_iam_role" "here_to_help_role" {
   assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json
 }
 
-resource "aws_iam_role" "here_to_help_lambda_role" {
-  name               = "here-to-help-lambda"
-  assume_role_policy = data.aws_iam_policy_document.here_to_help_role.json
-}
-
 data "aws_iam_policy_document" "here_to_help_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -268,52 +262,6 @@ data "aws_iam_policy_document" "here_to_help_role" {
       identifiers = ["lambda.amazonaws.com"]
     }
   }
-}
-
-resource "aws_cloudwatch_log_group" "here-to-help-lambda" {
-  name = var.function_name
-}
-
-resource "aws_iam_policy" "here-to-help-lambda" {
-  name        = "here-to-help-lambda"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = [
-          "ec2:DescribeNetworkInterfaces",
-          "ec2:CreateNetworkInterface",
-          "ec2:DeleteNetworkInterface",
-          "ec2:DescribeInstances",
-          "ec2:AttachNetworkInterface",
-          "ec2:DescribeRouteTables",
-          "ec2:CreateRoute",
-          "ec2:DeleteRoute",
-          "ec2:ReplaceRoute",
-          "ssm:Describe*",
-          "ssm:Get*",
-          "ssm:List*"
-        ]
-        Effect   = "Allow"
-        Resource = "*"
-      },
-      {
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Effect   = "Allow"
-        Resource = "arn:aws:logs:*:*:*"
-      },
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "here-to-help-lambda-attachment" {
-  role       = aws_iam_role.here_to_help_lambda_role.name
-  policy_arn = aws_iam_policy.here-to-help-lambda.arn
 }
 
 resource "aws_iam_policy" "here_to_help_lambda_policy" {
@@ -372,7 +320,7 @@ resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-emai-subscrip
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   name           = "here-to-help-lambda-error-filter"
   pattern        = "ERROR"
-  log_group_name = aws_cloudwatch_log_group.here-to-help-lambda.name
+  log_group_name = "/aws/lambda${var.function_name}"
 
   metric_transformation {
     name          = "CloudWatchLogError"

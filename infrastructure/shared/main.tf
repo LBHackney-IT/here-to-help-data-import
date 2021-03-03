@@ -187,7 +187,7 @@ resource "aws_lambda_function" "here-to-help-lambda-NSSS" {
 resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
   name                = "here-to-help-scheduled-event"
   description         = "Fires every one minutes"
-  schedule_expression = "rate(16 minutes)"
+  schedule_expression = "rate(5 minutes)"
   is_enabled = true
 }
 

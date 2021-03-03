@@ -324,7 +324,7 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
 
   metric_transformation {
     name          = "CloudWatchLogError"
-    namespace     = "here-to-help-lambda"
+    namespace     = "ErrorCount"
     value         = 1
   }
   depends_on = [

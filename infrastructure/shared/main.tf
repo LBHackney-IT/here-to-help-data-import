@@ -323,7 +323,7 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   log_group_name = "/aws/lambda/${var.function_name}"
 
   metric_transformation {
-    name          = "DeliveryErrors"
+    name          = "CloudWatchLogError"
     namespace     = "ErrorCount"
     value         = 1
   }

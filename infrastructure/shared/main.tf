@@ -270,6 +270,10 @@ data "aws_iam_policy_document" "here_to_help_role" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "here-to-help-lambda" {
+  name = var.function_name
+}
+
 data "aws_iam_policy_document" "here-to-help-lambda" {
   statement {
     actions = [
@@ -302,7 +306,6 @@ data "aws_iam_policy_document" "here-to-help-lambda" {
     identifiers = ["lambda.amazonaws.com"]
   }
   }
-  depends_on = [aws_cloudwatch_log_group.here-to-help-lambda]
 }
 
 resource "aws_iam_policy" "here_to_help_lambda_policy" {
@@ -341,10 +344,6 @@ resource "aws_iam_policy" "here_to_help_lambda_policy" {
   ]
 }
 EOF
-}
-
-resource "aws_cloudwatch_log_group" "here-to-help-lambda" {
-  name = "here-to-help-data-ingestion"
 }
 
 resource "aws_iam_role_policy_attachment" "here-to-help-lambda-role-attachment" {

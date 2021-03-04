@@ -46,8 +46,8 @@ variable "api_url" {
   type = string
 }
 
-variable "email_addresses" {
-  default = data.aws_ssm_parameter.email-addresses-for-sns
+output "email_addresses" {
+  value = data.aws_ssm_parameter.email-addresses-for-sns
 }
 
 variable "stage" {

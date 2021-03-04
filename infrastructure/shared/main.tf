@@ -35,6 +35,7 @@ variable "subnet_ids_for_lambda" {
               "production" = ["subnet-01d3657f97a243261", "subnet-0b7b8fea07efabf34"]
             }
 }
+
 variable "sg_for_lambda" {
   default = { "development" =  ["sg-0295c6df4beffa609"],
               "staging" = ["sg-0cd6d0dd6097bb9e8"],

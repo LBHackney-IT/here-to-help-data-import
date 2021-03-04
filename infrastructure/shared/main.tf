@@ -10,13 +10,15 @@ variable "SPL_function_name" {
   default = "here-to-help-data-ingestion-SPL"
 }
 
-variable "email_addresses" {
-  default = ["maysa.kanoni@hackney.gov.uk", "ben.dalton@hackney.gov.uk"]
-}
 
 variable "data_ingestion_function_names" {
   default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL"]
 }
+
+variable "emails_list" {
+  default = ${split(",", var.email_addresses)}
+}
+
 
 variable "spl_handler" {
   default = "lib.main.spl_lambda_handler"
@@ -47,6 +49,10 @@ variable "sg_for_lambda" {
 }
 
 variable "api_url" {
+  type = string
+}
+
+variable "email_addresses" {
   type = string
 }
 
@@ -328,15 +334,15 @@ resource "aws_sns_topic" "here-to-help-data-ingestion" {
 }
 
 resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-email-subscription" { 
-  count = length(var.email_addresses)
+  count = length(var.emails_list)
   topic_arn = aws_sns_topic.here-to-help-data-ingestion.arn
   protocol  = "email"
-  endpoint  = element(var.email_addresses, count.index)
+  endpoint  = element(var.emails_list, count.index)
 }
 
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   count = length(var.data_ingestion_function_names)
-  name           = "${element(var.data_ingestion_function_names, count.index}-error-filter"
+  name           = "${element(var.data_ingestion_function_names, count.index)}-error-filter"
   pattern        = "ERROR"
   log_group_name = "/aws/lambda/${element(var.data_ingestion_function_names, count.index)}"
 

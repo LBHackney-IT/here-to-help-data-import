@@ -21,9 +21,12 @@ provider "aws" {
 variable "api_url" {
   type = string
 }
-
+variable "email_addresses" {
+  type = string
+}
 module "all-resources" {
   source = "../shared"
   stage = "development"
   api_url = var.api_url
+  email_addresses = var.email_addresses
 }

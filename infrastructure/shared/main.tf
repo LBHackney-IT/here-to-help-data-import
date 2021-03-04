@@ -47,11 +47,15 @@ variable "api_url" {
 }
 
 variable "email_addresses" {
-  type = list
+  default = data.aws_ssm_parameter.email-addresses-for-sns
 }
 
 variable "stage" {
   type = string
+}
+
+data "aws_ssm_parameter" "email-addresses-for-sns" {
+  name = "/here-to-help-data-ingestion/${var.stage}/email-addresses-for-sns"
 }
 
 data "aws_ssm_parameter" "api_key" {

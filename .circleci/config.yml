@@ -89,8 +89,6 @@ commands:
         type: string
       help_request_api_url:
         type: string
-      email_addresses:
-        type: string
     steps:
       - *attach_workspace
       - checkout
@@ -163,21 +161,18 @@ jobs:
       - terraform-init-then-apply:
           stage: "development"
           help_request_api_url: $HELP_REQUEST_API_URL_DEVELOPEMENT
-          email_addresses: $LAMBDA_ERROR_EMAIL_NOTIFICATION_LIST_STAGING
   terraform-init-and-apply-to-staging:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
           stage: "staging"
           help_request_api_url: $HELP_REQUEST_API_URL_DEVELOPEMENT
-          email_addresses: $LAMBDA_ERROR_EMAIL_NOTIFICATION_LIST_STAGING
   terraform-init-and-apply-to-production:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
           stage: "production"
           help_request_api_url: $HELP_REQUEST_API_URL_PRODUCTION
-          email_addresses: $LAMBDA_ERROR_EMAIL_NOTIFICATION_LIST_PRODUCTION
 
 workflows:
   version: 2

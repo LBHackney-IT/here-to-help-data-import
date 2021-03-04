@@ -10,15 +10,9 @@ variable "SPL_function_name" {
   default = "here-to-help-data-ingestion-SPL"
 }
 
-
 variable "data_ingestion_function_names" {
   default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL"]
 }
-
-variable "emails_list" {
-  default = ${split(",", var.email_addresses)}
-}
-
 
 variable "spl_handler" {
   default = "lib.main.spl_lambda_handler"
@@ -53,7 +47,7 @@ variable "api_url" {
 }
 
 variable "email_addresses" {
-  type = string
+  type = list
 }
 
 variable "stage" {
@@ -334,10 +328,10 @@ resource "aws_sns_topic" "here-to-help-data-ingestion" {
 }
 
 resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-email-subscription" { 
-  count = length(var.emails_list)
+  count = length(var.email_addresses)
   topic_arn = aws_sns_topic.here-to-help-data-ingestion.arn
   protocol  = "email"
-  endpoint  = element(var.emails_list, count.index)
+  endpoint  = element(var.email_addresses, count.index)
 }
 
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {

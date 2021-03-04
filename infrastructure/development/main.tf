@@ -28,5 +28,5 @@ module "all-resources" {
   source = "../shared"
   stage = "development"
   api_url = var.api_url
-  email_addresses = var.email_addresses
+  email_addresses = split(",", var.email_addresses)
 }

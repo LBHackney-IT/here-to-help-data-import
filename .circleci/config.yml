@@ -105,7 +105,7 @@ commands:
           name: Terrafrom Apply
           command: |
             cd infrastructure/<<parameters.stage>>
-            terraform apply -var api_url=<<parameters.help_request_api_url>>  -var email_addresses=<<parameters.email_addresses>> -auto-approve
+            terraform apply -auto-approve -var api_url,email_addresses=<<[parameters.help_request_api_url, parameters.email_addresses]>> 
 
 jobs:
   build-and-test:

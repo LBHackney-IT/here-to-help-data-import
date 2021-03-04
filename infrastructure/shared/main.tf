@@ -46,8 +46,8 @@ variable "api_url" {
   type = string
 }
 
-output "email_addresses" {
-  value = data.aws_ssm_parameter.email-addresses-for-sns
+locals {
+  emails = split(",", data.aws_ssm_parameter.email-addresses-for-sns.value)
 }
 
 variable "stage" {
@@ -332,10 +332,10 @@ resource "aws_sns_topic" "here-to-help-data-ingestion" {
 }
 
 resource "aws_sns_topic_subscription" "here-to-help-data-ingestion-email-subscription" { 
-  count = length(var.email_addresses)
+  count = length(local.emails)
   topic_arn = aws_sns_topic.here-to-help-data-ingestion.arn
   protocol  = "email"
-  endpoint  = element(var.email_addresses, count.index)
+  endpoint  = element(local.emails, count.index)
 }
 
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {

@@ -135,10 +135,6 @@ resource "aws_lambda_function" "here-to-help-lambda" {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
       CT_INBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_inbound_folder_id.value
       CT_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.ct_outbound_folder_id.value
-      CEV_INBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_inbound_folder_id.value
-      CEV_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.cev_outbound_folder_id.value
-      SPL_INBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_inbound_folder_id.value
-      SPL_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.spl_outbound_folder_id.value
     }
   }
    depends_on = [
@@ -356,8 +352,8 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   ]
 }
 
-resource "aws_cloudwatch_metric_alarm" "here-to-help-lambda" {
-  alarm_name                = "here-to-help-lambda-error"
+resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion" {
+  alarm_name                = "here-to-help-data-ingestion"
   comparison_operator       = "GreaterThanThreshold"
   evaluation_periods        = "1"
   metric_name               = "CloudWatchLogError"

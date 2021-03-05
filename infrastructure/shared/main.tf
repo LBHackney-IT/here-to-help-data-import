@@ -357,7 +357,6 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion" {
   alarm_name                = "here-to-help-data-ingestion"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = "1"
-  datapoints_to_alarm       = "1"
   metric_name               = "CloudWatchLogError"
   namespace                 = "ErrorCount"
   period                    = "960"

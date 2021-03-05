@@ -357,48 +357,13 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion" {
   alarm_name                = "here-to-help-data-ingestion"
   comparison_operator       = "GreaterThanThreshold"
   evaluation_periods        = "1"
-  datapoints_to_alarm       = "1"
+  metric_name               = "CloudWatchLogError"
+  namespace                 = "ErrorCount"
+  period                    = "960"
+  statistic                 = "Sum"
   threshold                 = "1"
   alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
   alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
   depends_on = [aws_sns_topic.here-to-help-data-ingestion]
-
-  metric_query {
-    id = "SPL_errorCount"
-
-    metric {
-      metric_name = "CloudWatchLogError"
-      namespace   = "ErrorCount"
-      period      = 300
-      stat        = "Sum"
-
-      dimensions = {
-        FunctionName = aws_lambda_function.here-to-help-lambda-SPL.function_name
-      }
-    }
-  }
-
-  metric_query {
-    id = "SPL_invocations"
-
-    metric {
-      metric_name = "Invocations"
-      namespace   = "AWS/Lambda"
-      period      = 300
-      stat        = "Sum"
-
-      dimensions = {
-        FunctionName = aws_lambda_function.here-to-help-lambda-SPL.function_name
-      }
-    }
-  }
-
-  metric_query {
-    id = "errorRate"
-
-    expression  = " ( SPL_errorCount / SPL_invocations ) * 100"
-    label       = "Lambda error rate percentage"
-    return_data = "true"
-  }
 }
 

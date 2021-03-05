@@ -363,9 +363,8 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion" {
   period                    = "300"
   statistic                 = "Sum"
   threshold                 = "2"
-  treat_missing_data        = "notBreaching"
+  treat_missing_data        = "missing"
   alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
   alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
   depends_on = [aws_sns_topic.here-to-help-data-ingestion]
 }
-

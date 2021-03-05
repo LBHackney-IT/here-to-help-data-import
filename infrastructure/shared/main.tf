@@ -356,13 +356,13 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
 resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion" {
   alarm_name                = "here-to-help-data-ingestion"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
-  evaluation_periods        = "5"
-  datapoints_to_alarm       = "4"
+  evaluation_periods        = "1"
+  datapoints_to_alarm       = "1"
   metric_name               = "CloudWatchLogError"
   namespace                 = "ErrorCount"
   period                    = "300"
   statistic                 = "Sum"
-  threshold                 = "1"
+  threshold                 = "2"
   treat_missing_data        = "notBreaching"
   alarm_description         = "This metric monitors errors on the here-to-help-ingestion lambda logs"
   alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]

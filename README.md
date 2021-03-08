@@ -16,6 +16,7 @@ There are three data ingestion processes, and therefore three lambdas in this si
 - pytest test framework
 
 # How it works
+![](https://user-images.githubusercontent.com/46002877/110338795-526abb00-801f-11eb-94c7-abc6d0d19d5b.png)
 
 - AWS Lambdas have a maximum execution time of 15 minutes. Therefore, the ingestion lambda is configured to invoked by a cloudwatch event every 16 mins, this is to avoid concurrency issues
 

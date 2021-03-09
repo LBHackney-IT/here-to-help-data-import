@@ -13,7 +13,7 @@ class AddContactTracingRequests:
             row = row.to_dict()
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
-                row['Date of Birth'], day_first=True)
+                row['Date of Birth'])
 
             metadata = {
                 "first_symptomatic_at": row["First Symptomatic At"],

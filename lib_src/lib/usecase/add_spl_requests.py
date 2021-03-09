@@ -13,7 +13,7 @@ class AddSPLRequests:
         for index, row in data_frame.iterrows():
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
-                row.DateOfBirth, year_first=True)
+                row.DateOfBirth)
 
             metadata = {
                 "spl_id": row.Traced_NHSNUMBER

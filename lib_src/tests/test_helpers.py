@@ -1,4 +1,3 @@
-import pytest
 from faker import Faker
 from lib_src.lib.helpers import parse_date_of_birth, case_note_needs_an_update
 
@@ -8,11 +7,29 @@ class TestParseDateOfBirth:
     def test_year_first_no_separators(self):
         test_date = '19830502'
         dob_day, dob_month, dob_year = parse_date_of_birth(
-            test_date, year_first=True)
+            test_date)
 
         assert dob_day == 2
         assert dob_month == 5
         assert dob_year == 1983
+
+    def test_recent_year_first_no_separators(self):
+        test_date = '20020220'
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            test_date)
+
+        assert dob_day == 20
+        assert dob_month == 2
+        assert dob_year == 2002
+
+    def test_recent_day_first_no_separators(self):
+        test_date = '20122013'
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            test_date)
+
+        assert dob_day == 20
+        assert dob_month == 12
+        assert dob_year == 2013
 
     def test_year_first_with_separators(self):
         test_date = '1983-05-02'
@@ -22,19 +39,45 @@ class TestParseDateOfBirth:
         assert dob_month == 5
         assert dob_year == 1983
 
-    def test_day_first_with_separators(self):
-        test_date = '11/10/1989'
+    def test_day_first_with_slash_separators(self):
         dob_day, dob_month, dob_year = parse_date_of_birth(
-            test_date, day_first=True)
+            '03/10/1989')
+
+        assert dob_day == 3
+        assert dob_month == 10
+        assert dob_year == 1989
+
+    def test_day_first_with_dot_separators(self):
+        test_date = '11.10.1989'
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            test_date)
 
         assert dob_day == 11
         assert dob_month == 10
         assert dob_year == 1989
 
+    def test_day_first_with_space_separators(self):
+        test_date = '11 10 1989'
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            test_date)
+
+        assert dob_day == 11
+        assert dob_month == 10
+        assert dob_year == 1989
+
+    def test_day_first_with_separators(self):
+        test_date = '1989-11-10'
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            test_date)
+
+        assert dob_day == 10
+        assert dob_month == 11
+        assert dob_year == 1989
+
     def test_empty_string(self):
         test_date = ''
         dob_day, dob_month, dob_year = parse_date_of_birth(
-            test_date, day_first=True)
+            test_date)
 
         assert dob_day == ''
         assert dob_month == ''
@@ -43,25 +86,16 @@ class TestParseDateOfBirth:
     def test_undefined(self):
         test_date = None
         dob_day, dob_month, dob_year = parse_date_of_birth(
-            test_date, day_first=True)
+            test_date)
 
         assert dob_day == ''
         assert dob_month == ''
         assert dob_year == ''
 
-    def test_short_year(self):
-        test_date = '200596'
-        dob_day, dob_month, dob_year = parse_date_of_birth(
-            test_date, day_first=True)
-
-        assert dob_day == 20
-        assert dob_month == 5
-        assert dob_year == 1996
-
     def test_short_year_year_first(self):
-        test_date = '020520'
+        test_date = '20020520'
         dob_day, dob_month, dob_year = parse_date_of_birth(
-            test_date, year_first=True)
+            test_date)
 
         assert dob_day == 20
         assert dob_month == 5

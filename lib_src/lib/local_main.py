@@ -1,4 +1,8 @@
-from lib_src.lib.main import spl_lambda_handler
+from lib_src.lib.main import self_isolation_lambda_handler
+from dotenv import load_dotenv
+
 
 if __name__ == '__main__':
-    spl_lambda_handler('event', 'context')
+    load_dotenv()
+
+    self_isolation_lambda_handler('event', 'context')

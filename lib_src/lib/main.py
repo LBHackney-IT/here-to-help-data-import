@@ -139,6 +139,12 @@ def self_isolation_lambda_handler(event, context):
         key_file_location
     )
 
+    self_isolation_inbound_folder_id = getenv("SELF_ISOLATION_INBOUND_FOLDER_ID")
+    self_isolation_outbound_folder_id = getenv("SELF_ISOLATION_OUTBOUND_FOLDER_ID")
+
+    something = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
+    print(something)
+
     return {
         "body": "success"
     }

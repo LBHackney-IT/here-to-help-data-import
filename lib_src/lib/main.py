@@ -123,3 +123,22 @@ def nsss_lambda_handler(event, context):
     return {
         "body": json.dumps([cev_response])
     }
+
+def self_isolation_lambda_handler(event, context):
+    print('- -self_isolation_lambda_handler - -')
+
+    here_to_help_gateway = HereToHelpGateway()
+
+    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
+
+    key_file_location = path.relpath('lib/key_file.json')
+
+    google_drive_gateway = GoogleDriveGateway(key_file_location)
+
+    pygsheets_gateway = PygsheetsGateway(
+        key_file_location
+    )
+
+    return {
+        "body": "success"
+    }

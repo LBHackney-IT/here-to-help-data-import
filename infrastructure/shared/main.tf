@@ -10,8 +10,16 @@ variable "SPL_function_name" {
   default = "here-to-help-data-ingestion-SPL"
 }
 
+variable "self_isolation_function_name" {
+  default = "here-to-help-data-ingestion-self-isolation"
+}
+
 variable "data_ingestion_function_names" {
   default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL"]
+}
+
+variable "self_isolation_handler" {
+  default = "lib.main.self_isolation_lambda_handler"
 }
 
 variable "spl_handler" {
@@ -199,6 +207,32 @@ resource "aws_lambda_function" "here-to-help-lambda-NSSS" {
   ]
 }
 
+resource "aws_lambda_function" "here-to-help-lambda-self-isolation" {
+  role             = aws_iam_role.here_to_help_role.arn
+  handler          = var.self_isolation_handler
+  runtime          = var.runtime
+  function_name    = var.self_isolation_function_name
+  s3_bucket        = aws_s3_bucket.s3_deployment_artefacts.bucket
+  s3_key           = aws_s3_bucket_object.handler.key
+  source_code_hash = data.archive_file.lib_zip_file.output_base64sha256
+  memory_size = 10240
+  timeout = 900
+
+  vpc_config {
+    subnet_ids         = lookup(var.subnet_ids_for_lambda, var.stage)
+    security_group_ids = lookup(var.sg_for_lambda, var.stage)
+  }
+  environment {
+    variables = {
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
+      CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
+    }
+  }
+   depends_on = [
+    aws_s3_bucket_object.handler
+  ]
+}
+
 # See also the following AWS managed policy: AWSLambdaBasicExecutionRole
 
 resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event" {
@@ -216,6 +250,13 @@ resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-SPL" {
 }
 
 resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-NSSS" {
+  name                = "here-to-help-scheduled-event"
+  description         = "Fires every one minutes"
+  schedule_expression = "rate(16 minutes)"
+  is_enabled = true
+}
+
+resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-self-isolation" {
   name                = "here-to-help-scheduled-event"
   description         = "Fires every one minutes"
   schedule_expression = "rate(16 minutes)"
@@ -240,6 +281,12 @@ resource "aws_cloudwatch_event_target" "check_google_sheet_nsss" {
   arn       = aws_lambda_function.here-to-help-lambda-NSSS.arn
 }
 
+resource "aws_cloudwatch_event_target" "check_google_sheet_self_isolation" {
+  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event-self-isolation.name
+  target_id = "here-to-help-lambda-self-isolation"
+  arn       = aws_lambda_function.here-to-help-lambda-self-isolation.arn
+}
+
 resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet" {
   statement_id_prefix  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
@@ -262,6 +309,14 @@ resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_she
   function_name = aws_lambda_function.here-to-help-lambda-NSSS.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event-NSSS.arn
+}
+
+resource "aws_lambda_permission" "allow_lambda_logging_and_call_check_google_sheet-self-isolation" {
+  statement_id_prefix  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.here-to-help-lambda-self-isolation.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.here-to-help-scheduled-event-self-isolation.arn
 }
 
 resource "aws_iam_role" "here_to_help_role" {

@@ -15,7 +15,7 @@ variable "self_isolation_function_name" {
 }
 
 variable "data_ingestion_function_names" {
-  default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL"]
+  default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL", "here-to-help-data-ingestion-self-isolation"]
 }
 
 variable "self_isolation_handler" {
@@ -97,6 +97,14 @@ data "aws_ssm_parameter" "spl_inbound_folder_id" {
 
 data "aws_ssm_parameter" "spl_outbound_folder_id" {
   name = "/cv-19-res-support-v3/${var.stage}/spl_outbound_folder_id"
+}
+
+data "aws_ssm_parameter" "self_isolation_inbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/self_isolation_inbound_folder_id"
+}
+
+data "aws_ssm_parameter" "self_isolation_outbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/self_isolation_outbound_folder_id"
 }
 
 data "archive_file" "lib_zip_file" {
@@ -226,6 +234,8 @@ resource "aws_lambda_function" "here-to-help-lambda-self-isolation" {
     variables = {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
+      SELF_ISOLATION_INBOUND_FOLDER_ID = data.aws_ssm_parameter.self_isolation_inbound_folder_id.value
+      SELF_ISOLATION_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.self_isolation_outbound_folder_id.value
     }
   }
    depends_on = [
@@ -404,7 +414,8 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   depends_on = [
     aws_lambda_function.here-to-help-lambda,
     aws_lambda_function.here-to-help-lambda-SPL,
-    aws_lambda_function.here-to-help-lambda-NSSS    
+    aws_lambda_function.here-to-help-lambda-NSSS,
+    aws_lambda_function.here-to-help-lambda-self-isolation
   ]
 }
 

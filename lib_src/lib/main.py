@@ -19,7 +19,6 @@ load_dotenv()
 
 
 def lambda_handler(event, context):
-
     print('- -start up - -')
 
     here_to_help_gateway = HereToHelpGateway()
@@ -51,6 +50,7 @@ def lambda_handler(event, context):
     return {
         "body": json.dumps([response])
     }
+
 
 def spl_lambda_handler(event, context):
     print('- -spl_lambda_handler - -')
@@ -88,6 +88,7 @@ def spl_lambda_handler(event, context):
         "body": json.dumps([spl_response])
     }
 
+
 def nsss_lambda_handler(event, context):
     print('- -nsss_lambda_handler - -')
 
@@ -124,6 +125,7 @@ def nsss_lambda_handler(event, context):
         "body": json.dumps([cev_response])
     }
 
+
 def self_isolation_lambda_handler(event, context):
     print('- -self_isolation_lambda_handler - -')
 
@@ -139,6 +141,11 @@ def self_isolation_lambda_handler(event, context):
         key_file_location
     )
 
+    self_isolation_inbound_folder_id = getenv("SELF_ISOLATION_INBOUND_FOLDER_ID")
+    self_isolation_outbound_folder_id = getenv("SELF_ISOLATION_OUTBOUND_FOLDER_ID")
+
+    files = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
+
     return {
-        "body": "success"
+        "body": len(files)
     }

@@ -19,7 +19,6 @@ load_dotenv()
 
 
 def lambda_handler(event, context):
-
     print('- -start up - -')
 
     here_to_help_gateway = HereToHelpGateway()
@@ -51,6 +50,7 @@ def lambda_handler(event, context):
     return {
         "body": json.dumps([response])
     }
+
 
 def spl_lambda_handler(event, context):
     print('- -spl_lambda_handler - -')
@@ -88,6 +88,7 @@ def spl_lambda_handler(event, context):
         "body": json.dumps([spl_response])
     }
 
+
 def nsss_lambda_handler(event, context):
     print('- -nsss_lambda_handler - -')
 
@@ -124,6 +125,7 @@ def nsss_lambda_handler(event, context):
         "body": json.dumps([cev_response])
     }
 
+
 def self_isolation_lambda_handler(event, context):
     print('- -self_isolation_lambda_handler - -')
 
@@ -131,7 +133,7 @@ def self_isolation_lambda_handler(event, context):
 
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
 
-    key_file_location = path.relpath('key_file.json')
+    key_file_location = path.relpath('lib/key_file.json')
 
     google_drive_gateway = GoogleDriveGateway(key_file_location)
 
@@ -142,9 +144,8 @@ def self_isolation_lambda_handler(event, context):
     self_isolation_inbound_folder_id = getenv("SELF_ISOLATING_INBOUND_FOLDER_ID")
     self_isolation_outbound_folder_id = getenv("SELF_ISOLATING_OUTBOUND_FOLDER_ID")
 
-    something = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
-    print(something)
+    files = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
 
     return {
-        "body": "success"
+        "body": len(files)
     }

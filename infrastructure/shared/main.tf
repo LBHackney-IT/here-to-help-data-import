@@ -15,7 +15,7 @@ variable "self_isolation_function_name" {
 }
 
 variable "data_ingestion_function_names" {
-  default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL"]
+  default = ["here-to-help-data-ingestion","here-to-help-data-ingestion-NSSS", "here-to-help-data-ingestion-SPL", "here-to-help-data-ingestion-self-isolation"]
 }
 
 variable "self_isolation_handler" {
@@ -414,7 +414,8 @@ resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda" {
   depends_on = [
     aws_lambda_function.here-to-help-lambda,
     aws_lambda_function.here-to-help-lambda-SPL,
-    aws_lambda_function.here-to-help-lambda-NSSS    
+    aws_lambda_function.here-to-help-lambda-NSSS,
+    aws_lambda_function.here-to-help-lambda-self-isolation
   ]
 }
 

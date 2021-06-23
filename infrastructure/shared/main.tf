@@ -99,6 +99,14 @@ data "aws_ssm_parameter" "spl_outbound_folder_id" {
   name = "/cv-19-res-support-v3/${var.stage}/spl_outbound_folder_id"
 }
 
+data "aws_ssm_parameter" "self_isolation_inbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/self_isolation_inbound_folder_id"
+}
+
+data "aws_ssm_parameter" "self_isolation_outbound_folder_id" {
+  name = "/cv-19-res-support-v3/${var.stage}/self_isolation_outbound_folder_id"
+}
+
 data "archive_file" "lib_zip_file" {
   type        = "zip"
   source_dir = "../../lib_src"
@@ -226,6 +234,8 @@ resource "aws_lambda_function" "here-to-help-lambda-self-isolation" {
     variables = {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL = data.aws_ssm_parameter.api_base_url.value
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
+      SELF_ISOLATION_INBOUND_FOLDER_ID = data.aws_ssm_parameter.self_isolation_inbound_folder_id.value
+      SELF_ISOLATION_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.self_isolation_outbound_folder_id.value
     }
   }
    depends_on = [

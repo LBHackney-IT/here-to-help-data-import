@@ -131,7 +131,7 @@ def self_isolation_lambda_handler(event, context):
 
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
 
-    key_file_location = path.relpath('lib/key_file.json')
+    key_file_location = path.relpath('key_file.json')
 
     google_drive_gateway = GoogleDriveGateway(key_file_location)
 
@@ -139,8 +139,8 @@ def self_isolation_lambda_handler(event, context):
         key_file_location
     )
 
-    self_isolation_inbound_folder_id = getenv("SELF_ISOLATION_INBOUND_FOLDER_ID")
-    self_isolation_outbound_folder_id = getenv("SELF_ISOLATION_OUTBOUND_FOLDER_ID")
+    self_isolation_inbound_folder_id = getenv("SELF_ISOLATING_INBOUND_FOLDER_ID")
+    self_isolation_outbound_folder_id = getenv("SELF_ISOLATING_OUTBOUND_FOLDER_ID")
 
     something = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
     print(something)

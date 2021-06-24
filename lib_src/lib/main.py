@@ -146,6 +146,8 @@ def self_isolation_lambda_handler(event, context):
 
     files = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
 
+    print('Number of files found: ' + str(len(files)))
+
     return {
         "body": len(files)
     }

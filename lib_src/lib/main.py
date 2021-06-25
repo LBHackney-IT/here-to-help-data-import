@@ -14,6 +14,8 @@ from .usecase.process_spl_calls import ProcessSPLCalls
 from .usecase.process_multiple_sheets import ProcessMultipleSheets
 from os import getenv
 from os import path
+from .usecase.add_self_isolation_requests import AddSelfIsolationRequests
+from .usecase.process_self_isolation_calls import ProcessSelfIsolationCalls
 
 load_dotenv()
 
@@ -141,13 +143,28 @@ def self_isolation_lambda_handler(event, context):
         key_file_location
     )
 
+
+    add_self_isolation_requests = AddSelfIsolationRequests(
+        create_help_request, here_to_help_gateway)
+
+    process_new_sheet_self_isolation_calls = ProcessSelfIsolationCalls(add_self_isolation_requests)
+
     self_isolation_inbound_folder_id = getenv("SELF_ISOLATION_INBOUND_FOLDER_ID")
     self_isolation_outbound_folder_id = getenv("SELF_ISOLATION_OUTBOUND_FOLDER_ID")
 
-    files = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
+    sheet_process = ProcessMultipleSheets(
+        google_drive_gateway, pygsheets_gateway)
 
-    print('Number of files found: ' + str(len(files)))
+    self_isolation_response = sheet_process.execute(
+        self_isolation_inbound_folder_id,
+        self_isolation_outbound_folder_id,
+        process_new_sheet_self_isolation_calls
+    )
+
+    # files = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
+    #
+    # print('Number of files found: ' + str(len(files)))
 
     return {
-        "body": len(files)
+        "body": json.dumps([self_isolation_response])
     }

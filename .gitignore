@@ -14,3 +14,4 @@ lambda.zip
 .DS_Store
 lib_src/lib/key_file.json
 __pycache__/
+**/key_file.json

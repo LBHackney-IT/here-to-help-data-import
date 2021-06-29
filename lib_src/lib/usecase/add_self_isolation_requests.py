@@ -13,6 +13,8 @@ class AddSelfIsolationRequests:
         data_frame.insert(0, 'resident_id', '')
 
         for index, row in data_frame.iterrows():
+            if not self.is_self_isolation_request(row):
+                continue
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
                 row['Date of Birth'])
@@ -58,7 +60,8 @@ class AddSelfIsolationRequests:
                 data_frame.at[index, 'help_request_id'] = help_request_id
                 data_frame.at[index, 'resident_id'] = resident_id
 
-                print(f'Added CEV {index+1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
+                print(
+                    f'Added CEV {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
 
                 # if case_note_needs_an_update(request['CaseNotes'], nsss_case_note):
                 #     self.here_to_help_api.create_case_note(
@@ -66,6 +69,9 @@ class AddSelfIsolationRequests:
                 #             "author": author, "note": nsss_case_note})
 
             return data_frame
+
+    def is_self_isolation_request(self, row):
+        return True if row["LA Support Required"] == '1' or row["LA Support Letter Received"] == "1" else False
 
     # def is_called_required(self, row):
     #     return True if row['do_you_need_someone_to_contact_you_about_local_support'].lower(

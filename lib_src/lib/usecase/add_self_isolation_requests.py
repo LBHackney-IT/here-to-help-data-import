@@ -1,5 +1,5 @@
 import datetime
-from ..helpers import parse_date_of_birth, case_note_needs_an_update
+from ..helpers import parse_date_of_birth, case_note_needs_an_update, concatenate_address
 
 
 class AddSelfIsolationRequests:
@@ -19,6 +19,8 @@ class AddSelfIsolationRequests:
             dob_day, dob_month, dob_year = parse_date_of_birth(
                 row['Date of Birth'])
 
+            address_line_1 = concatenate_address(row['Address Line 1'], row['House Number'])
+
             metadata = {
                 "LA_support_required": row["LA Support Required"],
                 "LA_support_letter_received": row["LA Support Letter Received"]
@@ -29,7 +31,7 @@ class AddSelfIsolationRequests:
                     "Metadata": metadata,
                     "Uprn": row.UPRN,
                     "Postcode": row.Postcode.upper(),
-                    "AddressFirstLine": row['Address Line 1'],
+                    "AddressFirstLine": address_line_1,
                     "AddressSecondLine": row['Address Line 2'],
                     "AddressThirdLine": row.Town,
                     "FirstName": row.Forename.capitalize() if row.Forename else '',

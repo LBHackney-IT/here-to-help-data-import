@@ -36,6 +36,17 @@ def parse_date_of_birth(date_of_birth):
 
     return dob_day, dob_month, dob_year
 
+def concatenate_address(address_line_1, house_number):
+    if not address_line_1:
+        return house_number
+
+    if not house_number:
+        return address_line_1
+
+    if house_number == address_line_1:
+        return house_number
+
+    return house_number + ' ' + address_line_1
 
 def case_note_needs_an_update(case_notes_on_request, new_case_note):
     if not case_notes_on_request:

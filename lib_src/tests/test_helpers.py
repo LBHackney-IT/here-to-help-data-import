@@ -1,5 +1,19 @@
 from faker import Faker
 from lib_src.lib.helpers import parse_date_of_birth, case_note_needs_an_update
+from lib_src.lib.helpers import concatenate_address
+
+
+class TestAddressConcatenation:
+
+    def test_ignores_duplicate_values(self):
+        assert concatenate_address('123', '123') == '123'
+
+    def test_concatenates_house_number_with_address_line_1(self):
+        assert concatenate_address('A road', '12') == '12 A road'
+
+    def test_ignores_empty_value(self):
+        assert concatenate_address('A road', '') == 'A road'
+        assert concatenate_address('', '12') == '12'
 
 
 class TestParseDateOfBirth:

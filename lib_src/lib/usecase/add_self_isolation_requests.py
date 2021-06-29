@@ -70,7 +70,7 @@ class AddSelfIsolationRequests:
                 #         resident_id, help_request_id, {
                 #             "author": author, "note": nsss_case_note})
 
-            return data_frame
+        return data_frame
 
     def is_self_isolation_request(self, row):
         return True if row["LA Support Required"] == '1' or row["LA Support Letter Received"] == "1" else False

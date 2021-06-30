@@ -1,5 +1,5 @@
 import datetime
-from ..helpers import parse_date_of_birth, case_note_needs_an_update, concatenate_address
+from ..helpers import parse_date_of_birth, concatenate_address
 
 
 class AddSelfIsolationRequests:
@@ -8,7 +8,6 @@ class AddSelfIsolationRequests:
         self.here_to_help_api = here_to_help_api
 
     def execute(self, data_frame):
-        print("add")
         data_frame.insert(0, 'help_request_id', '')
         data_frame.insert(0, 'resident_id', '')
 
@@ -47,7 +46,7 @@ class AddSelfIsolationRequests:
                     "NhsNumber": row['NHS Number'],
                     "NhsCtasId": row.ID
                 }]
-            print(help_request)
+
             response = self.create_help_request.execute(
                 help_requests=help_request)
 
@@ -68,4 +67,4 @@ class AddSelfIsolationRequests:
         return data_frame
 
     def is_self_isolation_request(self, row):
-        return True if row["LA Support Required"] == '1' or row["LA Support Letter Received"] == "1" else False
+        return row["LA Support Required"] == '1' or row["LA Support Letter Received"] == "1"

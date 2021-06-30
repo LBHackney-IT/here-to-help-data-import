@@ -10,7 +10,10 @@ class FakeHereToHelpGateway:
         self.case_note = test_case_note
         self.get_help_request_called_with = []
         self.create_case_note_called_with = []
+        self.get_multiple_help_requests_called_with = []
+        self.create_resident_help_request_called_with = []
 
+    # Corresponds to old v3 endpoint (Resident + Help Request mix)
     def create_help_request(self, help_request):
         if self.error:
             raise Exception("message")
@@ -20,6 +23,66 @@ class FakeHereToHelpGateway:
         else:
             return {"Error": "error message"}
 
+    # Corresponds to v4 endpoint - creates Help Request only.
+    def create_resident_help_request(self, resident_id, help_request):
+        args_dict = {
+            'resident_id': resident_id,
+            'help_request': help_request
+        }
+        
+        self.create_resident_help_request_called_with.append(args_dict)
+
+        return { 'Id': 1 }
+
+    def get_resident_help_requests(self, resident_id):
+        self.get_multiple_help_requests_called_with.append(resident_id)
+
+        return [{
+            "Id": self.fake.random_number(digits=3),
+            "ResidentId": resident_id,
+            "IsOnBehalf": self.fake.null_boolean(),
+            "ConsentToCompleteOnBehalf": self.fake.null_boolean(),
+            "OnBehalfFirstName": self.fake.first_name(),
+            "OnBehalfLastName": self.fake.last_name(),
+            "OnBehalfEmailAddress": self.fake.free_email(),
+            "OnBehalfContactNumber": self.fake.cellphone_number(),
+            "RelationshipWithResident": None,
+            "GettingInTouchReason": None,
+            "HelpWithAccessingFood": None,
+            "HelpWithAccessingSupermarketFood": None,
+            "HelpWithCompletingNssForm": None,
+            "HelpWithShieldingGuidance": None,
+            "HelpWithNoNeedsIdentified": None,
+            "HelpWithAccessingMedicine": None,
+            "HelpWithAccessingOtherEssentials": None,
+            "HelpWithDebtAndMoney": None,
+            "HelpWithHealth": None,
+            "HelpWithMentalHealth": None,
+            "HelpWithAccessingInternet": None,
+            "HelpWithHousing": None,
+            "HelpWithJobsOrTraining": None,
+            "HelpWithChildrenAndSchools": None,
+            "HelpWithDisabilities": None,
+            "HelpWithSomethingElse": self.fake.boolean(),
+            "MedicineDeliveryHelpNeeded": None,
+            "WhenIsMedicinesDelivered": None,
+            "UrgentEssentials": None,
+            "UrgentEssentialsAnythingElse": None,
+            "CurrentSupport": None,
+            "CurrentSupportFeedback": None,
+            "DateTimeRecorded": self.fake.date(),
+            "InitialCallbackCompleted": None,
+            "CallbackRequired": True,
+            "CaseNotes": [{
+                "author": self.fake.name(),
+                "noteDate": self.fake.date(),
+                "note": self.case_note if self.case_note else self.fake.sentence()}],
+            "AdviceNotes": None,
+            "HelpNeeded": 'Shielding',
+            "NhsCtasId": self.fake.uuid4(),
+            "AssignedTo": self.fake.name(),
+            "HelpRequestCalls": []}]
+    
     def get_help_request(self, help_request_id):
         self.get_help_request_called_with.append(help_request_id)
 

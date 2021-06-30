@@ -131,6 +131,10 @@ def nsss_lambda_handler(event, context):
 def self_isolation_lambda_handler(event, context):
     print('- -self_isolation_lambda_handler - -')
 
+    if getenv("ENV") == 'production':
+        print(' -- disabled on production -- ')
+        return
+
     here_to_help_gateway = HereToHelpGateway()
 
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)

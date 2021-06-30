@@ -33,7 +33,16 @@ def test_only_callback_required_rows_processed():
     use_case = AddSelfIsolationRequests(create_help_request, here_to_help_api)
     processed_data_frame = use_case.execute(data_frame=data_frame)
 
+    assert(processed_data_frame.at[0, 'help_request_id'] is not None)
+
+    assert create_help_request.received_help_requests[1]['Metadata'] == {
+        "LA_support_required": '1',
+        "LA_support_letter_received": ''
+    }
+
     assert len(create_help_request.received_help_requests) == 3
+
+
 
 def test_callback_not_required_rows_ignored():
     create_help_request = FakeCreateHelpRequest()
@@ -61,6 +70,6 @@ def test_callback_not_required_rows_ignored():
     })
 
     use_case = AddSelfIsolationRequests(create_help_request, here_to_help_api)
-    processed_data_frame = use_case.execute(data_frame=data_frame)
+    use_case.execute(data_frame=data_frame)
 
     assert len(create_help_request.received_help_requests) == 0

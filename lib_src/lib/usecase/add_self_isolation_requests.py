@@ -65,31 +65,7 @@ class AddSelfIsolationRequests:
                 print(
                     f'Added CEV {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
 
-                # if case_note_needs_an_update(request['CaseNotes'], nsss_case_note):
-                #     self.here_to_help_api.create_case_note(
-                #         resident_id, help_request_id, {
-                #             "author": author, "note": nsss_case_note})
-
         return data_frame
 
     def is_self_isolation_request(self, row):
         return True if row["LA Support Required"] == '1' or row["LA Support Letter Received"] == "1" else False
-
-    # def is_called_required(self, row):
-    #     return True if row['do_you_need_someone_to_contact_you_about_local_support'].lower(
-    #     ) == 'yes' else False
-    #
-    # def get_case_note(self, row):
-    #     author = "Data Ingestion: National Shielding Service System"
-    #     note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
-    #     case_note = 'CEV: Dec 2020 Tier 4 '
-    #     case_note += f'NSSS Submitted on:  ' + \
-    #         str(row['submission_datetime']) + '. '
-    #     case_note += 'Do you want supermarket deliveries? ' + \
-    #         row['do_you_want_supermarket_deliveries'] + '. '
-    #     case_note += 'Do you have someone to go shopping for you? ' + row[
-    #         'do_you_have_someone_to_go_shopping_for_you'] + '. '
-    #     case_note += 'Do you need someone to contact you about local support? ' + \
-    #         row['do_you_need_someone_to_contact_you_about_local_support'] + '.'
-    #
-    #     return author, note_date, case_note

@@ -88,6 +88,15 @@ class TestParseDateOfBirth:
         assert dob_month == 11
         assert dob_year == 1989
 
+    def test_has_time(self):
+        test_date = '1950-02-27 00:00:00'
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            test_date)
+
+        assert dob_day == 27
+        assert dob_month == 2
+        assert dob_year == 1950
+
     def test_empty_string(self):
         test_date = ''
         dob_day, dob_month, dob_year = parse_date_of_birth(

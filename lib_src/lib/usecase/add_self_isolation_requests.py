@@ -64,6 +64,19 @@ class AddSelfIsolationRequests:
                 print(
                     f'Added CEV {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
 
+                # update case notes here
+                if row["LA Support Letter Received"] == '1':
+                    resident_help_requests = self.here_to_help_api.get_resident_help_requests(
+                        resident_id)
+                    if not any(res_help_request['HelpNeeded'] == 'Shielding' for res_help_request in resident_help_requests):
+                        cev_help_request = {
+                                    "CallbackRequired": False,
+                                    "HelpNeeded": "Shielding"}
+                        cev_case_id = self.here_to_help_api.create_resident_help_request(
+                            resident_id, cev_help_request).Id
+                            
+                        # create cev case notes
+
         return data_frame
 
     def is_self_isolation_request(self, row):

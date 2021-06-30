@@ -236,6 +236,7 @@ resource "aws_lambda_function" "here-to-help-lambda-self-isolation" {
       CV_19_RES_SUPPORT_V3_HELP_REQUESTS_API_KEY = data.aws_ssm_parameter.api_key.value
       SELF_ISOLATION_INBOUND_FOLDER_ID = data.aws_ssm_parameter.self_isolation_inbound_folder_id.value
       SELF_ISOLATION_OUTBOUND_FOLDER_ID = data.aws_ssm_parameter.self_isolation_outbound_folder_id.value
+      ENV = var.stage
     }
   }
    depends_on = [

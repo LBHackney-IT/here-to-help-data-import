@@ -101,3 +101,55 @@ class HereToHelpGateway:
             return {"Error": err}
 
         return result
+
+    def get_resident_help_requests(self, resident_id):
+        try:
+            resident_help_requests_url = f'{self.base_url}v4/residents/{resident_id}/help-requests'
+
+            response = requests.request(
+                "GET", resident_help_requests_url, headers=self.headers)
+
+            if response.status_code == 403:
+                print("Authentication error", response)
+                return {"Error": json.dumps(response.json())}
+
+            result = json.loads(response.text)
+
+        except HTTPError as err:
+            print("Could not get help requests for resident id: ", resident_id, err.msg)
+            return {"Error": err.msg}
+        except Exception as err:
+            print("Help requests were not found for resident id", resident_id)
+            return {"Error": err}
+
+        return result
+
+    def create_resident_help_request(self, resident_id, help_request):
+        try:
+            help_requests_url = f'{self.base_url}v4/residents/{resident_id}/help-requests'
+
+            data = json.dumps(help_request)
+
+            response = requests.request(
+                "POST", help_requests_url, headers=self.headers, data=data)
+            if response.status_code == 403:
+                print("Authentication error", response)
+                return {"Error": json.dumps(response.json())}
+
+            if not response.text.isdigit() and not isinstance(response.text, int):
+                print("Unexpected API response", response)
+                return {"Error": json.dumps(response.json())}
+
+            result = eval(json.dumps({"Id": response.text}))
+
+        except HTTPError as err:
+            print(
+                "Could not create a new help request for resident id: ",
+                resident_id,
+                err.msg)
+            return {"Error": err.msg}
+        except Exception as err:
+            print("Help request was not created for resident id", resident_id)
+            return {"Error": err}
+
+        return result

@@ -165,10 +165,6 @@ def self_isolation_lambda_handler(event, context):
         process_new_sheet_self_isolation_calls
     )
 
-    # files = google_drive_gateway.get_list_of_files(self_isolation_inbound_folder_id)
-    #
-    # print('Number of files found: ' + str(len(files)))
-
     return {
         "body": json.dumps([self_isolation_response])
     }

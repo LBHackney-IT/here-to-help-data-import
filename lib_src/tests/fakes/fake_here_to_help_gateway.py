@@ -39,7 +39,51 @@ class FakeHereToHelpGateway:
         self.get_multiple_help_requests_called_with.append(resident_id)
 
         if self.cev_exists is False:
-            return []
+            return [{
+                "Id": self.fake.random_number(digits=3),
+                "ResidentId": resident_id,
+                "IsOnBehalf": self.fake.null_boolean(),
+                "ConsentToCompleteOnBehalf": self.fake.null_boolean(),
+                "OnBehalfFirstName": self.fake.first_name(),
+                "OnBehalfLastName": self.fake.last_name(),
+                "OnBehalfEmailAddress": self.fake.free_email(),
+                "OnBehalfContactNumber": self.fake.cellphone_number(),
+                "RelationshipWithResident": None,
+                "GettingInTouchReason": None,
+                "HelpWithAccessingFood": None,
+                "HelpWithAccessingSupermarketFood": None,
+                "HelpWithCompletingNssForm": None,
+                "HelpWithShieldingGuidance": None,
+                "HelpWithNoNeedsIdentified": None,
+                "HelpWithAccessingMedicine": None,
+                "HelpWithAccessingOtherEssentials": None,
+                "HelpWithDebtAndMoney": None,
+                "HelpWithHealth": None,
+                "HelpWithMentalHealth": None,
+                "HelpWithAccessingInternet": None,
+                "HelpWithHousing": None,
+                "HelpWithJobsOrTraining": None,
+                "HelpWithChildrenAndSchools": None,
+                "HelpWithDisabilities": None,
+                "HelpWithSomethingElse": self.fake.boolean(),
+                "MedicineDeliveryHelpNeeded": None,
+                "WhenIsMedicinesDelivered": None,
+                "UrgentEssentials": None,
+                "UrgentEssentialsAnythingElse": None,
+                "CurrentSupport": None,
+                "CurrentSupportFeedback": None,
+                "DateTimeRecorded": self.fake.date(),
+                "InitialCallbackCompleted": None,
+                "CallbackRequired": True,
+                "CaseNotes": [{
+                    "author": self.fake.name(),
+                    "noteDate": self.fake.date(),
+                    "note": self.case_note if self.case_note else self.fake.sentence()}],
+                "AdviceNotes": None,
+                "HelpNeeded": 'Welfare Call',
+                "NhsCtasId": self.fake.uuid4(),
+                "AssignedTo": self.fake.name(),
+                "HelpRequestCalls": []}]
 
         return [{
             "Id": self.fake.random_number(digits=3),

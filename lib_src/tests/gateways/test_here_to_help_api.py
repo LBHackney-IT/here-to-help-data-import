@@ -71,7 +71,7 @@ class TestGetHelpRequest:
     def test(self, requests_mock):
         dirname = os.path.dirname(__file__)
 
-        with open(os.path.join(dirname, '../fixture.json'), 'r') as file:
+        with open(os.path.join(dirname, '../fixtures/help_request.json'), 'r') as file:
             mock_response = file.read()
 
         requests_mock.register_uri('GET', self.GET_URL, text=mock_response)
@@ -188,12 +188,12 @@ class TestGetHelpRequest:
         requests_mock.register_uri(
             'GET', self.GET_URL, exc=Exception("Exception"))
         assert self.gateway.get_help_request(help_request_id=50)[
-            "Error"] is not None
+                   "Error"] is not None
 
     def test_handle_non_json_responses(self, requests_mock):
         requests_mock.register_uri('GET', self.GET_URL, text="{{}}")
         assert self.gateway.get_help_request(help_request_id=50)[
-            "Error"] is not None
+                   "Error"] is not None
 
 
 class TestCreateCaseNote:
@@ -218,7 +218,7 @@ class TestCreateCaseNote:
         note_date = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %Z")
 
         assert requests_mock.last_request.text == '{"CaseNote": "{\\"author\\": \\"Ben\\", \\"noteDate\\": \\"' + \
-            note_date + '\\", \\"note\\": \\"Hello again\\"}"}'
+               note_date + '\\", \\"note\\": \\"Hello again\\"}"}'
 
         assert result == {
             "Id": "1"}
@@ -280,3 +280,152 @@ class TestCreateCaseNote:
                 "caseNote": "note"},
             resident_id=2,
             help_request_id=3)["Error"] is not None
+
+
+class TestGetResidentHelpRequests:
+
+    def setup_method(self, method):
+        self.GET_URL = "localhost:3000/v4/residents/50/help-requests"
+        self.gateway = HereToHelpGateway()
+
+    def test(self, requests_mock):
+        dirname = os.path.dirname(__file__)
+
+        with open(os.path.join(dirname, '../fixtures/resident_help_requests.json'), 'r') as file:
+            mock_response = file.read()
+
+        requests_mock.register_uri('GET', self.GET_URL, text=mock_response)
+
+        response = self.gateway.get_resident_help_requests(resident_id=50)
+        assert response == [
+            {
+                "Id": 2,
+                "ResidentId": 2,
+                "IsOnBehalf": None,
+                "ConsentToCompleteOnBehalf": None,
+                "OnBehalfFirstName": None,
+                "OnBehalfLastName": None,
+                "OnBehalfEmailAddress": None,
+                "OnBehalfContactNumber": None,
+                "RelationshipWithResident": None,
+                "GettingInTouchReason": None,
+                "HelpWithAccessingFood": None,
+                "HelpWithAccessingSupermarketFood": None,
+                "HelpWithCompletingNssForm": None,
+                "HelpWithShieldingGuidance": None,
+                "HelpWithNoNeedsIdentified": None,
+                "HelpWithAccessingMedicine": None,
+                "HelpWithAccessingOtherEssentials": None,
+                "HelpWithDebtAndMoney": None,
+                "HelpWithHealth": None,
+                "HelpWithMentalHealth": None,
+                "HelpWithAccessingInternet": None,
+                "HelpWithHousing": None,
+                "HelpWithJobsOrTraining": None,
+                "HelpWithChildrenAndSchools": None,
+                "HelpWithDisabilities": None,
+                "HelpWithSomethingElse": None,
+                "MedicineDeliveryHelpNeeded": None,
+                "WhenIsMedicinesDelivered": None,
+                "UrgentEssentials": None,
+                "UrgentEssentialsAnythingElse": None,
+                "CurrentSupport": None,
+                "CurrentSupportFeedback": None,
+                "DateTimeRecorded": "2021-06-25T08:49:15.934763",
+                "InitialCallbackCompleted": False,
+                "CallbackRequired": True,
+                "CaseNotes": "[]",
+                "AdviceNotes": None,
+                "HelpNeeded": "Shielding",
+                "NhsCtasId": "1",
+                "AssignedTo": None,
+                "HelpRequestCalls": []
+            }
+        ]
+
+    #
+
+    def test_authentication_error_handling(self, requests_mock):
+        requests_mock.register_uri(
+            'GET',
+            self.GET_URL,
+            exc=HTTPError(
+                url="",
+                code=403,
+                msg="Forbidden",
+                hdrs={},
+                fp=None))
+        assert self.gateway.get_resident_help_requests(resident_id=50)["Error"] == "Forbidden"
+
+    def test_other_http_error_handling(self, requests_mock):
+        requests_mock.register_uri(
+            'GET',
+            self.GET_URL,
+            exc=HTTPError(
+                url="",
+                code=500,
+                msg="Connection error",
+                hdrs={},
+                fp=None))
+        assert self.gateway.get_resident_help_requests(resident_id=50)["Error"] == "Connection error"
+
+    def test_general_error_handling(self, requests_mock):
+        requests_mock.register_uri(
+            'GET', self.GET_URL, exc=Exception("Exception"))
+        assert self.gateway.get_resident_help_requests(resident_id=50)[
+                   "Error"] is not None
+
+    def test_handle_non_json_responses(self, requests_mock):
+        requests_mock.register_uri('GET', self.GET_URL, text="{{}}")
+        assert self.gateway.get_resident_help_requests(resident_id=50)[
+                   "Error"] is not None
+
+class TestCreateResidentHelpRequest:
+
+    def setup_method(self, method):
+        self.POST_HELP_REQUESTS_URL = "localhost:3000/v4/residents/50/help-requests"
+        self.gateway = HereToHelpGateway()
+
+    def test(self, requests_mock):
+        requests_mock.register_uri(
+            'POST',
+            self.POST_HELP_REQUESTS_URL,
+            text='22')
+        assert self.gateway.create_resident_help_request(resident_id=50, help_request={}) == {"Id": "22"}
+
+    def test_authentication_error_handling(self, requests_mock):
+        requests_mock.register_uri(
+            'POST',
+            self.POST_HELP_REQUESTS_URL,
+            exc=HTTPError(
+                url="",
+                code=403,
+                msg="Forbidden",
+                hdrs={},
+                fp=None))
+        assert self.gateway.create_resident_help_request(resident_id=50, help_request={})["Error"] == "Forbidden"
+
+    def test_other_http_error_handling(self, requests_mock):
+        requests_mock.register_uri(
+            'POST',
+            self.POST_HELP_REQUESTS_URL,
+            exc=HTTPError(
+                url="",
+                code=500,
+                msg="Connection error",
+                hdrs={},
+                fp=None))
+        assert self.gateway.create_resident_help_request(resident_id=50, help_request={})["Error"] == "Connection error"
+
+    def test_general_error_handling(self, requests_mock):
+        requests_mock.register_uri(
+            'POST',
+            self.POST_HELP_REQUESTS_URL,
+            exc=Exception("Exception"))
+        assert self.gateway.create_resident_help_request(resident_id=50, help_request={})["Error"] is not None
+
+    def test_handle_non_int_id_responses(self, requests_mock):
+        requests_mock.register_uri(
+            'POST', self.POST_HELP_REQUESTS_URL, text="{{}")
+        assert self.gateway.create_resident_help_request(resident_id=50, help_request={})["Error"] is not None
+

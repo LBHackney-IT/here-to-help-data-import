@@ -1,5 +1,5 @@
 import datetime
-from ..helpers import parse_date_of_birth, concatenate_address
+from ..helpers import parse_date_of_birth, concatenate_address, case_note_needs_an_update
 
 
 class AddSelfIsolationRequests:
@@ -65,14 +65,23 @@ class AddSelfIsolationRequests:
                 print(
                     f'Added Self isolation {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
 
-                # update case notes here
+                author, self_isolation_case_notes = self.get_case_notes(row)
+
+                for case_note in self_isolation_case_notes:
+                    if case_note_needs_an_update(request['CaseNotes'], case_note):
+                        resident_id = resident_id
+                        self.here_to_help_api.create_case_note(
+                            resident_id, help_request_id, {
+                                "author": author, "note": case_note})
+
                 if row["LA Support Letter Received"] == '1':
                     resident_help_requests = self.here_to_help_api.get_resident_help_requests(
                         resident_id)
-                    if not any(res_help_request['HelpNeeded'] == 'Shielding' for res_help_request in resident_help_requests):
+                    if not any(res_help_request['HelpNeeded'] == 'Shielding' for res_help_request in
+                               resident_help_requests):
                         cev_help_request = {
-                                    "CallbackRequired": False,
-                                    "HelpNeeded": "Shielding"}
+                            "CallbackRequired": False,
+                            "HelpNeeded": "Shielding"}
                         cev_case_id = self.here_to_help_api.create_resident_help_request(
                             resident_id, cev_help_request)['Id']
 
@@ -89,6 +98,23 @@ class AddSelfIsolationRequests:
                                             "process ---"})
 
         return data_frame
+
+    def get_case_notes(self, row):
+        author = "Data Ingestion: Self Isolation"
+
+        unfiltered_case_notes = [self.get_note(row, "Day 4 Outcome"), self.get_note(row, "Day 7 Outcome"),
+                                 self.get_note(row, "Day 10 Outcome"), self.get_note(row, "Day 13 Outcome"),
+                                 self.get_note(row, "Comments")]
+
+        case_notes = [c for c in unfiltered_case_notes if c is not None]
+
+        return author, case_notes
+
+    def get_note(self, row, key):
+        if row[key]:
+            return key + ': ' + row[key]
+        else:
+            return None
 
     def is_self_isolation_request(self, row):
         return row["LA Support Required"] == '1' or row["LA Support Letter Received"] == "1"

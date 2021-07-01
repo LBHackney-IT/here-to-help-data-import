@@ -63,7 +63,7 @@ class AddSelfIsolationRequests:
                 data_frame.at[index, 'resident_id'] = resident_id
 
                 print(
-                    f'Added CEV {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
+                    f'Added Self isolation {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
 
                 # update case notes here
                 if row["LA Support Letter Received"] == '1':
@@ -76,9 +76,12 @@ class AddSelfIsolationRequests:
                         cev_case_id = self.here_to_help_api.create_resident_help_request(
                             resident_id, cev_help_request)['Id']
 
-                        data_frame.at[index, 'cev_case_added_id'] = cev_case_id
-
                         if cev_case_id:
+                            data_frame.at[index, 'cev_case_added_id'] = cev_case_id
+
+                            print(
+                                f'Added CEV {index + 1} of {len(data_frame)} for self isolation case {help_request_id}: resident_id: {resident_id} CEV help_request_id: {cev_case_id}')
+
                             self.here_to_help_api.create_case_note(
                                 resident_id, cev_case_id, {
                                     "author": "Self Isolation data ingestion pipeline",

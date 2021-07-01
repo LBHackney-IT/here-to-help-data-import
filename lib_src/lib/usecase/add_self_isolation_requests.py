@@ -10,6 +10,7 @@ class AddSelfIsolationRequests:
     def execute(self, data_frame):
         data_frame.insert(0, 'help_request_id', '')
         data_frame.insert(0, 'resident_id', '')
+        data_frame.insert(0, 'cev_case_added_id', '')
 
         for index, row in data_frame.iterrows():
             if not self.is_self_isolation_request(row):
@@ -73,9 +74,16 @@ class AddSelfIsolationRequests:
                                     "CallbackRequired": False,
                                     "HelpNeeded": "Shielding"}
                         cev_case_id = self.here_to_help_api.create_resident_help_request(
-                            resident_id, cev_help_request).Id
-                            
-                        # create cev case notes
+                            resident_id, cev_help_request)['Id']
+
+                        data_frame.at[index, 'cev_case_added_id'] = cev_case_id
+
+                        if cev_case_id:
+                            self.here_to_help_api.create_case_note(
+                                resident_id, cev_case_id, {
+                                    "author": "Self Isolation data ingestion pipeline",
+                                    "note": "--- self-reported CEV resident identified through self-isolation support "
+                                            "process ---"})
 
         return data_frame
 

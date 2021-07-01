@@ -1,7 +1,7 @@
 from faker import Faker
 
 class FakeHereToHelpGateway:
-    def __init__(self, error=False, test_resident_id=1162, test_case_note=""):
+    def __init__(self, error=False, test_resident_id=1162, test_case_note="", cev_exists=True):
         self.fake = Faker(['en-GB', 'en_GB', 'en_GB', 'en-GB'])
 
         self.count = 0
@@ -12,6 +12,7 @@ class FakeHereToHelpGateway:
         self.create_case_note_called_with = []
         self.get_multiple_help_requests_called_with = []
         self.create_resident_help_request_called_with = []
+        self.cev_exists = cev_exists
 
     # Corresponds to old v3 endpoint (Resident + Help Request mix)
     def create_help_request(self, help_request):
@@ -36,6 +37,9 @@ class FakeHereToHelpGateway:
 
     def get_resident_help_requests(self, resident_id):
         self.get_multiple_help_requests_called_with.append(resident_id)
+
+        if self.cev_exists is False:
+            return []
 
         return [{
             "Id": self.fake.random_number(digits=3),

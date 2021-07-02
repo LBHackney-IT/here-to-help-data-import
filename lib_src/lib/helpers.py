@@ -53,9 +53,9 @@ def case_note_needs_an_update(case_notes_on_request, new_case_note):
         return True
     else:
         for case_note in case_notes_on_request:
-            if case_note.get('note', None) != new_case_note:
-                return True
-        return False
+            if case_note.get('note', None) == new_case_note:
+                return False
+        return True
 
 
 def clean_data(columns, data_frame):

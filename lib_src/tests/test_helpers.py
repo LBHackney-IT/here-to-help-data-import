@@ -134,6 +134,9 @@ class TestCaseNoteNeedsAnUpdate:
 
         case_notes_on_request = [{'author': self.fake.name(),
                                   'noteDate': self.fake.date(),
+                                  'note': "Giant Orc"},
+                                 {'author': self.fake.name(),
+                                  'noteDate': self.fake.date(),
                                   'note': new_note}]
 
         result = case_note_needs_an_update(case_notes_on_request, new_note)

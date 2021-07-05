@@ -36,6 +36,7 @@ def parse_date_of_birth(date_of_birth):
 
     return dob_day, dob_month, dob_year
 
+
 def concatenate_address(address_line_1, house_number):
     if not address_line_1:
         return house_number
@@ -48,6 +49,7 @@ def concatenate_address(address_line_1, house_number):
 
     return house_number + ' ' + address_line_1
 
+
 def case_note_needs_an_update(case_notes_on_request, new_case_note):
     if not case_notes_on_request:
         return True
@@ -57,6 +59,24 @@ def case_note_needs_an_update(case_notes_on_request, new_case_note):
                 return False
         return True
 
+
+def resident_is_identifiable(help_request):
+    if help_request.get('NhsNumber'):
+        return True
+
+    if not help_request.get('FirstName') or not help_request.get('LastName'):
+        return False
+
+    if help_request.get('NhsCtasId'):
+        return True
+
+    if help_request.get('DobDay') and help_request.get('DobMonth') and help_request.get('DobYear'):
+        return True
+
+    if help_request.get('ContactTelephoneNumber') or help_request.get('ContactMobileNumber') or help_request.get('EmailAddress'):
+        return True
+
+    return False
 
 def clean_data(columns, data_frame):
     for i in columns:

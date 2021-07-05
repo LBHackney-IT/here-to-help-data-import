@@ -1,5 +1,5 @@
 from faker import Faker
-from lib_src.lib.helpers import parse_date_of_birth, case_note_needs_an_update
+from lib_src.lib.helpers import parse_date_of_birth, case_note_needs_an_update, resident_is_identifiable
 from lib_src.lib.helpers import concatenate_address
 
 
@@ -173,3 +173,78 @@ class TestCaseNoteNeedsAnUpdate:
 
         result = case_note_needs_an_update(case_notes_on_request, new_note)
         assert result
+
+
+class TestCaseResidentIsIdentifiable:
+    def setup_method(self):
+        self.fake = Faker()
+
+    def test_has_nhs_number_returns_true(self):
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra',
+            "DobDay": 12,
+            "DobMonth": 1,
+            "DobYear": 1985,
+            "ContactTelephoneNumber": "01234",
+            "ContactMobileNumber": "344",
+            "NhsNumber": "1231233",
+            "NhsCtasId": ""
+        })
+
+    def test_name_and_nhs_number_missing_returns_false(self):
+        assert resident_is_identifiable(help_request={
+            "FirstName": '',
+            "LastName": 'Zebra',
+            "DobDay": 12,
+            "DobMonth": 1,
+            "DobYear": 1985,
+            "ContactTelephoneNumber": "01234",
+            "ContactMobileNumber": "344",
+            "NhsNumber": "",
+            "NhsCtasId": ""
+        }) == False
+
+    def test_name_combined_with_other_key_fields_match_if_nhs_number_is_missing(self):
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra'
+        }) == False
+
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra',
+            "DobDay": 12,
+            "DobMonth": 1,
+            "DobYear": 1985,
+        })
+
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra',
+            "NhsCtasId": '1',
+        })
+
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra',
+            "NhsCtasId": '1',
+        })
+
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra',
+            "ContactTelephoneNumber": '13434',
+        })
+
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra',
+            "ContactMobileNumber": '13434',
+        })
+
+        assert resident_is_identifiable(help_request={
+            "FirstName": 'Mr',
+            "LastName": 'Zebra',
+            "EmailAddress": 'mr@zebra.safari',
+        })

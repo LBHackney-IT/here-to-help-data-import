@@ -1,3 +1,6 @@
+from lib_src.lib.helpers import resident_is_identifiable
+
+
 class CreateHelpRequest:
 
     def __init__(self, gateway):
@@ -8,6 +11,10 @@ class CreateHelpRequest:
         exceptions = []
         for help_request in help_requests:
             try:
+                if not resident_is_identifiable(help_request):
+                    result["unsuccessful_help_requests"].append(help_request)
+                    help_request['Error'] = "Help request was not uniquely identifiable"
+                    continue
                 response = self.gateway.create_help_request(help_request=help_request)
                 if "Error" in response:
                     help_request['Error'] = response["Error"]

@@ -13,8 +13,7 @@ def test_create_help_request():
     result = use_case.execute(help_requests=requests)
     assert result["created_help_request_ids"] == [1, 2]
     assert result["unsuccessful_help_requests"][0]["EmailAddress"] == "sample@example.com"
-    assert result["unsuccessful_help_requests"][0]["Error"] == "error message"
-    assert gateway.count == 3
+    assert gateway.count == 2
 
 
 def test_create_help_request_with_error():
@@ -27,6 +26,7 @@ def test_create_help_request_with_error():
                       "LastName": "Doe",
                       "NhsNumber": "321"},
                      {"LastName": "Jones",
+                      "FirstName": "Smith",
                       "EmailAddress": "sample@example.com"}]
     use_case = CreateHelpRequest(gateway=gateway)
     initial_help_requests = []

@@ -439,7 +439,7 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion" {
 resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda-warnings" {
   count = length(var.data_ingestion_function_names)
   name           = "${element(var.data_ingestion_function_names, count.index)}-warning-filter"
-  pattern        = "WARNING"
+  pattern        = "INGEST_WARNING"
   log_group_name = "/aws/lambda/${element(var.data_ingestion_function_names, count.index)}"
 
   metric_transformation {

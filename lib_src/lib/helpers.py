@@ -64,19 +64,15 @@ def resident_is_identifiable(help_request):
     if help_request.get('NhsNumber'):
         return True
 
-    if not help_request.get('FirstName') or not help_request.get('LastName'):
-        return False
+    if help_request.get('FirstName') and help_request.get('LastName'):
+        match_fields = ['NhsCtasId', 'Uprn', 'ContactTelephoneNumber', 'ContactMobileNumber', 'EmailAddress']
 
-    if help_request.get('NhsCtasId'):
-        return True
-
-    if help_request.get('DobDay') and help_request.get('DobMonth') and help_request.get('DobYear'):
-        return True
-
-    if help_request.get('Uprn') or help_request.get('ContactTelephoneNumber') or help_request.get('ContactMobileNumber') or help_request.get('EmailAddress'):
-        return True
+        if all(help_request.get(field) for field in ['DobDay', 'DobMonth', 'DobYear']) or\
+                any(help_request.get(field) for field in match_fields):
+            return True
 
     return False
+
 
 def clean_data(columns, data_frame):
     for i in columns:

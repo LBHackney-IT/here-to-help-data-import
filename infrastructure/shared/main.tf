@@ -435,3 +435,38 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion" {
   alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
   depends_on = [aws_sns_topic.here-to-help-data-ingestion]
 }
+
+resource "aws_cloudwatch_log_metric_filter" "here-to-help-lambda-warnings" {
+  count = length(var.data_ingestion_function_names)
+  name           = "${element(var.data_ingestion_function_names, count.index)}-warning-filter"
+  pattern        = "WARNING"
+  log_group_name = "/aws/lambda/${element(var.data_ingestion_function_names, count.index)}"
+
+  metric_transformation {
+    name          = "CloudWatchLogWarning"
+    namespace     = "WarningCount"
+    value         = 1
+  }
+  depends_on = [
+    aws_lambda_function.here-to-help-lambda,
+    aws_lambda_function.here-to-help-lambda-SPL,
+    aws_lambda_function.here-to-help-lambda-NSSS,
+    aws_lambda_function.here-to-help-lambda-self-isolation
+  ]
+}
+
+resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion-warnings" {
+  alarm_name                = "here-to-help-data-ingestion-warnings"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
+  evaluation_periods        = "1"
+  datapoints_to_alarm       = "1"
+  metric_name               = "CloudWatchLogWarning"
+  namespace                 = "WarningCount"
+  period                    = "86400"
+  statistic                 = "Sum"
+  threshold                 = "0"
+  treat_missing_data        = "missing"
+  alarm_description         = "This metric monitors warnings on the here-to-help-ingestion lambda logs"
+  alarm_actions             = [ aws_sns_topic.here-to-help-data-ingestion.arn ]
+  depends_on = [aws_sns_topic.here-to-help-data-ingestion]
+}

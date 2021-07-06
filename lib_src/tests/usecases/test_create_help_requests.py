@@ -13,7 +13,6 @@ def test_create_help_request():
     result = use_case.execute(help_requests=requests)
     assert result["created_help_request_ids"] == [1, 2]
     assert result["unsuccessful_help_requests"][0]["EmailAddress"] == "sample@example.com"
-    assert result["unsuccessful_help_requests"][0]["Error"] == "Help request was not uniquely identifiable"
     assert gateway.count == 2
 
 

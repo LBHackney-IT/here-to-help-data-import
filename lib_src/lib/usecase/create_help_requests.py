@@ -13,7 +13,7 @@ class CreateHelpRequest:
             try:
                 if not resident_is_identifiable(help_request):
                     result["unsuccessful_help_requests"].append(help_request)
-                    help_request['Error'] = "Help request was not uniquely identifiable"
+                    print("Help request was not uniquely identifiable and was skipped.")
                     continue
                 response = self.gateway.create_help_request(help_request=help_request)
                 if "Error" in response:

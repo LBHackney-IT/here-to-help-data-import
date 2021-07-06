@@ -73,7 +73,7 @@ def resident_is_identifiable(help_request):
     if help_request.get('DobDay') and help_request.get('DobMonth') and help_request.get('DobYear'):
         return True
 
-    if help_request.get('ContactTelephoneNumber') or help_request.get('ContactMobileNumber') or help_request.get('EmailAddress'):
+    if help_request.get('Uprn') or help_request.get('ContactTelephoneNumber') or help_request.get('ContactMobileNumber') or help_request.get('EmailAddress'):
         return True
 
     return False

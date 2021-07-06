@@ -1,4 +1,4 @@
-from lib_src.lib.helpers import resident_is_identifiable
+from ..helpers import resident_is_identifiable
 
 
 class CreateHelpRequest:

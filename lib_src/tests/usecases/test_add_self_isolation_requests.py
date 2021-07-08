@@ -7,7 +7,8 @@ from lib_src.tests.fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
 def get_data_frame(la_support_letter_received=['1', '', '1'],
                    la_support_required=['0', '1', '1'],
                    day_7_outcome=['', '', ''],
-                   day_13_outcome=['', '', '']):
+                   day_13_outcome=['', '', ''],
+                   status_report=['completed', 'completed', 'completed']):
     return pd.DataFrame({
         'UPRN': ['A UPRN', 'A UPRN 2', 'A UPRN 3'],
         'Postcode': ['BS3 3NG', 'BS4', 'BS5'],
@@ -21,6 +22,7 @@ def get_data_frame(la_support_letter_received=['1', '', '1'],
         'Phone2': ['000', '0123', '34'],
         'Phone': ['000', '2314', '1234'],
         'Email': ['owen@test', 'test@someone.com', 'test2343@asite.com'],
+        'Status Report': status_report,
         'NHS Number': ['123412345', '92342323', '24359e43'],
         'ID': ['123', '144', '555'],
         'LA Support Letter Received': la_support_letter_received,
@@ -140,3 +142,25 @@ def test_day_outcome_columns_become_case_notes():
             "author": "Data Ingestion: Self Isolation",
             "note": "Day 7 Outcome: day7"}
     }
+
+# most of this might be irrelevant - no time to examine
+def test_rows_only_get_processed_when_status_report_is_completed():
+    create_help_request = FakeCreateHelpRequest()
+
+    test_resident_id = 125551
+    here_to_help_api = FakeHereToHelpGateway(test_resident_id=test_resident_id)
+
+    data_frame = get_data_frame(
+        la_support_letter_received=['1', '1', '1'],
+        la_support_required=['1', '1', '1'],
+        status_report=['completed', 'failed', 'completed'])
+
+    use_case = AddSelfIsolationRequests(create_help_request, here_to_help_api)
+    processed_data_frame = use_case.execute(data_frame=data_frame)
+
+    # check whether the correct help request got imported
+    assert any(help_request.get("NhsNumber") == "123412345" for help_request in create_help_request.received_help_requests)
+    assert any(help_request.get("NhsNumber") == "24359e43" for help_request in create_help_request.received_help_requests)
+    
+    # check whether the correct quantity of help request has gotten imported
+    assert len(create_help_request.received_help_requests) == 2

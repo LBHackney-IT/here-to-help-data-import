@@ -14,7 +14,10 @@ class AddSelfIsolationRequests:
         data_frame.insert(0, 'resident_id', '')
         data_frame.insert(0, 'cev_case_added_id', '')
 
-        for index, row in data_frame.iterrows():
+        for index, row in data_frame.iterrows():                        
+            if not self.is_self_isolation_request_completed(row):
+                continue
+
             if not self.is_self_isolation_request(row):
                 continue
 
@@ -115,3 +118,6 @@ class AddSelfIsolationRequests:
 
     def is_self_isolation_request(self, row):
         return row["LA Support Required"] == '1' or row["LA Support Letter Received"] == "1"
+
+    def is_self_isolation_request_completed(self, row):
+        return row["Status Report"].lower() == 'completed'

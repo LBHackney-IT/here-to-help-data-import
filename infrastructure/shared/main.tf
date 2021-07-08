@@ -462,7 +462,7 @@ resource "aws_cloudwatch_metric_alarm" "here-to-help-data-ingestion-warnings" {
   datapoints_to_alarm       = "1"
   metric_name               = "CloudWatchLogWarning"
   namespace                 = "WarningCount"
-  period                    = "86400"
+  period                    = "43200"
   statistic                 = "Sum"
   threshold                 = "1"
   treat_missing_data        = "missing"

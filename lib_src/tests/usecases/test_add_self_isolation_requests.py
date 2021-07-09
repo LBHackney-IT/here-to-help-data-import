@@ -2,13 +2,16 @@ from lib_src.lib.usecase.add_self_isolation_requests import AddSelfIsolationRequ
 import pandas as pd
 from lib_src.tests.fakes.fake_create_help_request import FakeCreateHelpRequest
 from lib_src.tests.fakes.fake_here_to_help_gateway import FakeHereToHelpGateway
+import datetime
 
 
 def get_data_frame(la_support_letter_received=['1', '', '1'],
                    la_support_required=['0', '1', '1'],
                    day_7_outcome=['', '', ''],
                    day_13_outcome=['', '', ''],
-                   status_report=['completed', 'completed', 'completed']):
+                   status_report=['completed', 'completed', 'completed'],
+                   date_tested=[datetime.date.today().strftime("%d/%m/%Y"), datetime.date.today().strftime("%d/%m/%Y"),
+                                datetime.date.today().strftime("%d/%m/%Y")]):
     return pd.DataFrame({
         'UPRN': ['A UPRN', 'A UPRN 2', 'A UPRN 3'],
         'Postcode': ['BS3 3NG', 'BS4', 'BS5'],
@@ -31,7 +34,8 @@ def get_data_frame(la_support_letter_received=['1', '', '1'],
         'Day 7 Outcome': day_7_outcome,
         'Day 10 Outcome': ['', '', ''],
         'Day 13 Outcome': day_13_outcome,
-        'Comments': ['', '', '']
+        'Comments': ['', '', ''],
+        "Date Tested": date_tested
     })
 
 
@@ -143,6 +147,7 @@ def test_day_outcome_columns_become_case_notes():
             "note": "Day 7 Outcome: day7"}
     }
 
+
 # most of this might be irrelevant - no time to examine
 def test_rows_only_get_processed_when_status_report_is_completed():
     create_help_request = FakeCreateHelpRequest()
@@ -159,8 +164,61 @@ def test_rows_only_get_processed_when_status_report_is_completed():
     processed_data_frame = use_case.execute(data_frame=data_frame)
 
     # check whether the correct help request got imported
-    assert any(help_request.get("NhsNumber") == "123412345" for help_request in create_help_request.received_help_requests)
-    assert any(help_request.get("NhsNumber") == "24359e43" for help_request in create_help_request.received_help_requests)
-    
+    assert any(
+        help_request.get("NhsNumber") == "123412345" for help_request in create_help_request.received_help_requests)
+    assert any(
+        help_request.get("NhsNumber") == "24359e43" for help_request in create_help_request.received_help_requests)
+
     # check whether the correct quantity of help request has gotten imported
     assert len(create_help_request.received_help_requests) == 2
+
+
+def test_only_rows_newer_than_seven_days_get_processed():
+    create_help_request = FakeCreateHelpRequest()
+
+    test_resident_id = 121231
+    here_to_help_api = FakeHereToHelpGateway(test_resident_id=test_resident_id)
+
+    la_support_letter_received = ['', '', '']
+    la_support_required = ['1', '1', '1']
+
+    invalid_date = datetime.date.today() - datetime.timedelta(days=80)
+    invalid_edge_date = datetime.date.today() - datetime.timedelta(days=7)
+    valid_edge_date = datetime.date.today() - datetime.timedelta(days=6)
+
+    data_frame = get_data_frame(la_support_letter_received=la_support_letter_received,
+                                la_support_required=la_support_required,
+                                date_tested=[invalid_date.strftime("%d/%m/%Y"),
+                                             invalid_edge_date.strftime("%d/%m/%Y"),
+                                             valid_edge_date.strftime("%d/%m/%Y")])
+
+    use_case = AddSelfIsolationRequests(create_help_request, here_to_help_api)
+    processed_data_frame = use_case.execute(data_frame=data_frame)
+
+    assert (processed_data_frame.at[0, 'help_request_id'] is not None)
+
+    assert len(create_help_request.received_help_requests) == 1
+
+def test_ignore_rows_with_no_date_tested_processed():
+    create_help_request = FakeCreateHelpRequest()
+
+    test_resident_id = 121231
+    here_to_help_api = FakeHereToHelpGateway(test_resident_id=test_resident_id)
+
+    la_support_letter_received = ['', '', '']
+    la_support_required = ['1', '1', '1']
+
+    valid_date = datetime.date.today()
+
+    data_frame = get_data_frame(la_support_letter_received=la_support_letter_received,
+                                la_support_required=la_support_required,
+                                date_tested=[valid_date.strftime("%d/%m/%Y"),
+                                             '',
+                                             ''])
+
+    use_case = AddSelfIsolationRequests(create_help_request, here_to_help_api)
+    processed_data_frame = use_case.execute(data_frame=data_frame)
+
+    assert (processed_data_frame.at[0, 'help_request_id'] is not None)
+
+    assert len(create_help_request.received_help_requests) == 1

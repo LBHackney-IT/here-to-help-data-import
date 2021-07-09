@@ -1,5 +1,5 @@
 import datetime
-from ..helpers import parse_date_of_birth, concatenate_address, case_note_needs_an_update
+from ..helpers import parse_date_of_birth, concatenate_address, case_note_needs_an_update, manual_parse
 
 
 class AddSelfIsolationRequests:
@@ -14,11 +14,14 @@ class AddSelfIsolationRequests:
         data_frame.insert(0, 'resident_id', '')
         data_frame.insert(0, 'cev_case_added_id', '')
 
-        for index, row in data_frame.iterrows():                        
+        for index, row in data_frame.iterrows():
             if not self.is_self_isolation_request_completed(row):
                 continue
 
             if not self.is_self_isolation_request(row):
+                continue
+
+            if not self.is_from_last_seven_days(row):
                 continue
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
@@ -121,3 +124,15 @@ class AddSelfIsolationRequests:
 
     def is_self_isolation_request_completed(self, row):
         return row["Status Report"].lower() == 'completed'
+
+    def is_from_last_seven_days(self, row):
+        if not row["Date Tested"]:
+            return False
+
+        parsed_tested_date = manual_parse(row["Date Tested"])
+        today = datetime.date.today()
+
+        if (today - parsed_tested_date.date()).days >= 7:
+            return False
+        else:
+            return True

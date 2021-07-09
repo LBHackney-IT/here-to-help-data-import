@@ -23,7 +23,8 @@ class ProcessSelfIsolationCalls:
         'Day 7 Outcome',
         'Day 10 Outcome',
         'Day 13 Outcome',
-        'Comments'
+        'Comments',
+        'Date Tested'
     ]
 
     def __init__(self, add_self_isolation_requests):

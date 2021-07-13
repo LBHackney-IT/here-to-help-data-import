@@ -97,6 +97,15 @@ class TestParseDateOfBirth:
         assert dob_month == 2
         assert dob_year == 1950
 
+    def test_day_less_than_13(self):
+        test_date = '2021-06-08 00:00:00'
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            test_date)
+
+        assert dob_day == 8
+        assert dob_month == 6
+        assert dob_year == 2021
+
     def test_empty_string(self):
         test_date = ''
         dob_day, dob_month, dob_year = parse_date_of_birth(

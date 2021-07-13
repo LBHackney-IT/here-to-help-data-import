@@ -21,6 +21,12 @@ def manual_parse(date_string):
     except ValueError:
         pass
 
+    try:
+        date = datetime.datetime.strptime(date_numbers_string, "%Y%m%d%H%M%S")
+        return date
+    except ValueError:
+        pass
+
     return parser.parse(date_string, dayfirst=True)
 
 
@@ -67,7 +73,7 @@ def resident_is_identifiable(help_request):
     if help_request.get('FirstName') and help_request.get('LastName'):
         match_fields = ['NhsCtasId', 'Uprn', 'ContactTelephoneNumber', 'ContactMobileNumber', 'EmailAddress']
 
-        if all(help_request.get(field) for field in ['DobDay', 'DobMonth', 'DobYear']) or\
+        if all(help_request.get(field) for field in ['DobDay', 'DobMonth', 'DobYear']) or \
                 any(help_request.get(field) for field in match_fields):
             return True
 

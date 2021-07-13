@@ -188,9 +188,9 @@ def test_only_rows_newer_than_seven_days_get_processed():
 
     data_frame = get_data_frame(la_support_letter_received=la_support_letter_received,
                                 la_support_required=la_support_required,
-                                date_tested=[invalid_date.strftime("%d/%m/%Y"),
+                                date_tested=[invalid_date.strftime("%d/%m/%Y %H:%M:%S"),
                                              invalid_edge_date.strftime("%d/%m/%Y"),
-                                             valid_edge_date.strftime("%d/%m/%Y")])
+                                             valid_edge_date.strftime("%d-%m-%Y")])
 
     use_case = AddSelfIsolationRequests(create_help_request, here_to_help_api)
     processed_data_frame = use_case.execute(data_frame=data_frame)

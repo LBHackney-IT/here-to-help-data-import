@@ -61,6 +61,80 @@ class TestParseDateOfBirth:
         assert dob_month == 10
         assert dob_year == 1989
 
+    def test_single_digit_month_values(self):
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '25/6/2021')
+
+        assert dob_day == 25
+        assert dob_month == 6
+        assert dob_year == 2021
+
+    def test_single_day_values(self):
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '2/06/2021')
+
+        assert dob_day == 2
+        assert dob_month == 6
+        assert dob_year == 2021
+
+    def test_single_month_and_day_values(self):
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '2/6/2021')
+
+        assert dob_day == 2
+        assert dob_month == 6
+        assert dob_year == 2021
+
+    def test_a_range_of_date_values(self):
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '2/6/2021')
+
+        assert dob_day == 2
+        assert dob_month == 6
+        assert dob_year == 2021
+
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '12/6/2021')
+
+        assert dob_day == 12
+        assert dob_month == 6
+        assert dob_year == 2021
+
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '13/12/2021')
+
+        assert dob_day == 13
+        assert dob_month == 12
+        assert dob_year == 2021
+
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '13/3/2033')
+
+        assert dob_day == 13
+        assert dob_month == 3
+        assert dob_year == 2033
+
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '7-3-2033')
+
+        assert dob_day == 7
+        assert dob_month == 3
+        assert dob_year == 2033
+
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '1989-3-1')
+
+        assert dob_day == 1
+        assert dob_month == 3
+        assert dob_year == 1989
+
+        dob_day, dob_month, dob_year = parse_date_of_birth(
+            '1913-1-13')
+
+        assert dob_day == 13
+        assert dob_month == 1
+        assert dob_year == 1913
+
     def test_day_first_with_dot_separators(self):
         test_date = '11.10.1989'
         dob_day, dob_month, dob_year = parse_date_of_birth(

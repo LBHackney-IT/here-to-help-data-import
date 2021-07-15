@@ -4,15 +4,10 @@ import re
 from dateutil import parser
 import numpy as np
 
-def normalise_date_value(value):
-    if len(value) == 1:
-        return value.zfill(2)
-    else:
-        return value
 
 def manual_parse(date_string):
     date_numbers_string = re.findall(r'\d+', date_string)
-    date_numbers_string = [normalise_date_value(date_portion) for date_portion in date_numbers_string]
+    date_numbers_string = [date_portion.zfill(2) for date_portion in date_numbers_string]
     date_numbers_string = ''.join(date_numbers_string)
 
     try:

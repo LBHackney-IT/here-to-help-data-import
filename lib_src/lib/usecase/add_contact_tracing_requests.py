@@ -1,6 +1,7 @@
+import datetime
 from dateutil import parser
 
-from ..helpers import parse_date_of_birth
+from ..helpers import parse_date_of_birth, manual_parse
 
 class AddContactTracingRequests:
     def __init__(self, create_help_request):
@@ -10,6 +11,9 @@ class AddContactTracingRequests:
         responses = []
 
         for index, row in data_frame.iterrows():
+            if not self.is_from_last_fourteen_days(row):
+                continue
+
             row = row.to_dict()
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
@@ -45,3 +49,15 @@ class AddContactTracingRequests:
             responses.append(self.create_help_request.execute(help_requests=help_request))
 
         return responses
+
+    def is_from_last_fourteen_days(self, row):
+        if not row["Date Tested"]:
+            return False
+
+        parsed_tested_date = manual_parse(row["Date Tested"])
+        today = datetime.date.today()
+
+        if (today - parsed_tested_date.date()).days >= 14:
+            return False
+        else:
+            return True

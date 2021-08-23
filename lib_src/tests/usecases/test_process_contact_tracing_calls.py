@@ -1,4 +1,5 @@
 import datetime as dt
+import pandas as pd
 from lib_src.lib.usecase.process_contact_tracing_calls import ProcessContactTracingCalls
 from lib_src.tests.fakes.fake_google_drive_gateway import FakeGoogleDriveGateway
 from lib_src.tests.fakes.fake_pygsheet_gateway import FakePygsheetGateway
@@ -161,5 +162,23 @@ def test_no_new_power_bi_spreadsheet_to_process():
     assert len(fake_pygsheet_gateway.get_data_frame_from_sheet_called_with) == 0
 
     assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 0
+
+    assert len(fake_add_contact_tracing_requests.execute_called_with) == 0
+
+def test_total_rows_exceeds_3000_does_not_process():
+    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
+
+    data_frame = pd.DataFrame(POWER_BI)
+    data_frame = data_frame.loc[data_frame.index.repeat(3001)]
+
+    fake_pygsheet_gateway = FakePygsheetGateway(data_frame)
+    fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
+
+    use_case = ProcessContactTracingCalls(
+        fake_google_drive_gateway,
+        fake_pygsheet_gateway,
+        fake_add_contact_tracing_requests)
+
+    use_case.execute('inbound_folder_id', 'outbound_folder_id')
 
     assert len(fake_add_contact_tracing_requests.execute_called_with) == 0

@@ -130,4 +130,3 @@ def test_only_rows_newer_than_fourteen_days_get_processed():
         'first_symptomatic_at': '08/12/2020', 'date_tested': valid_edge_date.strftime("%d-%m-%Y")
     }
 
-

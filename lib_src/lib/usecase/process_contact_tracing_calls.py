@@ -1,5 +1,6 @@
 import datetime as dt
 import numpy as np
+from ..helpers import manual_parse
 
 class ProcessContactTracingCalls:
     # have also included NHS Number, 'Date Updated', 'Date Time Extracted' as
@@ -157,4 +158,26 @@ class ProcessContactTracingCalls:
 
         # some account ids are just numbers, we need them to be string
         data_frame['Account ID'] = data_frame['Account ID'].astype(str)
-        return data_frame
+
+        indexes = []
+
+        for index, row in data_frame.iterrows():
+            if not self.is_from_last_fourteen_days(row["Date Tested"]):
+                indexes.append(index)
+
+        if len(indexes) > 0:
+            print('Warning: Ignored ' + str(len(indexes)) + ' contact tracing rows that were older than 14 days.')
+
+        return data_frame.drop(data_frame.index[indexes])
+
+    def is_from_last_fourteen_days(self, date_tested):
+        if not date_tested:
+            return False
+
+        parsed_tested_date = manual_parse(date_tested)
+        today = dt.date.today()
+
+        if (today - parsed_tested_date.date()).days >= 14:
+            return False
+        else:
+            return True

@@ -100,33 +100,3 @@ def test_create_help_request():
     assert create_Help_request.received_help_requests[0]['Metadata'] == {
         'first_symptomatic_at': '08/12/2020', 'date_tested': datetime.date.today().strftime("%d/%m/%Y")
     }
-
-
-def test_only_rows_newer_than_fourteen_days_get_processed():
-    create_help_request = FakeCreateHelpRequest()
-
-    invalid_date = datetime.date.today() - datetime.timedelta(days=80)
-    invalid_edge_date = datetime.date.today() - datetime.timedelta(days=14)
-    valid_edge_date = datetime.date.today() - datetime.timedelta(days=13)
-
-    use_case = AddContactTracingRequests(create_help_request)
-
-    processed_data_frame = use_case.execute(data_frame=get_data_frame(date_tested=invalid_date.strftime("%d/%m/%Y %H:%M:%S")))
-    assert len(create_help_request.received_help_requests) == 0
-
-    processed_data_frame = use_case.execute(
-        data_frame=get_data_frame(date_tested=invalid_edge_date.strftime("%d/%m/%Y")))
-    assert len(create_help_request.received_help_requests) == 0
-
-    processed_data_frame = use_case.execute(
-        data_frame=get_data_frame(date_tested=None))
-    assert len(create_help_request.received_help_requests) == 0
-
-    processed_data_frame = use_case.execute(
-        data_frame=get_data_frame(date_tested=valid_edge_date.strftime("%d-%m-%Y")))
-    assert len(create_help_request.received_help_requests) == 1
-
-    assert create_help_request.received_help_requests[0]['Metadata'] == {
-        'first_symptomatic_at': '08/12/2020', 'date_tested': valid_edge_date.strftime("%d-%m-%Y")
-    }
-

@@ -22,7 +22,8 @@ from lib_src.tests.fakes.fake_add_contact_tracing_requests import FakeAddContact
 #  'Isolation Follow Up', 'Isolation Start Date',
 #  'Combined Date Completed', 'Delay Creation Completion Days',
 #  'Date Failed Uncontactable', 'Date Updated', 'Date Time Extracted']
-POWER_BI = {
+def get_data_frame(date_tested=None):
+    return pd.DataFrame({
     'Category': ['case'],
     'ID': ['5270010'],
     'Account ID': ['dd034b2100'],
@@ -53,7 +54,7 @@ POWER_BI = {
     'PHE Centre': ['London'],
     'PHE Centre Index': [''],
     'First Symptomatic At': ['08/12/2020'],
-    'Date Tested': ['09/12/2020'],
+    'Date Tested': [date_tested],
     'Number of Contacts': [2],
     'Number of Occupations': [4],
     'Occupation': ['Test'],
@@ -86,12 +87,13 @@ POWER_BI = {
     'Date Failed Uncontactable': [''],
     'Date Updated': ['10/12/2020'],
     'Date Time Extracted': ['1/21/21 3:53']
-}
+    })
 
 
 def test_processing_new_power_bi_spreadsheet():
+    today = dt.datetime.now().date().strftime('%Y-%m-%d')
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
-    fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
+    fake_pygsheet_gateway = FakePygsheetGateway(get_data_frame(today))
     fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
     use_case = ProcessContactTracingCalls(
@@ -100,8 +102,6 @@ def test_processing_new_power_bi_spreadsheet():
         fake_add_contact_tracing_requests)
 
     use_case.execute('inbound_folder_id', 'outbound_folder_id')
-
-    today = dt.datetime.now().date().strftime('%Y-%m-%d')
 
     assert len(fake_google_drive_gateway.search_folder_calls) == 2
 
@@ -122,7 +122,7 @@ def test_processing_new_power_bi_spreadsheet():
 
 def test_new_power_bi_spreadsheet_but_it_has_been_processed():
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, True)
-    fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
+    fake_pygsheet_gateway = FakePygsheetGateway(get_data_frame(dt.datetime.now().date().strftime('%Y-%m-%d')))
     fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
     use_case = ProcessContactTracingCalls(
@@ -145,7 +145,7 @@ def test_new_power_bi_spreadsheet_but_it_has_been_processed():
 
 def test_no_new_power_bi_spreadsheet_to_process():
     fake_google_drive_gateway = FakeGoogleDriveGateway(False, False)
-    fake_pygsheet_gateway = FakePygsheetGateway(POWER_BI)
+    fake_pygsheet_gateway = FakePygsheetGateway(get_data_frame(dt.datetime.now().date().strftime('%Y-%m-%d')))
     fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
     use_case = ProcessContactTracingCalls(
@@ -168,7 +168,7 @@ def test_no_new_power_bi_spreadsheet_to_process():
 def test_total_rows_exceeds_3000_does_not_process():
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
 
-    data_frame = pd.DataFrame(POWER_BI)
+    data_frame = pd.DataFrame(get_data_frame(dt.datetime.now().date().strftime('%Y-%m-%d')))
     data_frame = data_frame.loc[data_frame.index.repeat(3001)]
 
     fake_pygsheet_gateway = FakePygsheetGateway(data_frame)
@@ -182,3 +182,24 @@ def test_total_rows_exceeds_3000_does_not_process():
     use_case.execute('inbound_folder_id', 'outbound_folder_id')
 
     assert len(fake_add_contact_tracing_requests.execute_called_with) == 0
+
+def test_rows_older_than_14_days_ago_dont_get_processed():
+    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
+
+    invalid_date = dt.date.today() - dt.timedelta(days=80)
+    invalid_edge_date = dt.date.today() - dt.timedelta(days=14)
+    valid_edge_date = dt.date.today() - dt.timedelta(days=13)
+
+    data_frame = get_data_frame(invalid_date.strftime('%d/%m/%Y'))
+
+    fake_pygsheet_gateway = FakePygsheetGateway(data_frame)
+    fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
+
+    use_case = ProcessContactTracingCalls(
+        fake_google_drive_gateway,
+        fake_pygsheet_gateway,
+        fake_add_contact_tracing_requests)
+
+    use_case.execute('inbound_folder_id', 'outbound_folder_id')
+
+    assert len(fake_add_contact_tracing_requests.execute_called_with[0]) == 0

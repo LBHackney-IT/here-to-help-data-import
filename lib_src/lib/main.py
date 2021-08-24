@@ -44,9 +44,12 @@ def lambda_handler(event, context):
     ct_inbound_folder_id = getenv("CT_INBOUND_FOLDER_ID")
     ct_outbound_folder_id = getenv("CT_OUTBOUND_FOLDER_ID")
 
+    excluded_ctas_ids = getenv("EXCLUDED_CTAS_IDS").split(",")
+
     response = find_and_process_contact_tracing.execute(
         ct_inbound_folder_id,
-        ct_outbound_folder_id
+        ct_outbound_folder_id,
+        excluded_ctas_ids
     )
 
     return {

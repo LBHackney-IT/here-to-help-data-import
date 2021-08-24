@@ -101,7 +101,7 @@ def test_processing_new_power_bi_spreadsheet():
         fake_pygsheet_gateway,
         fake_add_contact_tracing_requests)
 
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
+    use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
 
     assert len(fake_google_drive_gateway.search_folder_calls) == 2
 
@@ -130,7 +130,7 @@ def test_new_power_bi_spreadsheet_but_it_has_been_processed():
         fake_pygsheet_gateway,
         fake_add_contact_tracing_requests)
 
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
+    use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
 
     assert len(fake_google_drive_gateway.search_folder_calls) == 2
 
@@ -153,7 +153,7 @@ def test_no_new_power_bi_spreadsheet_to_process():
         fake_pygsheet_gateway,
         fake_add_contact_tracing_requests)
 
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
+    use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
 
     assert len(fake_google_drive_gateway.search_folder_calls) == 1
 
@@ -179,7 +179,7 @@ def test_total_rows_exceeds_3000_does_not_process():
         fake_pygsheet_gateway,
         fake_add_contact_tracing_requests)
 
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
+    use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
 
     assert len(fake_add_contact_tracing_requests.execute_called_with) == 0
 
@@ -200,6 +200,25 @@ def test_rows_older_than_14_days_ago_dont_get_processed():
         fake_pygsheet_gateway,
         fake_add_contact_tracing_requests)
 
-    use_case.execute('inbound_folder_id', 'outbound_folder_id')
+    use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
+
+    assert len(fake_add_contact_tracing_requests.execute_called_with[0]) == 0
+
+def test_excludes_excluded_ctas_ids():
+    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
+
+    valid_edge_date = dt.date.today() - dt.timedelta(days=13)
+
+    data_frame = get_data_frame(valid_edge_date.strftime('%d/%m/%Y'))
+
+    fake_pygsheet_gateway = FakePygsheetGateway(data_frame)
+    fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
+
+    use_case = ProcessContactTracingCalls(
+        fake_google_drive_gateway,
+        fake_pygsheet_gateway,
+        fake_add_contact_tracing_requests)
+
+    use_case.execute('inbound_folder_id', 'outbound_folder_id', ['dd034b2100'])
 
     assert len(fake_add_contact_tracing_requests.execute_called_with[0]) == 0

@@ -28,7 +28,7 @@ class ProcessContactTracingCalls:
         self.pygsheet_gateway = pygsheet_gateway
         self.add_contact_tracing_requests = add_contact_tracing_requests
 
-    def execute(self, inbound_folder_id, outbound_folder_id):
+    def execute(self, inbound_folder_id, outbound_folder_id, excluded_ctas_ids):
         inbound_spread_sheet_id = self.google_drive_gateway.search_folder(
                 inbound_folder_id, "spreadsheet")
 
@@ -40,7 +40,7 @@ class ProcessContactTracingCalls:
                     inbound_spread_sheet_id, 'A3')
 
                 if len(data_frame) < 3000:
-                    data_frame = self.clean_data(data_frame=data_frame)
+                    data_frame = self.clean_data(data_frame=data_frame, excluded_ctas_ids=excluded_ctas_ids)
 
                     city_cases = self.get_city_cases(data_frame=data_frame)
 
@@ -151,7 +151,7 @@ class ProcessContactTracingCalls:
         # print(email_list)
         return address_list, email_list
 
-    def clean_data(self, data_frame):  # takes whole sheet and lints data
+    def clean_data(self, data_frame, excluded_ctas_ids):  # takes whole sheet and lints data
         for i in self.COLS:
             data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'\s+', '')
             data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'nan', np.nan)
@@ -162,11 +162,11 @@ class ProcessContactTracingCalls:
         indexes = []
 
         for index, row in data_frame.iterrows():
-            if not self.is_from_last_fourteen_days(row["Date Tested"]):
+            if not self.is_from_last_fourteen_days(row["Date Tested"]) or row["Account ID"] in excluded_ctas_ids:
                 indexes.append(index)
 
         if len(indexes) > 0:
-            print('Warning: Ignored ' + str(len(indexes)) + ' contact tracing rows that were older than 14 days.')
+            print('Warning: Ignored ' + str(len(indexes)) + ' contact tracing rows that were older than 14 days or an excluded ctas id.')
 
         return data_frame.drop(data_frame.index[indexes])
 

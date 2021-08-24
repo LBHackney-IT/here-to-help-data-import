@@ -168,7 +168,9 @@ class ProcessContactTracingCalls:
         if len(indexes) > 0:
             print('Warning: Ignored ' + str(len(indexes)) + ' contact tracing rows that were older than 14 days or an excluded ctas id.')
 
-        return data_frame.drop(data_frame.index[indexes])
+        cleaned_data_frame = data_frame.drop(data_frame.index[indexes])
+
+        return cleaned_data_frame
 
     def is_from_last_fourteen_days(self, date_tested):
         if not date_tested:

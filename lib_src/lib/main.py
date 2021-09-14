@@ -146,7 +146,6 @@ def self_isolation_lambda_handler(event, context):
         key_file_location
     )
 
-
     add_self_isolation_requests = AddSelfIsolationRequests(
         create_help_request, here_to_help_gateway)
 
@@ -166,4 +165,31 @@ def self_isolation_lambda_handler(event, context):
 
     return {
         "body": json.dumps([self_isolation_response])
+    }
+
+
+def generic_ingestion_lambda_handler(event, context):
+    print('- -generic_ingestion_lambda_handler - -')
+
+    here_to_help_gateway = HereToHelpGateway()
+
+    create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
+
+    key_file_location = path.relpath('lib/key_file.json')
+
+    google_drive_gateway = GoogleDriveGateway(key_file_location)
+
+    pygsheets_gateway = PygsheetsGateway(
+        key_file_location
+    )
+
+    generic_ingestion_inbound_folder_id = getenv("GENERIC_INGESTION_INBOUND_FOLDER_ID")
+    generic_ingestion_outbound_folder_id = getenv("GENERIC_INGESTION_OUTBOUND_FOLDER_ID")
+
+    files = google_drive_gateway.get_list_of_files(generic_ingestion_inbound_folder_id)
+
+    print('Number of files found: ' + str(len(files)))
+
+    return {
+        "body": len(files)
     }

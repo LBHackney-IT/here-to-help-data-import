@@ -183,16 +183,16 @@ def generic_ingestion_lambda_handler(event, context):
 
     key_file_location = path.relpath('lib/key_file.json')
 
-    add_generic_requests = AddGenericIngestionRequests(
-        create_help_request, here_to_help_gateway)
-
-    process_new_sheet_generic_calls = ProcessGenericIngestionCalls(add_generic_requests)
-
     google_drive_gateway = GoogleDriveGateway(key_file_location)
 
     pygsheets_gateway = PygsheetsGateway(
         key_file_location
     )
+
+    add_generic_requests = AddGenericIngestionRequests(
+        create_help_request, here_to_help_gateway)
+
+    process_new_sheet_generic_calls = ProcessGenericIngestionCalls(add_generic_requests)
 
     generic_ingestion_inbound_folder_id = getenv("GENERIC_INGESTION_INBOUND_FOLDER_ID")
     generic_ingestion_outbound_folder_id = getenv("GENERIC_INGESTION_OUTBOUND_FOLDER_ID")

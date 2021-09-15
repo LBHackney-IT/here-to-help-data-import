@@ -16,6 +16,8 @@ from os import getenv
 from os import path
 from .usecase.add_self_isolation_requests import AddSelfIsolationRequests
 from .usecase.process_self_isolation_calls import ProcessSelfIsolationCalls
+from .usecase.add_generic_ingestion_requests import AddGenericIngestionRequests
+from .usecase.process_generic_ingestion_calls import ProcessGenericIngestionCalls
 
 load_dotenv()
 
@@ -171,6 +173,10 @@ def self_isolation_lambda_handler(event, context):
 def generic_ingestion_lambda_handler(event, context):
     print('- -generic_ingestion_lambda_handler - -')
 
+    if getenv("ENV") == 'production':
+        print(' -- disabled on production -- ')
+        return
+
     here_to_help_gateway = HereToHelpGateway()
 
     create_help_request = CreateHelpRequest(gateway=here_to_help_gateway)
@@ -183,13 +189,23 @@ def generic_ingestion_lambda_handler(event, context):
         key_file_location
     )
 
+    add_generic_requests = AddGenericIngestionRequests(
+        create_help_request, here_to_help_gateway)
+
+    process_new_sheet_generic_calls = ProcessGenericIngestionCalls(add_generic_requests)
+
     generic_ingestion_inbound_folder_id = getenv("GENERIC_INGESTION_INBOUND_FOLDER_ID")
     generic_ingestion_outbound_folder_id = getenv("GENERIC_INGESTION_OUTBOUND_FOLDER_ID")
 
-    files = google_drive_gateway.get_list_of_files(generic_ingestion_inbound_folder_id)
+    sheet_process = ProcessMultipleSheets(
+        google_drive_gateway, pygsheets_gateway)
 
-    print('Number of files found: ' + str(len(files)))
+    generic_ingestion_response = sheet_process.execute(
+        generic_ingestion_inbound_folder_id,
+        generic_ingestion_outbound_folder_id,
+        process_new_sheet_generic_calls
+    )
 
     return {
-        "body": len(files)
+        "body": json.dumps([generic_ingestion_response])
     }

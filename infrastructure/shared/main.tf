@@ -331,11 +331,7 @@ resource "aws_cloudwatch_event_rule" "here-to-help-scheduled-event-generic-inges
   is_enabled = true
 }
 
-resource "aws_cloudwatch_event_target" "check_google_sheet" {
-  rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event.name
-  target_id = "here-to-help-lambda"
-  arn       = aws_lambda_function.here-to-help-lambda.arn
-}
+
 
 resource "aws_cloudwatch_event_target" "check_google_sheet_spl" {
   rule      = aws_cloudwatch_event_rule.here-to-help-scheduled-event-SPL.name

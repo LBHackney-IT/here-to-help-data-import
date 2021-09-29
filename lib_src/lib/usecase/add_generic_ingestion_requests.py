@@ -1,9 +1,14 @@
 import datetime
-from ..helpers import parse_date_of_birth
+from ..helpers import parse_date_of_birth, case_note_needs_an_update
 
+valid_help_request_types = {
+    "EUSS": "EUSS",
+    "LINK WORK": "Link Work"
+}
 
-def is_valid_help_request_type(help_request_type):
-    return help_request_type == 'EUSS'
+valid_help_request_subtypes = {
+    "REPAIRS": "Repairs"
+}
 
 
 class AddGenericIngestionRequests:
@@ -18,23 +23,34 @@ class AddGenericIngestionRequests:
         data_frame.insert(0, 'resident_id', '')
 
         for index, row in data_frame.iterrows():
-            help_request_type = row['Help Request Type']
+            help_request_type_upper = row['Help Request Type'].upper() if row['Help Request Type'] else ''
+            help_request_subtype_upper = row['Subtype'].upper() if row['Subtype'] else ''
 
-            if not is_valid_help_request_type(help_request_type):
+            help_request_type = valid_help_request_types.get(help_request_type_upper)
+            help_request_subtype = valid_help_request_subtypes.get(help_request_subtype_upper)
+
+            if not help_request_type:
                 continue
+
+            if help_request_subtype is None and row['Subtype']:
+                continue
+
+            if help_request_subtype is None:
+                help_request_subtype = ''
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
                 row['d.o.b'])
 
             metadata = {
                 "Author": author,
-                "generic_ingestion_id": help_request_type.replace(" ", "")
+                "generic_ingestion_id": help_request_type.replace(" ", "") + help_request_subtype.replace(" ", "")
             }
 
             help_request = [
                 {
                     "Metadata": metadata,
                     "Postcode": row.Postcode.upper(),
+                    "Uprn": row['UPRN'],
                     "AddressFirstLine": row['Address Line 1'],
                     "AddressSecondLine": row['Address Line 2'],
                     "AddressThirdLine": row.City,
@@ -44,9 +60,11 @@ class AddGenericIngestionRequests:
                     "DobMonth": f'{dob_month}',
                     "DobYear": f'{dob_year}',
                     "ContactTelephoneNumber": row['Phone number'],
+                    "ContactMobileNumber": row['Phone number 2'],
                     "EmailAddress": row.Email if '@' in row.Email else '',
                     "CallbackRequired": True,
-                    "HelpNeeded": help_request_type
+                    "HelpNeeded": help_request_type,
+                    "HelpNeededSubtype": help_request_subtype
                 }]
 
             response = self.create_help_request.execute(
@@ -64,6 +82,24 @@ class AddGenericIngestionRequests:
                 data_frame.at[index, 'resident_id'] = resident_id
 
                 print(
-                    f'Added Generic Ingestion record of type {help_request_type} {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
+                    f'Added Generic Ingestion record of type {help_request_type} {help_request_subtype} {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
 
+                generic_ingestion_case_notes = [c for c in
+                                                [self.get_note(row["Case Note 1"], "Note from Data Ingestion"),
+                                                 self.get_note(row["Case Note 2"], "Note from Data Ingestion"),
+                                                 self.get_note(row["Case Note 3"], "Note from Data Ingestion"),
+                                                 self.get_note(row["Case Note 4"], "Note from Data Ingestion")] if
+                                                c is not None]
+
+                for case_note in generic_ingestion_case_notes:
+                    if case_note_needs_an_update(request['CaseNotes'], case_note):
+                        resident_id = resident_id
+                        self.here_to_help_api.create_case_note(
+                            resident_id, help_request_id, {"author": author, "note": case_note})
         return data_frame
+
+    def get_note(self, case_note, heading):
+        if case_note:
+            return heading + ': ' + case_note
+        else:
+            return None

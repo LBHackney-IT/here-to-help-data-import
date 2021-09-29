@@ -94,15 +94,8 @@ class AddGenericIngestionRequests:
                 for case_note in generic_ingestion_case_notes:
                     if case_note_needs_an_update(request['CaseNotes'], case_note):
                         resident_id = resident_id
-                        if help_request_subtype:
-                            self.here_to_help_api.create_case_note(
-                                resident_id, help_request_id, {
-                                    "author": author, "note": case_note, "helpNeeded": help_request_type,
-                                    "helpNeededSubtype": help_request_subtype})
-                        else:
-                            self.here_to_help_api.create_case_note(
-                                resident_id, help_request_id, {
-                                    "author": author, "note": case_note, "helpNeeded": help_request_type})
+                        self.here_to_help_api.create_case_note(
+                            resident_id, help_request_id, {"author": author, "note": case_note})
         return data_frame
 
     def get_note(self, case_note, heading):

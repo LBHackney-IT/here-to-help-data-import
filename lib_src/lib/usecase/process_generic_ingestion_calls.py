@@ -15,7 +15,11 @@ class ProcessGenericIngestionCalls:
         'Phone number',
         'Phone number 2',
         'UPRN',
-        'Subtype'
+        'Subtype',
+        'Case Note 1',
+        'Case Note 2',
+        'Case Note 3',
+        'Case Note 4'
     ]
 
     def __init__(self, add_generic_ingestion_requests):

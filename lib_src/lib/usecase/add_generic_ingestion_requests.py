@@ -1,5 +1,5 @@
 import datetime
-from ..helpers import parse_date_of_birth
+from ..helpers import parse_date_of_birth, case_note_needs_an_update
 
 valid_help_request_types = {
     "EUSS": "EUSS",
@@ -32,13 +32,11 @@ class AddGenericIngestionRequests:
             if not help_request_type:
                 continue
 
-            if help_request_subtype is not None and help_request_type == 'EUSS':
+            if help_request_subtype is None and row['Subtype']:
                 continue
 
             if help_request_subtype is None:
                 help_request_subtype = ''
-                print('help_request_subtype',
-                      help_request_subtype)
 
             dob_day, dob_month, dob_year = parse_date_of_birth(
                 row['d.o.b'])
@@ -86,4 +84,23 @@ class AddGenericIngestionRequests:
                 print(
                     f'Added Generic Ingestion record of type {help_request_type} {help_request_subtype} {index + 1} of {len(data_frame)}: resident_id: {resident_id} help_request_id: {help_request_id}')
 
+                generic_ingestion_case_notes = [c for c in
+                                                [self.get_note(row["Case Note 1"], "Note from Data Ingestion"),
+                                                 self.get_note(row["Case Note 2"], "Note from Data Ingestion"),
+                                                 self.get_note(row["Case Note 3"], "Note from Data Ingestion"),
+                                                 self.get_note(row["Case Note 4"], "Note from Data Ingestion")] if
+                                                c is not None]
+
+                for case_note in generic_ingestion_case_notes:
+                    if case_note_needs_an_update(request['CaseNotes'], case_note):
+                        resident_id = resident_id
+                        self.here_to_help_api.create_case_note(
+                            resident_id, help_request_id, {
+                                "author": author, "note": case_note})
         return data_frame
+
+    def get_note(self, case_note, heading):
+        if case_note:
+            return heading + ': ' + case_note
+        else:
+            return None

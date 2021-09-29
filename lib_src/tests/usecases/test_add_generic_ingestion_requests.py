@@ -86,5 +86,6 @@ def test_day_outcome_columns_become_case_notes():
         'help_request_id': 1,
         'case_note': {
             "author": "Data Ingestion: Generic Ingestion",
-            "note": "Note from Data Ingestion: 1"}
+            "note": "Note from Data Ingestion: 1",
+            "helpNeeded": "EUSS"}
     }

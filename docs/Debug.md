@@ -10,17 +10,15 @@ This document details setting up that environment.
 
 1. Setup the Here To Help front-end following the [Readme](https://github.com/LBHackney-IT/coronavirus-here-to-help-frontend/blob/master/README.md)
 
-2. Setup the Here to Help API following the [Readme] (https://github.com/LBHackney-IT/cv-19-res-support-v3/blob/master/README.md). Ensure all steps are followed to be able to run in Debug mode. If you run with make serve it will use the same port as the front-end and all three won't run together.
+2. Setup the Here to Help API following the [Readme](https://github.com/LBHackney-IT/cv-19-res-support-v3/blob/master/README.md). Ensure all steps are followed to be able to run in Debug mode. If you run with make serve it will use the same port as the front-end and all three won't run together.
 
 3. Change your local ingest .env CV_19_RES_SUPPORT_V3_HELP_REQUESTS_BASE_URL parameter to point to the local API, e.g: http://localhost:5000/api/
 
 4. Change your .env INBOUND and OUTBOUND folder parameters to be a valid ID. This is the final portion of the path when accessing the folder in a browser:
 
-e.g:
+For example: drive.google.com/drive/u/1/folders/1uq9_dtmTi_5cdA4Qj38BdUJHKbjQgxn7?ths=true
 
-https://drive.google.com/drive/u/1/folders/1uq9_dtmTi_5cdA4Qj38BdUJHKbjQgxn7?ths=true
-
-The ID is 1uq9_dtmTi_5cdA4Qj38BdUJHKbjQgxn7
+The ID from the above is 1uq9_dtmTi_5cdA4Qj38BdUJHKbjQgxn7
 
 5. Change lib_src\local_main.py to call the ingest type you wish to test.
 
@@ -44,6 +42,6 @@ Depending on what you have already, none or all of these will need to be followe
 
 # Common issues
 
-1. Key file not found.
+1. Key file not found when running ingest in debug.
 
 This seems to vary per environment and may relate to the python root path specified in the IDE. The easiest solution is to move it to where it expects. It should be excluded from all directories in .gitignore but you must confirm this as well as ensure you're using a key that only contains development / dummy data.

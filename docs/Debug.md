@@ -42,4 +42,8 @@ Depending on what you have already, none or all of these will need to be followe
 
 6. The service account listed in GCP will have an email address. Share the inbound and outbound folders with this email.
 
+# Common issues
 
+1. Key file not found.
+
+This seems to vary per environment and may relate to the python root path specified in the IDE. The easiest solution is to move it to where it expects. It should be excluded from all directories in .gitignore but you must confirm this as well as ensure you're using a key that only contains development / dummy data.

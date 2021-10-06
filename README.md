@@ -2,11 +2,13 @@
 
 The data ingestion process is a process which ingests data from a Google sheet into the here-to-help database through the [help help api](https://github.com/LBHackney-IT/cv-19-res-support-v3).
 
-There are three data ingestion processes, and therefore three lambdas in this single repository:
+There are five data ingestion processes, and therefore five lambdas in this single repository:
 
 - Here to Help data ingestion lambda - ingests contact tracing data into the here to help API
 - Here to Help data ingestion NSSS lambda - ingests national shielding service data into the Here to Help API
 - Here to Help data ingestion SPL lambda- ingests shielding patient list data into the Here to Help API
+- Here to Help data ingestion Self Isolation - ingests self isolation data into the here to help API
+- Here to Help generic ingestion - originally created for EUSS calls, and then Link Work but allows the Help Type to be specified in the ingest; to stop the proliferation of lambdas and associated infrastructure with every new data type.
 
 # Stack
 
@@ -30,21 +32,24 @@ There are three data ingestion processes, and therefore three lambdas in this si
   - For SPL data, navigate to cev-spl, inbound and upload the file there
     https://drive.google.com/drive/folders/SPL_INBOUND_FOLDER_ID
 
+
 - The lambda reads the uploaded file, then one record at a time calls the here to help api
-- The here to help api checks if the resident already exists in the database and adds them if they do not
+- The here to help api checks if the resident already exists in the database and adds them if they do not.
   - For contact tracing, the here to help api only adds records if there is no help request with the same ctas id
   - For NSS, the here to help api only adds records if there is no help request with the nss id. It adds a case note if the NSS details have changed
   - For SPL, the here to help api only adds records if there is no help request with the spl id. It adds a case note if the SPL details have changed
-  - The lambdas send the nss id and spl id as metadata whilst making the request to the here to help api
+  - For Self Isolation, the here to help api only adds records if there is no help request with the ctas id. It adds a case note if that case note (by Text) has't been added before. 
+  - For the generic ingest it will never create a duplicate help request by help type for an individual resident. This doesn't check if one of that type has been created via the front-end.
+  - The lambdas send the nss id, spl id and ctas id (where they exist) as metadata whilst making the request to the here to help api
 - The lambda will only process files uploaded on that day
-- A limit of 3000 residents/rows has been agreed as the lambda could time out beyond this (if it takes longer than the 15 min timeout period set on the lambda to process the entire file)
+- A limit, not enforced in code for all ingests, of 3000 residents/rows has been agreed as the lambda could time out beyond this (if it takes longer than the 15 min timeout period set on the lambda to process the entire file)
 - If there are more than 3000 residents, you can split the data into multiple files which will process consecutively (this only applies for SPL and NSSS, if you would like to upload more than 3000 contact tracing residents, please read further for guidance)
 - Once a file has been processed, the lambda will upload a file in the outbound folder summarising all the processed residents
 
-- The lambda only processes non-processed files. It identifies non-processed files differently for the three lambdas:
+- The lambda only processes non-processed files. It identifies non-processed files differently for the lambdas:
 
   - For contact tracing lambda, we only expect a single file to be uploaded per day, therefore the lambda only processes a single file uploaded on that day. If you would like to upload another file on the same day, then make sure to remove the file that was generated in the outbound folder. This is because it checks the creation date of the file in the outbound folder to see if a file had been processed on that day
-  - For the SPL and NSSS lambda, the lambdas can process multiple files. It will process files that do not have a corresponding outbound file(compares names and dates of files), but it will only do so if the number of files in the inbound and outbound folders are not the same. This is because the lambda checks the file counts to verify that the inbound files have been processed. Ensure that you do not have multiple files with the same name on the same day so each file is processed
+  - For all others, the lambdas can process multiple files. It will process files that do not have a corresponding outbound file(compares names and dates of files), but it will only do so if the number of files in the inbound and outbound folders are not the same. This is because the lambda checks the file counts to verify that the inbound files have been processed. Ensure that you do not have multiple files with the same name on the same day so each file is processed
   - You should not manually add files to the outbound folder as this could break the process. If you would like to delete an outbound file ensure to delete the respective inbound file first to avoid reprocessing. For this reason, you should not remove files from the outbound folder
     You can verify that the ingestion process has run by navigating to the resident profile in Here to Help (staging, production) and checking that an ingestion case note is created
 
@@ -81,6 +86,8 @@ To run tests
 ```bash
 pytest
 ```
+
+For steps on setting up a replica production environment, to be able to ingest a file in a development Google Drive folder and debug through the ingest, API and to the front-end, see [here](/docs/Debug.md).
 
 ### Development
 

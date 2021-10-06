@@ -57,6 +57,8 @@ There are five data ingestion processes, and therefore five lambdas in this sing
 
 ## Getting started
 
+Using your preferred IDE for Python, follow the below steps. If unsure, Rider is recommended.
+
 To create the virtual environment
 
 ```bash

@@ -58,7 +58,7 @@ class ProcessContactTracingCalls:
             if not any(
                     f['name'] == processed_file_name for f in outbound_files):
                 print(
-                    f'processing {len(outbound_files) + 1} of {len(inbound_files)}')
+                    f'processing {processed_file_name}')
 
                 inbound_spread_sheet_id = file.get('id')
 

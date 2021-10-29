@@ -91,8 +91,19 @@ def get_data_frame(date_tested=None):
 
 
 def test_processing_new_power_bi_spreadsheet():
+    return_inbound_files = [
+        {'name': "fake_inbound1.xlsx", 'id': '1'},
+        {'name': "fake_inbound2.xlsx", 'id': '2'}
+    ]
+    return_outbound_files = [
+        {'name': f'PROCESSED_1',
+         'id': '1'},
+        {'name': f'PROCESSED_2',
+         'id': '2'},
+    ]
+
     today = dt.datetime.now().date().strftime('%Y-%m-%d')
-    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
+    fake_google_drive_gateway = FakeGoogleDriveGateway(True, True, return_inbound_files, return_outbound_files)
     fake_pygsheet_gateway = FakePygsheetGateway(get_data_frame(today))
     fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
@@ -103,7 +114,7 @@ def test_processing_new_power_bi_spreadsheet():
 
     use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
 
-    assert len(fake_google_drive_gateway.search_folder_calls) == 2
+    assert len(fake_google_drive_gateway.get_list_of_files_called_with) == 2
 
     assert len(fake_google_drive_gateway.created_spreadsheets) == 2
 
@@ -121,7 +132,17 @@ def test_processing_new_power_bi_spreadsheet():
 
 
 def test_new_power_bi_spreadsheet_but_it_has_been_processed():
-    fake_google_drive_gateway = FakeGoogleDriveGateway(True, True)
+    return_inbound_files = [
+        {'name': "fake_inbound1.xlsx", 'id': '1'}
+    ]
+    return_outbound_files = [
+        {'name': f'PROCESSED_1',
+         'id': '1'},
+        {'name': f'PROCESSED_2',
+         'id': '2'},
+    ]
+
+    fake_google_drive_gateway = FakeGoogleDriveGateway(True, True, return_inbound_files, return_outbound_files)
     fake_pygsheet_gateway = FakePygsheetGateway(get_data_frame(dt.datetime.now().date().strftime('%Y-%m-%d')))
     fake_add_contact_tracing_requests = FakeAddContactTracingRequests()
 
@@ -132,7 +153,7 @@ def test_new_power_bi_spreadsheet_but_it_has_been_processed():
 
     use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
 
-    assert len(fake_google_drive_gateway.search_folder_calls) == 2
+    assert len(fake_google_drive_gateway.get_list_of_files_called_with) == 2
 
     assert len(fake_google_drive_gateway.created_spreadsheets) == 0
 
@@ -154,8 +175,6 @@ def test_no_new_power_bi_spreadsheet_to_process():
         fake_add_contact_tracing_requests)
 
     use_case.execute('inbound_folder_id', 'outbound_folder_id', [])
-
-    assert len(fake_google_drive_gateway.search_folder_calls) == 1
 
     assert len(fake_google_drive_gateway.created_spreadsheets) == 0
 

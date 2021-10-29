@@ -68,17 +68,23 @@ def case_note_needs_an_update(case_notes_on_request, new_case_note):
 
 
 def resident_is_identifiable(help_request):
-    if help_request.get('NhsNumber'):
-        return True
-
-    if help_request.get('FirstName') and help_request.get('LastName'):
-        match_fields = ['NhsCtasId', 'Uprn', 'ContactTelephoneNumber', 'ContactMobileNumber', 'EmailAddress']
-
-        if all(help_request.get(field) for field in ['DobDay', 'DobMonth', 'DobYear']) or \
-                any(help_request.get(field) for field in match_fields):
+    try:
+        if help_request.get('NhsNumber'):
             return True
 
-    return False
+        if help_request.get('FirstName') and help_request.get('LastName'):
+            match_fields = ['NhsCtasId', 'Uprn', 'ContactTelephoneNumber', 'ContactMobileNumber', 'EmailAddress']
+
+            if all(help_request.get(field) for field in ['DobDay', 'DobMonth', 'DobYear']) or \
+                    any(help_request.get(field) for field in match_fields):
+                return True
+
+        return False
+    except Exception as e:
+        print("Helper Error: 'resident_is_identifiable' has encountered unexpected data.", str(e), help_request)
+        # Don't want to handle this by returning a bool value as this would imply
+        # that resident was not identifiable rather than resident data was unexpected.
+        raise e
 
 
 def clean_data(columns, data_frame):

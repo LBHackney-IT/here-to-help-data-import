@@ -133,14 +133,16 @@ def test_processing_new_power_bi_spreadsheet():
 
 
 def test_new_power_bi_spreadsheet_but_it_has_been_processed():
+    today = dt.datetime.now().date().strftime('%Y-%m-%d')
+
     return_inbound_files = [
-        {'name': "fake_inbound1.xlsx", 'id': '1'}
+        {'name': "file1", 'id': 'inbound_folder_id'}
     ]
     return_outbound_files = [
-        {'name': f'PROCESSED_1',
-         'id': '1'},
-        {'name': f'PROCESSED_2',
-         'id': '2'},
+        {'name': f'city_CT_FOR_UPLOAD_file1_{today}',
+         'id': 'outbound_folder_id'},
+        {'name': f'Hackney_CT_FOR_UPLOAD_file1_{today}',
+         'id': 'outbound_folder_id'},
     ]
 
     fake_google_drive_gateway = FakeGoogleDriveGateway(True, True, return_inbound_files, return_outbound_files)
@@ -206,8 +208,8 @@ def test_total_rows_exceeds_3000_does_not_process():
 
 
 def test_rows_older_than_14_days_ago_dont_get_processed():
-    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
-
+    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False, return_inbound_files=[{'name': "file1",
+                                                                                          'id': 'inbound_folder_id'}])
     invalid_date = dt.date.today() - dt.timedelta(days=80)
     invalid_edge_date = dt.date.today() - dt.timedelta(days=14)
     valid_edge_date = dt.date.today() - dt.timedelta(days=13)
@@ -228,7 +230,8 @@ def test_rows_older_than_14_days_ago_dont_get_processed():
 
 
 def test_excludes_excluded_ctas_ids():
-    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False)
+    fake_google_drive_gateway = FakeGoogleDriveGateway(True, False, return_inbound_files=[{'name': "file1",
+                                                                                          'id': 'inbound_folder_id'}])
 
     valid_edge_date = dt.date.today() - dt.timedelta(days=13)
 

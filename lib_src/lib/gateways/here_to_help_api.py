@@ -29,8 +29,13 @@ class HereToHelpGateway:
             if response.status_code == 403:
                 print("Authentication error", response)
                 return {"Error": json.dumps(response.json())}
-
-            result = eval(response.text)
+            
+            if response.status_code != 201:
+                print("ERROR: Not a 201 response! Response: ", response.text)
+                raise Exception("Failure within an API.")
+            else:
+                result = response.json()
+                return result
 
         except HTTPError as err:
             print(
@@ -40,9 +45,7 @@ class HereToHelpGateway:
             return {"Error": err.msg}
         except Exception as err:
             print("Help request was not created", help_request)
-            return {"Error": err}
-
-        return result
+            return {"Error": str(err)}
 
     def get_help_request(self, help_request_id):
         try:

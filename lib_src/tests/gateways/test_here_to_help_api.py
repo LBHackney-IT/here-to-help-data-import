@@ -18,8 +18,19 @@ class TestCreateHelpRequest:
         requests_mock.register_uri(
             'POST',
             self.POST_HELP_REQUESTS_URL,
-            text='{"Id": "1"}')
+            text='{"Id": "1"}',
+            status_code=201)
         assert self.gateway.create_help_request(help_request={}) == {"Id": "1"}
+    
+    # The API promises 201, so it should be a 201 - we shouldn't be parsing json from any other response
+    def test_if_not_201_then_its_an_error(self, requests_mock):
+        requests_mock.register_uri(
+            'POST',
+            self.POST_HELP_REQUESTS_URL,
+            text='Error that mocks you, the programmer, when it\'s not logged',
+            status_code=409)
+        expected_exception = str(Exception("Failure within an API."))
+        assert self.gateway.create_help_request(help_request={}) == {"Error": expected_exception}
 
     def test_authentication_error_handling(self, requests_mock):
         requests_mock.register_uri(

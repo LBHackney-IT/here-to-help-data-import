@@ -2,6 +2,7 @@ import datetime as dt
 import numpy as np
 from ..helpers import manual_parse
 
+
 class ProcessContactTracingCalls:
     # have also included NHS Number, 'Date Updated', 'Date Time Extracted' as
     # would be useful for data warehouse etc
@@ -29,12 +30,37 @@ class ProcessContactTracingCalls:
         self.add_contact_tracing_requests = add_contact_tracing_requests
 
     def execute(self, inbound_folder_id, outbound_folder_id, excluded_ctas_ids):
-        inbound_spread_sheet_id = self.google_drive_gateway.search_folder(
-                inbound_folder_id, "spreadsheet")
+        inbound_files = self.google_drive_gateway.get_list_of_files(
+            inbound_folder_id)
 
-        if inbound_spread_sheet_id:
-            if not self.google_drive_gateway.search_folder(
-                    outbound_folder_id, "spreadsheet"):
+        if not inbound_files:
+            print(
+                "No File found for today in folder: https://drive.google.com/drive/folders/%s " %
+                inbound_folder_id)
+            print("Will Abort")
+            return 'not found'
+
+        outbound_files = self.google_drive_gateway.get_list_of_files(
+            outbound_folder_id)
+
+        if len(inbound_files) * 2 == len(outbound_files):
+            print(
+                "Output files found in output folder: https://drive.google.com/drive/folders/%s " %
+                outbound_folder_id)
+            print("Will Abort")
+            return 'all done'
+
+        for file in inbound_files:
+            today = dt.datetime.now().date().strftime('%Y-%m-%d')
+
+            processed_file_name = f'Hackney_CT_FOR_UPLOAD_{file.get("name")}_{today}'
+
+            if not any(
+                    f['name'] == processed_file_name for f in outbound_files):
+                print(
+                    f'processing {processed_file_name}')
+
+                inbound_spread_sheet_id = file.get('id')
 
                 data_frame = self.pygsheet_gateway.get_data_frame_from_sheet(
                     inbound_spread_sheet_id, 'A3')
@@ -70,32 +96,22 @@ class ProcessContactTracingCalls:
                     today = dt.datetime.now().date().strftime('%Y-%m-%d')
 
                     hackney_output_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
-                        outbound_folder_id, f'Hackney_CT_FOR_UPLOAD_{today}')
+                        outbound_folder_id, f'Hackney_CT_FOR_UPLOAD_{file.get("name")}_{today}')
 
                     self.pygsheet_gateway.populate_spreadsheet(
                         hackney_spreadsheet, spreadsheet_key=hackney_output_spreadsheet_key)
 
                     city_spreadsheet_key = self.google_drive_gateway.create_spreadsheet(
-                        outbound_folder_id, f'city_CT_FOR_UPLOAD_{today}')
+                        outbound_folder_id, f'city_CT_FOR_UPLOAD_{file.get("name")}_{today}')
 
                     self.pygsheet_gateway.populate_spreadsheet(
                         city_spreadsheet, spreadsheet_key=city_spreadsheet_key)
                 else:
                     print("Error: Contact Tracing sheet exceeded 3000 rows and was skipped. File found in \
                     inbound folder: https://drive.google.com/drive/folders/%s " %
-                    (inbound_folder_id))
-            else:
-                print(
-                    "Contact Tracing output file found in \
-                    output folder: https://drive.google.com/drive/folders/%s " %
-                    (outbound_folder_id))
-                print("Will Abort")
-        else:
-            print(
-                "No File found for todays PowerBI Output in \
-                folder: https://drive.google.com/drive/folders/%s " %
-                (inbound_folder_id))
-            print("Will Abort")
+                          (inbound_folder_id))
+
+                break
 
     @classmethod
     def get_city_cases(cls, data_frame):
@@ -108,7 +124,7 @@ class ProcessContactTracingCalls:
         # print("[get_hackney_cases] Creating Hackney Case Dataframe")
         hack_data_frame = data_frame[data_frame['UTLA'] == 'Hackney']
         hack_data_frame = hack_data_frame[(~hack_data_frame['Phone'].isna()) |
-                          (~hack_data_frame['Phone2'].isna())]
+                                          (~hack_data_frame['Phone2'].isna())]
         # ensures there is at least one Phone Number
         hack_data_frame = hack_data_frame[self.COLS]
         return hack_data_frame
@@ -127,10 +143,10 @@ class ProcessContactTracingCalls:
     def get_address_email_lists(cls, data_frame):
         # print(
         #     "[get_address_email_lists] Only returns cases that don't have any phone number")
-        address_list =  data_frame[(data_frame['House Number'].str.len() > 0)
-                                   & (data_frame['Postcode'].str.len() > 0)
-                                   & (data_frame['Phone'].str.len() == 0)
-                                   & (data_frame['Phone2'].str.len() == 0)]
+        address_list = data_frame[(data_frame['House Number'].str.len() > 0)
+                                  & (data_frame['Postcode'].str.len() > 0)
+                                  & (data_frame['Phone'].str.len() == 0)
+                                  & (data_frame['Phone2'].str.len() == 0)]
 
         address_list = address_list[[
             'Date Time Extracted',
@@ -144,7 +160,7 @@ class ProcessContactTracingCalls:
             (data_frame['Email'].str.len() > 0)
             & (data_frame['Phone'].str.len() == 0)
             & (data_frame['Phone2'].str.len() == 0)
-        ]
+            ]
         email_list = email_list[['Date Time Extracted',
                                  'Forename', 'Surname', 'Email']]
         # print(address_list)
@@ -166,7 +182,8 @@ class ProcessContactTracingCalls:
                 indexes.append(index)
 
         if len(indexes) > 0:
-            print('Warning: Ignored ' + str(len(indexes)) + ' contact tracing rows that were older than 14 days or an excluded ctas id.')
+            print('Warning: Ignored ' + str(
+                len(indexes)) + ' contact tracing rows that were older than 14 days or an excluded ctas id.')
 
         cleaned_data_frame = data_frame.drop(data_frame.index[indexes])
 

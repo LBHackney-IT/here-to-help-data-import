@@ -93,3 +93,7 @@ def clean_data(columns, data_frame):
         data_frame[i] = data_frame[i].astype(str).str.strip().replace(r'nan', np.nan)
 
     return data_frame
+
+# No need to test this, as it's basically base python method
+def is_within_collection(value, collection):
+    return any(item == value for item in collection)

@@ -63,7 +63,7 @@ class ProcessContactTracingCalls:
                 inbound_spread_sheet_id = file.get('id')
 
                 data_frame = self.pygsheet_gateway.get_data_frame_from_sheet(
-                    inbound_spread_sheet_id, 'A3')
+                    inbound_spread_sheet_id, 'auto')
 
                 if len(data_frame) < 3000:
                     data_frame = self.clean_data(data_frame=data_frame, excluded_ctas_ids=excluded_ctas_ids)

@@ -125,7 +125,7 @@ def test_processing_new_power_bi_spreadsheet():
     ]
 
     assert fake_pygsheet_gateway.get_data_frame_from_sheet_called_with == [
-        ['inbound_folder_id', 'A3']]
+        ['inbound_folder_id', 'auto']]
 
     assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 2
 

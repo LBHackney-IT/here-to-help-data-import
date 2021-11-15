@@ -1,7 +1,7 @@
+import datetime
 from faker import Faker
-from lib_src.lib.helpers import parse_date_of_birth, case_note_needs_an_update, resident_is_identifiable
+from lib_src.lib.helpers import parse_date_of_birth, case_note_needs_an_update, resident_is_identifiable, manual_parse
 from lib_src.lib.helpers import concatenate_address
-
 
 class TestAddressConcatenation:
 
@@ -331,3 +331,52 @@ class TestCaseResidentIsIdentifiable:
             "LastName": 'Zebra',
             "EmailAddress": 'mr@zebra.safari',
         })
+
+class TestManualParseMethodForDates:
+    def test_dmYHM_slash_date_returns_valid_date(self):
+        # arrange
+        test_date_1 = '09/11/2021 00:00'
+        expected_1 = datetime.datetime(2021,11,9,0,0)
+        
+        test_date_2 = '07/01/2021 18:57'
+        expected_2 = datetime.datetime(2021,1,7,18,57)
+
+        # act
+        parsed_date_str_1 = manual_parse(test_date_1)
+        parsed_date_str_2 = manual_parse(test_date_2)
+
+        # assert
+        assert (parsed_date_str_1 - expected_1).total_seconds() == 0
+        assert (parsed_date_str_2 - expected_2).total_seconds() == 0
+    
+    def test_dmY_slash_date_returns_valid_date(self):
+        # arrange
+        test_date_1 = '24/05/2022'
+        expected_1 = datetime.datetime(2022,5,24)
+        
+        test_date_2 = '18/03/2020'
+        expected_2 = datetime.datetime(2020,3,18)
+
+        # act
+        parsed_date_str_1 = manual_parse(test_date_1)
+        parsed_date_str_2 = manual_parse(test_date_2)
+
+        # assert
+        assert (parsed_date_str_1 - expected_1).total_seconds() == 0
+        assert (parsed_date_str_2 - expected_2).total_seconds() == 0
+    
+    def test_dmYHMS_slash_date_returns_valid_date(self):
+        # arrange
+        test_date_1 = '15/01/2022 00:00:00'
+        expected_1 = datetime.datetime(2022,1,15,0,0,0)
+        
+        test_date_2 = '25/12/2021 07:22:45'
+        expected_2 = datetime.datetime(2021,12,25,7,22,45)
+
+        # act
+        parsed_date_str_1 = manual_parse(test_date_1)
+        parsed_date_str_2 = manual_parse(test_date_2)
+
+        # assert
+        assert (parsed_date_str_1 - expected_1).total_seconds() == 0
+        assert (parsed_date_str_2 - expected_2).total_seconds() == 0

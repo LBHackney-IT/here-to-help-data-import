@@ -6,6 +6,7 @@ import numpy as np
 
 
 def manual_parse(date_string):
+    date_string = re.sub(r"(\s\d\d:\d\d)(?=$|\s)", "\g<1>:00", date_string)
     date_numbers_string = re.findall(r'\d+', date_string)
     date_numbers_string = [date_portion.zfill(2) for date_portion in date_numbers_string]
     date_numbers_string = ''.join(date_numbers_string)

@@ -91,7 +91,10 @@ class ProcessContactTracingCalls:
                         'data_frame': hackney_cases
                     }]
 
+                    print(f'Adding Hackney Cases: {len(hackney_cases)}')
                     self.add_contact_tracing_requests.execute(hackney_cases)
+                    print(f'Adding Hackney Cases: {len(city_cases)}')
+                    self.add_contact_tracing_requests.execute(city_cases)
 
                     today = dt.datetime.now().date().strftime('%Y-%m-%d')
 
@@ -116,7 +119,8 @@ class ProcessContactTracingCalls:
     @classmethod
     def get_city_cases(cls, data_frame):
         # print("[get_city_cases] Creating COL Case Dataframe")
-        city_data_frame = data_frame[data_frame['UTLA'] == 'City of London']
+        city_data_frame = data_frame[(data_frame['UTLA'] == 'CityofLondon') |
+                                     (data_frame['UTLA'] == 'City of London')]
         # print(city_data_frame)
         return city_data_frame
 

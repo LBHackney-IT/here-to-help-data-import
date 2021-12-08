@@ -128,8 +128,8 @@ def test_processing_new_power_bi_spreadsheet():
         ['inbound_folder_id', 'auto']]
 
     assert len(fake_pygsheet_gateway.populate_spreadsheet_called_with) == 2
-
-    assert len(fake_add_contact_tracing_requests.execute_called_with) == 1
+    # We're including City of London cases that were previously ignored
+    assert len(fake_add_contact_tracing_requests.execute_called_with) == 2
 
 
 def test_new_power_bi_spreadsheet_but_it_has_been_processed():

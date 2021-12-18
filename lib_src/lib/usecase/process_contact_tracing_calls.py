@@ -93,7 +93,7 @@ class ProcessContactTracingCalls:
 
                     print(f'Adding Hackney Cases: {len(hackney_cases)}')
                     self.add_contact_tracing_requests.execute(hackney_cases)
-                    print(f'Adding Hackney Cases: {len(city_cases)}')
+                    print(f'Adding City Cases: {len(city_cases)}')
                     self.add_contact_tracing_requests.execute(city_cases)
 
                     today = dt.datetime.now().date().strftime('%Y-%m-%d')
@@ -127,9 +127,7 @@ class ProcessContactTracingCalls:
     def get_hackney_cases(self, data_frame):
         # print("[get_hackney_cases] Creating Hackney Case Dataframe")
         hack_data_frame = data_frame[data_frame['UTLA'] == 'Hackney']
-        hack_data_frame = hack_data_frame[(~hack_data_frame['Phone'].isna()) |
-                                          (~hack_data_frame['Phone2'].isna())]
-        # ensures there is at least one Phone Number
+        
         hack_data_frame = hack_data_frame[self.COLS]
         return hack_data_frame
 
